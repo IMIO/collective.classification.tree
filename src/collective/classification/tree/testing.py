@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
+
 from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
-from plone.app.testing import (
-    applyProfile,
-    FunctionalTesting,
-    IntegrationTesting,
-    PLONE_FIXTURE,
-    PloneSandboxLayer,
-)
+from plone.app.testing import applyProfile
+from plone.app.testing import FunctionalTesting
+from plone.app.testing import IntegrationTesting
+from plone.app.testing import PLONE_FIXTURE
+from plone.app.testing import PloneSandboxLayer
+from plone.app.testing import TEST_USER_ID
 from plone.testing import z2
+from plone.app.testing import setRoles
 
 import collective.classification.tree
 
 
 class CollectiveClassificationTreeLayer(PloneSandboxLayer):
 
-    defaultBases = ((PLONE_FIXTURE,),)
+    defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         # Load any other ZCML that is required for your tests.
@@ -30,6 +31,7 @@ class CollectiveClassificationTreeLayer(PloneSandboxLayer):
 
     def setUpPloneSite(self, portal):
         applyProfile(portal, "collective.classification.tree:default")
+        setRoles(portal, TEST_USER_ID, ["Manager"])
 
 
 COLLECTIVE_CLASSIFICATION_TREE_FIXTURE = CollectiveClassificationTreeLayer()
