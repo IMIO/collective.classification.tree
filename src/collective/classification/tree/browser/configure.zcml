@@ -1,21 +1,52 @@
 <configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:plone="http://namespaces.plone.org/plone"
-    i18n_domain="collective.classification.tree">
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:plone="http://namespaces.plone.org/plone"
+  i18n_domain="collective.classification.tree">
 
   <!-- Set overrides folder for Just-a-Bunch-Of-Templates product -->
   <include package="z3c.jbot" file="meta.zcml" />
   <browser:jbot
-      directory="overrides"
-      layer="collective.classification.tree.interfaces.ICollectiveClassificationTreeLayer"
-      />
+    directory="overrides"
+    layer="collective.classification.tree.interfaces.ICollectiveClassificationTreeLayer"
+    />
 
   <!-- Publish static files -->
   <plone:static
-      name="collective.classification.tree"
-      type="plone"
-      directory="static"
+    name="collective.classification.tree"
+    type="plone"
+    directory="static"
+    />
+
+  <configure package="plone.dexterity.browser">
+    <browser:page
+      for="collective.classification.tree.contents.category.IClassificationCategory"
+      class="collective.classification.tree.browser.category.CategoryView"
+      name="view"
+      permission="zope2.View"
+      template="item.pt"
       />
+  </configure>
+
+  <browser:page
+    for="collective.classification.tree.contents.category.IClassificationCategory"
+    class=".category.CategoryEditView"
+    name="edit"
+    permission="cmf.ModifyPortalContent"
+    />
+
+  <browser:page
+    for="collective.classification.tree.contents.category.IClassificationCategory"
+    class=".category.CategoryAddView"
+    name="add-ClassificationCategory"
+    permission="cmf.AddPortalContent"
+    />
+
+  <browser:page
+    for="collective.classification.tree.contents.container.IClassificationContainer"
+    class=".category.CategoryAddView"
+    name="add-ClassificationCategory"
+    permission="cmf.ModifyPortalContent"
+    />
 
 </configure>
