@@ -66,8 +66,9 @@ setup(
             # Plone KGS does not use this version, because it would break
             # Remove if your package shall be part of coredev.
             # plone_coredev tests as of 2016-04-01.
-            "plone.testing>=5.0.0",
+            "plone.testing",
             "plone.app.robotframework[debug]",
+            "plone.app.contenttypes",
         ]
     },
     entry_points="""
