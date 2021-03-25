@@ -49,4 +49,22 @@
     permission="cmf.ModifyPortalContent"
     />
 
+  <!-- actions -->
+
+  <browser:page
+    name="plone_context_state"
+    for="collective.classification.tree.contents.category.IClassificationCategory"
+    permission="zope2.View"
+    class=".actions.ContextState"
+    allowed_interface="plone.app.layout.globals.interfaces.IContextState"
+    />
+
+  <adapter
+    for="collective.classification.tree.contents.category.IClassificationCategory
+         *"
+    name="plone.contentmenu.actions"
+    factory=".actions.ActionsSubMenuItem"
+    provides="plone.app.contentmenu.interfaces.IContentMenuItem"
+    />
+
 </configure>
