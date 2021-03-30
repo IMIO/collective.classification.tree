@@ -15,28 +15,32 @@
   <include file="permissions.zcml" />
 
   <genericsetup:registerProfile
-      name="default"
-      title="collective.classification.tree"
-      directory="profiles/default"
-      description="Installs the collective.classification.tree add-on."
-      provides="Products.GenericSetup.interfaces.EXTENSION"
-      post_handler=".setuphandlers.post_install"
-      />
+    name="default"
+    title="collective.classification.tree"
+    directory="profiles/default"
+    description="Installs the collective.classification.tree add-on."
+    provides="Products.GenericSetup.interfaces.EXTENSION"
+    post_handler=".setuphandlers.post_install"
+    />
 
   <genericsetup:registerProfile
-      name="uninstall"
-      title="collective.classification.tree (uninstall)"
-      directory="profiles/uninstall"
-      description="Uninstalls the collective.classification.tree add-on."
-      provides="Products.GenericSetup.interfaces.EXTENSION"
-      post_handler=".setuphandlers.uninstall"
-      />
+    name="uninstall"
+    title="collective.classification.tree (uninstall)"
+    directory="profiles/uninstall"
+    description="Uninstalls the collective.classification.tree add-on."
+    provides="Products.GenericSetup.interfaces.EXTENSION"
+    post_handler=".setuphandlers.uninstall"
+    />
 
   <utility
-      factory=".setuphandlers.HiddenProfiles"
-      name="collective.classification.tree-hiddenprofiles"
-      />
+    factory=".setuphandlers.HiddenProfiles"
+    name="collective.classification.tree-hiddenprofiles"
+    />
 
-  <!-- -*- extra stuff goes here -*- -->
+  <utility
+    component=".vocabularies.classification_tree_vocabulary_factory"
+    name="collective.classification.vocabularies:tree"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    />
 
 </configure>
