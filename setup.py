@@ -59,6 +59,7 @@ setup(
         "plone.app.relationfield",
         "plone.app.lockingbehavior",
         "plone.schema",
+        "collective.js.datatables",
     ],
     extras_require={
         "test": [

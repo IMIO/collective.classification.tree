@@ -9,6 +9,7 @@
 
   <include package="plone.app.dexterity" />
   <include package="plone.restapi" />
+  <include package="collective.js.datatables" />
 
   <include package=".browser" />
   <include package=".contents" />

@@ -1,0 +1,111 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone.dexterity">
+<head>
+  <metal:block fill-slot="style_slot">
+    <link rel="stylesheet" type="text/css" media="screen" href="++resource++jquery.datatables/media/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="++resource++jquery.datatables/media/css/jquery.dataTables_themeroller.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="++resource++jquery.datatables/extras/TableTools/media/css/dataTables.tableTools.min.css">
+    <style type="text/css">.clear{clear:both}</style>
+  </metal:block>
+  <metal:block fill-slot="javascript_slot">
+    <script type="text/javascript" src="++resource++jquery.datatables.js"></script>
+    <script type="text/javascript" src="++resource++jquery.datatables/extras/TableTools/media/js/dataTables.TableTools.js"></script>
+  </metal:block>
+</head>
+<body>
+
+<metal:main fill-slot="main">
+
+  <h1 class="documentFirstHeading" tal:content="context/Title" />
+
+  <p class="documentDescription" tal:content="context/Description" />
+
+  <tal:block repeat="widget view/widgets/values">
+    <div class="field" tal:condition="python:widget.__name__ not in ('IBasic.title', 'IBasic.description', 'title', 'description',)">
+      <label tal:content="widget/label" />
+      <br />
+      <div tal:content="structure widget/render" />
+    </div>
+  </tal:block>
+
+  <fieldset tal:repeat="group view/groups"
+            tal:attributes="id python:''.join((group.prefix, 'groups.', group.__name__)).replace('.', '-')">
+    <legend tal:content="group/label" />
+    <div class="field" tal:repeat="widget group/widgets/values">
+      <label tal:content="widget/label" />
+      <br />
+      <div tal:content="structure widget/render" />
+    </div>
+  </fieldset>
+
+  <table id="table" class="tree-listing" i18n:domain="collective.classification.tree">
+    <thead>
+        <tr>
+            <th i18n:translate="">Identifier</th>
+            <th i18n:translate="">Name</th>
+            <th i18n:translate="">Informations</th>
+            <th></th>
+        </tr>
+    </thead>
+  </table>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      var column_link_renderer = function(data, type, row, meta) {
+        if (type === 'display') {
+          data = '<a href="' + row["@id"] + '">' + data + '</a>';
+        }
+        return data;
+      };
+
+      var column_action_renderer = function(data, type, row, meta) {
+        if (type === 'display') {
+          render = ''
+          data.forEach(function(value, index, array) {
+            render = render + ' <a href="' + value["link"] +  '">' + value["title"] + '</a>';
+          });
+        } else {
+          render = data
+        }
+        return render;
+      };
+
+
+      $("#table").DataTable({
+        "processing": true,
+        "serverSide": true,
+        "pageLength": 25,
+        "lengthMenu": [5, 10, 25, 50, 100],
+        "ajax": {
+          "url": "@tree",
+          "type": "GET",
+          "beforeSend": function (request) {
+              request.setRequestHeader("Accept", "application/json");
+          }
+        },
+        "search": {
+          "regex": true,
+        },
+        "columns": [
+          {"data": "identifier", "render": column_link_renderer},
+          {"data": "title", "render": column_link_renderer},
+          {"data": "informations"},
+          {"data": "links", "orderable": false, "searchable": false, "render": column_action_renderer},
+        ],
+        "oLanguage": {
+          "sUrl": "@@collective.js.datatables.translation"
+        },
+      });
+    });
+  </script>
+
+</metal:main>
+
+</body>
+</html>
+

@@ -46,7 +46,15 @@
     for="collective.classification.tree.contents.container.IClassificationContainer"
     class=".category.CategoryAddView"
     name="add-ClassificationCategory"
-    permission="cmf.ModifyPortalContent"
+    permission="cmf.AddPortalContent"
+    />
+
+  <browser:page
+    for="collective.classification.tree.contents.container.IClassificationContainer"
+    class=".container.ContainerView"
+    name="view"
+    permission="zope2.View"
+    template="templates/container.pt"
     />
 
   <!-- actions -->
