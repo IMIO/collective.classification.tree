@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from Acquisition import Implicit
+from Acquisition import aq_parent
 from BTrees.OOBTree import OOBTree
 from OFS.Traversable import Traversable
 from OFS.event import ObjectWillBeRemovedEvent
 from Products.CMFCore.DynamicType import DynamicType
 from collective.classification.tree import _
+from collective.classification.tree import caching
 from collective.classification.tree.contents.common import BaseContainer
 from persistent import Persistent
 from plone.uuid.interfaces import IAttributeUUID
@@ -122,3 +124,21 @@ class ClassificationCategory(
 
 
 ClassificationCategoryFactory = Factory(ClassificationCategory)
+
+
+def container_modified(context, event):
+    func = "collective.classification.tree.utils.iterate_over_tree"
+    caching.invalidate_cache(func, context.UID())
+    classification_tree = True
+    portal_types = ("ClassificationContainer", "ClassificationCategory")
+    while classification_tree is True:
+        context = aq_parent(context)
+        if not context or context.portal_type not in portal_types:
+            classification_tree is False
+            break
+        caching.invalidate_cache(func, context.UID())
+
+
+def category_modified(context, event):
+    # This allow cache invalidation on edit
+    notify(ContainerModifiedEvent(aq_parent(context)))

@@ -2,6 +2,7 @@
 
 from BTrees.OOBTree import OOBTree
 from OFS.event import ObjectWillBeRemovedEvent
+from collective.classification.tree import caching
 from collective.classification.tree.contents.common import BaseContainer
 from plone.dexterity.content import Container
 from plone.supermodel import model
@@ -78,3 +79,9 @@ class ClassificationContainer(Container, BaseContainer):
 
     def allowedContentTypes(self):
         return []
+
+
+def container_modified(context, event):
+    caching.invalidate_cache(
+        "collective.classification.tree.utils.iterate_over_tree", context.UID()
+    )

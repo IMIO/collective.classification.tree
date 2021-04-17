@@ -9,4 +9,23 @@
     name="ClassificationCategory"
     />
 
+  <!-- subscribers -->
+  <subscriber
+    for=".container.IClassificationContainer
+         zope.container.interfaces.IContainerModifiedEvent"
+    handler=".container.container_modified"
+    />
+
+  <subscriber
+    for=".category.IClassificationCategory
+         zope.container.interfaces.IContainerModifiedEvent"
+    handler=".category.container_modified"
+    />
+
+  <subscriber
+    for=".category.IClassificationCategory
+         zope.lifecycleevent.IObjectModifiedEvent"
+    handler=".category.category_modified"
+    />
+
 </configure>
