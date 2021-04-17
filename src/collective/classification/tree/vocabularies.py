@@ -12,7 +12,10 @@ def classification_tree_vocabulary_factory(context):
     results = []
     for container in containers:
         results.extend(
-            [(e.UID(), e.Title()) for e in utils.iterate_over_tree(container.getObject())]
+            [
+                (e.UID(), e.Title())
+                for e in utils.iterate_over_tree(container.getObject())
+            ]
         )
     results = sorted(results, key=itemgetter(1))
     terms = [
