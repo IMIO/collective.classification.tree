@@ -1,0 +1,15 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:i18n="http://namespaces.zope.org/i18n"
+  xmlns:plone="http://namespaces.plone.org/plone"
+  i18n_domain="collective.classification.tree">
+
+  <plone:service
+    method="GET"
+    for="collective.classification.tree.contents.container.IClassificationContainer"
+    factory=".tree.TreeGet"
+    name="@tree"
+    permission="zope2.View"
+    />
+
+</configure>

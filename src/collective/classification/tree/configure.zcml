@@ -8,9 +8,12 @@
   <i18n:registerTranslations directory="locales" />
 
   <include package="plone.app.dexterity" />
+  <include package="plone.restapi" />
 
   <include package=".browser" />
   <include package=".contents" />
+  <include package=".services" />
+  <include package=".serializer" />
 
   <include file="permissions.zcml" />
 
