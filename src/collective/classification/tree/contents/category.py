@@ -44,6 +44,8 @@ class ClassificationCategory(
 ):
     __parent__ = None
     __allow_access_to_unprotected_subobjects__ = True
+    portal_type = "ClassificationCategory"
+
     identifier = FieldProperty(IClassificationCategory["identifier"])
     title = FieldProperty(IClassificationCategory["title"])
     informations = FieldProperty(IClassificationCategory["informations"])
