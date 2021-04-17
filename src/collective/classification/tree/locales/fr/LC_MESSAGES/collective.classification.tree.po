@@ -17,45 +17,45 @@ msgstr ""
 #: ../browser/category.py:74
 #: ../serializer/category.py:39
 msgid "Add"
-msgstr ""
+msgstr "Ajouter"
 
 #: ../browser/category.py:63
 msgid "Add Classification Category"
-msgstr ""
+msgstr "Ajouter une catégorie de classification"
 
 #: ../browser/category.py:48
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: ../browser/category.py:70
 msgid "Category added"
-msgstr ""
+msgstr "Catégorie ajoutée"
 
 #: ../browser/category.py:32
 msgid "Changes saved"
-msgstr ""
+msgstr "Changements sauvegardés"
 
 #: ../profiles/default/types/ClassificationContainer.xml
 msgid "ClassificationContainer"
-msgstr ""
+msgstr "Arbre de classification"
 
 #: ../serializer/category.py:35
 msgid "Edit"
-msgstr ""
+msgstr "Modifier"
 
 #: ../browser/category.py:25
 msgid "Edit Classification Category"
-msgstr ""
+msgstr "Modifier une catégorie de classification"
 
 #: ../browser/container.py:60
 #: ../browser/templates/container.pt:49
 #: ../contents/category.py:29
 msgid "Identifier"
-msgstr ""
+msgstr "Identifiant"
 
 #: ../contents/category.py:30
 msgid "Identifier of the category"
-msgstr ""
+msgstr "Identifiant de la catégorie"
 
 #: ../browser/templates/container.pt:51
 #: ../contents/category.py:38
@@ -69,19 +69,19 @@ msgstr ""
 #: ../browser/templates/container.pt:50
 #: ../contents/category.py:35
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: ../contents/category.py:35
 msgid "Name of the category"
-msgstr ""
+msgstr "Nom de la catégorie"
 
 #: ../browser/category.py:39
 msgid "Save"
-msgstr ""
+msgstr "Sauvegarder"
 
 #: ../browser/container.py:72
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
 #: ../configure.zcml:37
 msgid "Uninstalls the collective.classification.tree add-on."

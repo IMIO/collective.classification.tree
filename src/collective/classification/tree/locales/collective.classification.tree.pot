@@ -1,0 +1,99 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2021-04-17 09:49+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: collective.classification.tree\n"
+
+#: ../browser/category.py:74
+#: ../serializer/category.py:39
+msgid "Add"
+msgstr ""
+
+#: ../browser/category.py:63
+msgid "Add Classification Category"
+msgstr ""
+
+#: ../browser/category.py:48
+msgid "Cancel"
+msgstr ""
+
+#: ../browser/category.py:70
+msgid "Category added"
+msgstr ""
+
+#: ../browser/category.py:32
+msgid "Changes saved"
+msgstr ""
+
+#: ../profiles/default/types/ClassificationContainer.xml
+msgid "ClassificationContainer"
+msgstr ""
+
+#: ../serializer/category.py:35
+msgid "Edit"
+msgstr ""
+
+#: ../browser/category.py:25
+msgid "Edit Classification Category"
+msgstr ""
+
+#: ../browser/container.py:60
+#: ../browser/templates/container.pt:49
+#: ../contents/category.py:29
+msgid "Identifier"
+msgstr ""
+
+#: ../contents/category.py:30
+msgid "Identifier of the category"
+msgstr ""
+
+#: ../browser/templates/container.pt:51
+#: ../contents/category.py:38
+msgid "Informations"
+msgstr ""
+
+#: ../configure.zcml:28
+msgid "Installs the collective.classification.tree add-on."
+msgstr ""
+
+#: ../browser/templates/container.pt:50
+#: ../contents/category.py:35
+msgid "Name"
+msgstr ""
+
+#: ../contents/category.py:35
+msgid "Name of the category"
+msgstr ""
+
+#: ../browser/category.py:39
+msgid "Save"
+msgstr ""
+
+#: ../browser/container.py:72
+msgid "Title"
+msgstr ""
+
+#: ../configure.zcml:37
+msgid "Uninstalls the collective.classification.tree add-on."
+msgstr ""
+
+#: ../configure.zcml:28
+msgid "collective.classification.tree"
+msgstr ""
+
+#: ../configure.zcml:37
+msgid "collective.classification.tree (uninstall)"
+msgstr ""
