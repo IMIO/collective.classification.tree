@@ -15,6 +15,7 @@
   <include package=".contents" />
   <include package=".services" />
   <include package=".serializer" />
+  <include package=".form" />
 
   <include file="permissions.zcml" />
 

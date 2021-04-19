@@ -1,0 +1,22 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:i18n="http://namespaces.zope.org/i18n"
+  xmlns:plone="http://namespaces.plone.org/plone"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  i18n_domain="collective.classification.tree">
+
+  <browser:page
+    name="import"
+    for="collective.classification.tree.contents.container.IClassificationContainer"
+    class=".import.ImportFirstStepView"
+    permission="cmf.AddPortalContent"
+    />
+
+  <browser:page
+    name="import-process"
+    for="collective.classification.tree.contents.container.IClassificationContainer"
+    class=".import.ImportSecondStepView"
+    permission="cmf.AddPortalContent"
+    />
+
+</configure>

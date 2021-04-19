@@ -51,3 +51,8 @@ class BaseContainer(object):
         del self._tree[uid]
         notify(ObjectRemovedEvent(element, self, uid))
         notify(ContainerModifiedEvent(self))
+
+    def get_by(self, identifier, key):
+        filtered = [e for e in self.values() if getattr(e, identifier) == key]
+        if len(filtered) > 0:
+            return filtered[0]
