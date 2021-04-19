@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from Acquisition import aq_parent
 from collective.classification.tree.caching import forever_context_cache_key
 from plone.memoize import ram
 from zope.component import createObject
@@ -20,6 +21,23 @@ def get_by(context, identifier, key):
     filtered = [e for e in iterate_over_tree(context) if getattr(e, identifier) == key]
     if len(filtered) > 0:
         return filtered[0]
+
+
+def get_chain(obj, include_self=True):
+    """Return Acquisition chain for classification object"""
+    in_chain = True
+    chain = []
+    if include_self is True:
+        chain.append(obj)
+    portal_types = ("ClassificationContainer", "ClassificationCategory")
+    while in_chain is True:
+        obj = aq_parent(obj)
+        if not obj or obj.portal_type not in portal_types:
+            in_chain = False
+            break
+        else:
+            chain.append(obj)
+    return chain
 
 
 def importer(context, identifier, title, parent_identifier=None, informations=None):
