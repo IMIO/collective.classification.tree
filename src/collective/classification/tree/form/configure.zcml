@@ -8,14 +8,14 @@
   <browser:page
     name="import"
     for="collective.classification.tree.contents.container.IClassificationContainer"
-    class=".import.ImportFirstStepView"
+    class=".importform.ImportFirstStepView"
     permission="cmf.AddPortalContent"
     />
 
   <browser:page
     name="import-process"
     for="collective.classification.tree.contents.container.IClassificationContainer"
-    class=".import.ImportSecondStepView"
+    class=".importform.ImportSecondStepView"
     permission="cmf.AddPortalContent"
     />
 
