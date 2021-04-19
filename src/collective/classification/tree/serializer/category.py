@@ -3,6 +3,7 @@
 from collective.classification.tree import _
 from collective.classification.tree.contents.category import IClassificationCategory
 from plone.restapi.interfaces import ISerializeToJson
+from plone import api
 from zope.component import adapter
 from zope.i18n import translate
 from zope.interface import Interface
@@ -31,6 +32,8 @@ class SerializeToJson(object):
 
     @property
     def _links(self):
+        if not api.user.has_permission("cmf.ModifyPortalContent"):
+            return []
         return [
             {
                 "title": translate(_("Edit"), context=self.request),
