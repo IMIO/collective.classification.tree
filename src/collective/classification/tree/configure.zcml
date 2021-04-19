@@ -47,4 +47,16 @@
     provides="zope.schema.interfaces.IVocabularyFactory"
     />
 
+  <utility
+    component=".vocabularies.csv_separator_vocabulary_factory"
+    name="collective.classification.vocabularies:csv_separator"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    />
+
+  <utility
+    component=".vocabularies.import_keys_vocabulary_factory"
+    name="collective.classification.vocabularies:import_keys"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    />
+
 </configure>
