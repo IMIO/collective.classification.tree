@@ -51,6 +51,11 @@ class IImportFirstStep(model.Schema):
 class ImportFormFirstStep(BaseForm):
     schema = IImportFirstStep
     ignoreContext = True
+    # TODO:
+    # - Ensure that the csv file contains the miminum number of columns
+    # - Ensure that all lines of the csv file contains the same number of columns
+    # - Detect encoding issues
+    # - Return explicit error message containing line numbers
 
     def _set_data(self, data):
         annotation = IAnnotations(self.context)
@@ -76,6 +81,10 @@ class ImportFirstStepView(FormWrapper):
 @implementer(IFieldsForm)
 class ImportFormSecondStep(BaseForm):
     ignoreContext = True
+    # TODO:
+    # - Ensure that all required columns are defined (identifier + name)
+    # - Ensure that all required columns have values
+    # - Return explicit error message containing line numbers
 
     @property
     def schema(self):
