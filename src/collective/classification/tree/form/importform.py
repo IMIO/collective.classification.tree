@@ -3,15 +3,18 @@
 from collective.classification.tree import _
 from collective.classification.tree import utils
 from persistent.dict import PersistentDict
+from plone import api
 from plone.autoform.form import AutoExtensibleForm
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from plone.z3cform.layout import FormWrapper
+from time import time
 from z3c.form import button
 from z3c.form.form import Form
 from z3c.form.interfaces import IFieldsForm
 from zope import schema
 from zope.annotation import IAnnotations
+from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implementer
 from zope.interface.interface import InterfaceClass
 
@@ -70,13 +73,8 @@ class ImportFirstStepView(FormWrapper):
     form = ImportFormFirstStep
 
 
-class IImportSecondStep(model.Schema):
-    pass
-
-
 @implementer(IFieldsForm)
 class ImportFormSecondStep(BaseForm):
-    # schema = IImportSecondStep
     ignoreContext = True
 
     @property
@@ -123,6 +121,33 @@ class ImportFormSecondStep(BaseForm):
         annotation = IAnnotations(self.context)
         return annotation[ANNOTATION_KEY]
 
+    def _process_data_children(self, key, data):
+        if key not in data:
+            return []
+        return [
+            {
+                "identifier": k,
+                "title": v[0],
+                "informations": v[1].get("informations"),
+                "_children": self._process_data_children(k, data),
+            }
+            for k, v in data[key].items()
+        ]
+
+    def _process_data(self, data):
+        """Consolidate data before import"""
+        processed_data = []
+        for key, value in data[None].items():
+            processed_data.append(
+                {
+                    "identifier": key,
+                    "title": value[0],
+                    "informations": value[1].get("informations"),
+                    "_children": self._process_data_children(key, data),
+                }
+            )
+        return processed_data
+
     def _import(self, data):
         import_data = self._get_data()
         mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
@@ -134,19 +159,37 @@ class ImportFormSecondStep(BaseForm):
             reader = csv.reader(f, delimiter=import_data["separator"].encode(encoding))
             if has_header:
                 reader.next()
+            data = {}
             for line in reader:
                 line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
+                parent_identifier = line_data.pop("parent_identifier") or None
                 identifier = line_data.pop("identifier")
                 title = line_data.pop("title")
-                utils.importer(self.context, identifier, title, **line_data)
+                if parent_identifier not in data:
+                    # Using dictionary avoid duplicated informations
+                    data[parent_identifier] = {}
+                data[parent_identifier][identifier] = (title, line_data)
+            for node in self._process_data(data):
+                args = (None, node.pop("identifier"), node.pop("title"))
+                modified = utils.importer(self.context, *args, **node)
+                utils.trigger_event(modified, ContainerModifiedEvent)
 
-    @button.buttonAndHandler(_(u"Continue"), name="continue")
+    @button.buttonAndHandler(_(u"Import"), name="import")
     def handleApply(self, action):
         data, errors = self.extractData()
         if errors:
             self.status = self.formErrorsMessage
             return
+        begin = time()
         self._import(data)
+        duration = int((time() - begin) * 100) / 100.0
+        api.portal.show_message(
+            message=_(
+                u"Import completed in ${duration} seconds",
+                mapping={"duration": str(duration)},
+            ),
+            request=self.request,
+        )
 
 
 class ImportSecondStepView(FormWrapper):
