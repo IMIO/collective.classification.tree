@@ -199,6 +199,7 @@ class ImportFormSecondStep(BaseForm):
             ),
             request=self.request,
         )
+        self.request.response.redirect(self.context.absolute_url())
 
 
 class ImportSecondStepView(FormWrapper):
