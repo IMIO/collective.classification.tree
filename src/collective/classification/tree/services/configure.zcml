@@ -12,4 +12,12 @@
     permission="zope2.View"
     />
 
+  <plone:service
+    method="GET"
+    for="collective.classification.tree.contents.category.IClassificationCategory"
+    factory=".tree.TreeGet"
+    name="@tree"
+    permission="zope2.View"
+    />
+
 </configure>

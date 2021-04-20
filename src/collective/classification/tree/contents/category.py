@@ -5,6 +5,7 @@ from Acquisition import aq_parent
 from BTrees.OOBTree import OOBTree
 from OFS.Traversable import Traversable
 from OFS.event import ObjectWillBeRemovedEvent
+from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.DynamicType import DynamicType
 from collective.classification.tree import _
 from collective.classification.tree import caching
@@ -41,7 +42,7 @@ class IClassificationCategory(Interface):
     informations = schema.TextLine(title=_(u"Informations"), required=False)
 
 
-@implementer(IClassificationCategory, IAttributeUUID)
+@implementer(IClassificationCategory, IAttributeUUID, IContentish)
 class ClassificationCategory(
     DynamicType, Traversable, Implicit, Persistent, BaseContainer
 ):
