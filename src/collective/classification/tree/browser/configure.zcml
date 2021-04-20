@@ -65,12 +65,11 @@
     allowed_interface="plone.app.layout.globals.interfaces.IContextState"
     />
 
-  <adapter
-    for="collective.classification.tree.contents.category.IClassificationCategory
-         *"
-    name="plone.contentmenu.actions"
-    factory=".actions.ActionsSubMenuItem"
-    provides="plone.app.contentmenu.interfaces.IContentMenuItem"
+  <browser:page
+    for="collective.classification.tree.contents.category.IClassificationCategory"
+    name="delete_confirmation"
+    class=".actions.DeleteConfirmationForm"
+    permission="zope2.DeleteObjects"
     />
 
 </configure>

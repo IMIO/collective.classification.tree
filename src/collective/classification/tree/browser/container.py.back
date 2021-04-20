@@ -1,0 +1,89 @@
+# -*- coding: utf-8 -*-
+
+from plone.autoform.view import WidgetsView
+from collective.classification.tree.contents.container import IClassificationContainer
+from collective.classification.tree import utils
+from collective.classification.tree import _
+from z3c.table.column import Column
+from z3c.table.interfaces import IColumn
+from z3c.table.interfaces import INoneCell
+from z3c.table.interfaces import ITable
+from z3c.table.table import Table
+from zope.interface import implementer
+from zope.interface import implementer_only
+from zope.component import adapter
+from zope.interface import Interface
+
+
+class IContainerTable(ITable):
+    """Marker interface for container table"""
+
+
+@implementer(IContainerTable)
+class ContainerTable(Table):
+    cssClasses = {"table": "listing"}
+    cssClassEven = u"odd"
+    cssClassOdd = u"even"
+    batchSize = 50
+    startBatchingAt = 50
+
+    @property
+    def values(self):
+        return utils.iterate_over_tree(self.context)
+
+    @property
+    def length(self):
+        return len(self.values)
+
+    def renderCell(self, item, column, colspan=0):
+        if INoneCell.providedBy(column):
+            return u""
+        cssClass = column.cssClasses.get("td")
+        cssClass = self.getCSSHighlightClass(column, item, cssClass)
+        cssClass = self.getCSSSortClass(column, cssClass)
+        cssClass = self.getCSSClass("td", cssClass)
+        colspanStr = ' colspan="%s"' % colspan if colspan else ""
+        data_order = ""
+        if hasattr(column, "render_data_order"):
+            data_order = ' data-order="{0}"'.format(column.render_data_order(item))
+        return u"\n      <td%s%s%s>%s</td>" % (
+            cssClass,
+            colspanStr,
+            data_order,
+            column.renderCell(item),
+        )
+
+
+@implementer_only(IColumn)
+@adapter(Interface, Interface, IContainerTable)
+class IdentifierColumn(Column):
+    header = _(u"Identifier")
+    weight = 10
+
+    def renderCell(self, item):
+        return u'<a href="{url}" alt="{id}">{id}</a>'.format(
+            url=item.absolute_url(), id=item.identifier
+        )
+
+
+@implementer_only(IColumn)
+@adapter(Interface, Interface, IContainerTable)
+class TitleColumn(Column):
+    header = _(u"Title")
+    weight = 20
+
+    def renderCell(self, item):
+        return u'<a href="{url}" alt="{title}">{title}</a>'.format(
+            url=item.absolute_url(), title=item.title
+        )
+
+
+class ContainerView(WidgetsView):
+    """Classification Container View"""
+    schema = IClassificationContainer
+
+    def table(self):
+        """Render a table with childrens"""
+        table = ContainerTable(self.context, self.request)
+        table.update()
+        return table.render()

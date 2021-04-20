@@ -22,7 +22,6 @@ from zope.interface import Interface
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectRemovedEvent
 from zope.schema.fieldproperty import FieldProperty
-from Products.CMFDynamicViewFTI.fti import DynamicViewTypeInformation
 from plone.dexterity.fti import DexterityFTI
 
 import six
@@ -119,10 +118,17 @@ class ClassificationCategory(
         return []
 
     def getTypeInfo(self):
-        return DexterityFTI("ClassificationCategory")
-        fti = DynamicViewTypeInformation("ClassificationCategory")
-        fti.default_view = "view"
+        fti = DexterityFTI("ClassificationCategory")
         return fti
+
+    def manage_delObjects(self, ids=None, REQUEST=None):
+        """Delete the contained objects with the specified ids"""
+        if ids is None:
+            ids = []
+        if isinstance(ids, basestring):
+            ids = [ids]
+        for id in ids:
+            del self[id]
 
 
 ClassificationCategoryFactory = Factory(ClassificationCategory)
