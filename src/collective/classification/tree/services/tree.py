@@ -83,7 +83,10 @@ class TreeSearchHandler(object):
     def _order(self, results):
         idx = self._to_int(self.query.get("order[0][column]", "0"), 0)
         reverse = self.query.get("order[0][dir]", "asc") == "desc"
-        order_column = self._get_columns()[idx]
+        columns = self._get_columns()
+        if not columns:
+            return results
+        order_column = columns[idx]
         return sorted(results, key=attrgetter(order_column), reverse=reverse)
 
 
