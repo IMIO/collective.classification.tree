@@ -18,15 +18,13 @@
     directory="static"
     />
 
-  <configure package="plone.dexterity.browser">
-    <browser:page
-      for="collective.classification.tree.contents.category.IClassificationCategory"
-      class="collective.classification.tree.browser.category.CategoryView"
-      name="view"
-      permission="zope2.View"
-      template="item.pt"
-      />
-  </configure>
+  <browser:page
+    for="collective.classification.tree.contents.category.IClassificationCategory"
+    class="collective.classification.tree.browser.category.CategoryView"
+    name="view"
+    permission="zope2.View"
+    template="templates/container.pt"
+    />
 
   <browser:page
     for="collective.classification.tree.contents.category.IClassificationCategory"

@@ -43,7 +43,11 @@
     </div>
   </fieldset>
 
-  <table id="table" class="tree-listing" i18n:domain="collective.classification.tree">
+  <table id="table"
+         class="tree-listing"
+         data-url=""
+         tal:attributes="data-url string:${context/absolute_url}/@tree"
+         i18n:domain="collective.classification.tree">
     <thead>
         <tr>
             <th i18n:translate="">Identifier</th>
@@ -82,7 +86,7 @@
         "pageLength": 25,
         "lengthMenu": [5, 10, 25, 50, 100],
         "ajax": {
-          "url": "@tree",
+          "url": $("#table").data("url"),
           "type": "GET",
           "beforeSend": function (request) {
               request.setRequestHeader("Accept", "application/json");
