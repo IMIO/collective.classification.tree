@@ -43,6 +43,16 @@
     </div>
   </fieldset>
 
+  <div class="actions" i18n:domain="collective.classification.tree">
+    <a href=""
+       tal:attributes="href string:${context/absolute_url}/add-ClassificationCategory"
+       i18n:translate="">Add Category</a>
+    <a href=""
+       tal:attributes="href string:${context/absolute_url}/@@import"
+       tal:condition="python: context.portal_type == 'ClassificationContainer'"
+       i18n:translate="">Import</a>
+  </div>
+
   <table id="table"
          class="tree-listing"
          data-url=""
@@ -57,6 +67,16 @@
         </tr>
     </thead>
   </table>
+
+  <div class="actions" i18n:domain="collective.classification.tree">
+    <a href=""
+       tal:attributes="href string:${context/absolute_url}/add-ClassificationCategory"
+       i18n:translate="">Add Category</a>
+    <a href=""
+       tal:attributes="href string:${context/absolute_url}/@@import"
+       tal:condition="python: context.portal_type == 'ClassificationContainer'"
+       i18n:translate="">Import</a>
+  </div>
 
   <script type="text/javascript">
     $(document).ready(function() {
