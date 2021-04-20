@@ -91,3 +91,253 @@ class TestUtils(unittest.TestCase):
 
         expected = [u"001", u"001.1", u"001.2", u"002-updated", u"002.1"]
         self.assertEqual(expected, sorted([e.identifier for e in results]))
+
+    def test_importer_one_level(self):
+        """Ensure that the content is correctly created"""
+        container = api.content.create(
+            title="Container2", type="ClassificationContainer", container=self.folder
+        )
+        _children = [
+            {"identifier": u"key1.1", "title": u"Key 1.1", "informations": None, "_children": []},
+            {"identifier": u"key1.2", "title": u"Key 1.2", "informations": None, "_children": []},
+        ]
+        utils.importer(container, None, u"key1", u"Key 1", None, _children)
+        utils.importer(container, None, u"key2", u"Key 1", None, None)
+
+        self.assertEqual(2, len(container))
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.identifier for e in container.values()])
+        )
+
+        subelement = container.get_by("identifier", "key1")
+        self.assertEqual(2, len(subelement))
+        self.assertEqual(
+            ["key1.1", "key1.2"], sorted([e.identifier for e in subelement.values()])
+        )
+
+    def test_importer_one_level_modified(self):
+        """Ensure that the content is correctly modified"""
+        container = self.container
+        utils.importer(container, None, u"001", u"First Modified", None, None)
+        utils.importer(container, None, u"002", u"Second", None, None)
+
+        self.assertEqual(2, len(container))
+        self.assertEqual(
+            ["001", "002"], sorted([e.identifier for e in container.values()])
+        )
+
+        subelement = container.get_by("identifier", "001")
+        self.assertEqual(u"First Modified", subelement.title)
+        self.assertEqual(2, len(subelement))
+        self.assertEqual(
+            ["001.1", "001.2"], sorted([e.identifier for e in subelement.values()])
+        )
+
+    def test_importer_one_level_result(self):
+        """Ensure that the returned list is correct"""
+        container = api.content.create(
+            title="Container2", type="ClassificationContainer", container=self.folder
+        )
+        _children = [
+            {"identifier": u"key1.1", "title": u"Key 1.1", "informations": None, "_children": []},
+            {"identifier": u"key1.2", "title": u"Key 1.2", "informations": None, "_children": []},
+        ]
+        modified = utils.importer(container, None, u"key1", u"Key 1", None, _children)
+        expected_results = [
+            [None],
+            ["key1", None],
+            ["key1", None],
+        ]
+        results = [
+            [getattr(e, "identifier", None) for e in element] for element in modified
+        ]
+        self.assertEqual(expected_results, results)
+
+    def test_importer_one_level_modified_result(self):
+        """Ensure that the returned list is correct"""
+        container = self.container
+        modified = utils.importer(container, None, u"001", u"First M", None, None)
+        results = [
+            [getattr(e, "identifier", None) for e in element] for element in modified
+        ]
+        self.assertEqual([[None]], results)
+
+        modified = utils.importer(container, None, u"002", u"Second", None, None)
+        results = [
+            [getattr(e, "identifier", None) for e in element] for element in modified
+        ]
+        self.assertEqual([], results)
+
+    def test_importer_multi_levels(self):
+        """Ensure that the multi level contents is correctly created"""
+        container = api.content.create(
+            title="Container2", type="ClassificationContainer", container=self.folder
+        )
+        _children = [
+            {
+                "identifier": u"key1.1",
+                "title": u"Key 1.1",
+                "informations": None,
+                "_children": [
+                    {
+                        "identifier": u"key1.1.1",
+                        "title": u"Key 1.1.1",
+                        "informations": None,
+                        "_children": [
+                            {
+                                "identifier": u"key1.1.1.1",
+                                "title": u"Key 1.1.1.1",
+                                "informations": None,
+                                "_children": [],
+                            },
+                        ],
+                    },
+                ],
+            },
+            {"identifier": u"key1.2", "title": u"Key 1.2", "informations": None, "_children": []},
+        ]
+        utils.importer(container, None, u"key1", u"Key 1", None, _children)
+        utils.importer(container, None, u"key2", u"Key 1", None, None)
+
+        self.assertEqual(2, len(container))
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.identifier for e in container.values()])
+        )
+
+        subelement = container.get_by("identifier", "key1")
+        self.assertEqual(2, len(subelement))
+        self.assertEqual(
+            ["key1.1", "key1.2"], sorted([e.identifier for e in subelement.values()])
+        )
+
+        subelement = subelement.get_by("identifier", "key1.1")
+        self.assertEqual(1, len(subelement))
+        self.assertEqual(
+            ["key1.1.1"], sorted([e.identifier for e in subelement.values()])
+        )
+
+        subelement = subelement.get_by("identifier", "key1.1.1")
+        self.assertEqual(1, len(subelement))
+        self.assertEqual(
+            ["key1.1.1.1"], sorted([e.identifier for e in subelement.values()])
+        )
+
+    def test_importer_multi_levels_modified(self):
+        """Ensure that the content is correctly modified"""
+        container = self.container
+        children = [
+            {"identifier": u"001.1", "title": u"first", "informations": None, "_children": []},
+            {
+                "identifier": u"001.2",
+                "title": u"second modified",
+                "informations": None,
+                "_children": [],
+            },
+        ]
+        utils.importer(container, None, u"001", u"First Modified", None, children)
+
+        self.assertEqual(2, len(container))
+        self.assertEqual(
+            ["001", "002"], sorted([e.identifier for e in container.values()])
+        )
+
+        subelement = container.get_by("identifier", "001")
+        self.assertEqual(u"First Modified", subelement.title)
+        self.assertEqual(2, len(subelement))
+        self.assertEqual(
+            ["001.1", "001.2"], sorted([e.identifier for e in subelement.values()])
+        )
+        self.assertEqual(
+            ["first", "second modified"], sorted([e.title for e in subelement.values()])
+        )
+
+    def test_importer_multi_levels_result(self):
+        """Ensure that the returned list is correct"""
+        container = api.content.create(
+            title="Container2", type="ClassificationContainer", container=self.folder
+        )
+        _children = [
+            {
+                "identifier": u"key1.1",
+                "title": u"Key 1.1",
+                "informations": None,
+                "_children": [
+                    {
+                        "identifier": u"key1.1.1",
+                        "title": u"Key 1.1.1",
+                        "informations": None,
+                        "_children": [
+                            {
+                                "identifier": u"key1.1.1.1",
+                                "title": u"Key 1.1.1.1",
+                                "informations": None,
+                                "_children": [],
+                            },
+                        ],
+                    },
+                ],
+            },
+            {"identifier": u"key1.2", "title": u"Key 1.2", "informations": None, "_children": []},
+        ]
+        modified = utils.importer(container, None, u"key1", u"Key 1", None, _children)
+        expected_results = [
+            [None],
+            ["key1", None],
+            ["key1.1", "key1", None],
+            ["key1.1.1", "key1.1", "key1", None],
+            ["key1", None],
+        ]
+        results = [
+            [getattr(e, "identifier", None) for e in element] for element in modified
+        ]
+        self.assertEqual(expected_results, results)
+
+    def test_importer_multi_levels_modified_result(self):
+        """Ensure that the returned list is correct"""
+        container = self.container
+        children = [
+            {"identifier": u"001.1", "title": u"first", "informations": None, "_children": []},
+            {
+                "identifier": u"001.2",
+                "title": u"second modified",
+                "informations": None,
+                "_children": [],
+            },
+        ]
+        modified = utils.importer(
+            container, None, u"001", u"First Modified", None, children
+        )
+
+        expected_results = [[None], ["001", None]]
+        results = [
+            [getattr(e, "identifier", None) for e in element] for element in modified
+        ]
+        self.assertEqual(expected_results, results)
+
+    def test_filter_chains_basic(self):
+        data = [
+            [None],
+            ["key1", None],
+            ["key1.1", "key1", None],
+            ["key1.1.1", "key1.1", "key1", None],
+            ["key1", None],
+        ]
+        result = utils.filter_chains(data)
+        expected_results = ["key1.1.1"]
+        self.assertEqual(result, expected_results)
+
+    def test_filter_chains_complex(self):
+        data = [
+            [None],
+            ["key1", None],
+            ["key1.1", "key1", None],
+            ["key1.1.1", "key1.1", "key1", None],
+            ["key1.2", "key1", None],
+            ["key1", None],
+            ["key2", None],
+            ["key3", None],
+            ["key3.1", "key3", None],
+        ]
+        result = utils.filter_chains(data)
+        expected_results = ["key1.1.1", "key1.2", "key2", "key3.1"]
+        self.assertEqual(sorted(result), sorted(expected_results))
