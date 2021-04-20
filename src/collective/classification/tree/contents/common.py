@@ -27,30 +27,36 @@ class BaseContainer(object):
             return
         return uuid
 
-    def _add_element(self, element):
+    def _add_element(self, element, event=True):
         element = aq_base(element)
         uid = self._generate_uid()
         IMutableUUID(element).set(uid)
 
-        notify(ObjectWillBeAddedEvent(element, self, uid))
+        if event is True:
+            notify(ObjectWillBeAddedEvent(element, self, uid))
         self._tree[uid] = element
         element.__parent__ = aq_base(self)
 
-        notify(ObjectCreatedEvent(element))
-        notify(ObjectAddedEvent(element.__of__(self), self, uid))
-        notify(ContainerModifiedEvent(self))
+        if event is True:
+            notify(ObjectCreatedEvent(element))
+            notify(ObjectAddedEvent(element.__of__(self), self, uid))
+            notify(ContainerModifiedEvent(self))
 
-    def _update_element(self, element):
+    def _update_element(self, element, event=True):
         element = aq_base(element)
         self._tree[element.UID()] = element
-        notify(ObjectModifiedEvent(element))
+        if event is True:
+            notify(ObjectModifiedEvent(element))
 
-    def _delete_element(self, element):
+    def _delete_element(self, element, event=True):
         uid = element.UID()
-        notify(ObjectWillBeRemovedEvent(element, self, uid))
+        if event is True:
+            notify(ObjectWillBeRemovedEvent(element, self, uid))
+
         del self._tree[uid]
-        notify(ObjectRemovedEvent(element, self, uid))
-        notify(ContainerModifiedEvent(self))
+        if event is True:
+            notify(ObjectRemovedEvent(element, self, uid))
+            notify(ContainerModifiedEvent(self))
 
     def get_by(self, identifier, key):
         filtered = [e for e in self.values() if getattr(e, identifier) == key]
