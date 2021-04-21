@@ -5,13 +5,14 @@ from Acquisition import aq_parent
 from BTrees.OOBTree import OOBTree
 from OFS.Traversable import Traversable
 from OFS.event import ObjectWillBeRemovedEvent
-from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.DynamicType import DynamicType
 from collective.classification.tree import _
 from collective.classification.tree import caching
 from collective.classification.tree import utils
 from collective.classification.tree.contents.common import BaseContainer
 from persistent import Persistent
+from plone.dexterity.fti import DexterityFTI
+from plone.rest.interfaces import IService
 from plone.uuid.interfaces import IAttributeUUID
 from plone.uuid.interfaces import IMutableUUID
 from zope import schema
@@ -22,7 +23,6 @@ from zope.interface import Interface
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectRemovedEvent
 from zope.schema.fieldproperty import FieldProperty
-from plone.dexterity.fti import DexterityFTI
 
 import six
 
@@ -41,7 +41,7 @@ class IClassificationCategory(Interface):
     informations = schema.TextLine(title=_(u"Informations"), required=False)
 
 
-@implementer(IClassificationCategory, IAttributeUUID, IContentish)
+@implementer(IClassificationCategory, IAttributeUUID, IService)
 class ClassificationCategory(
     DynamicType, Traversable, Implicit, Persistent, BaseContainer
 ):
