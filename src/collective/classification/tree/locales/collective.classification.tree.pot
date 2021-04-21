@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-04-21 13:48+0000\n"
+"POT-Creation-Date: 2021-04-21 14:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,12 +58,9 @@ msgstr ""
 msgid "Changes saved"
 msgstr ""
 
+#: ../behaviors/classification.py:27
 #: ../behaviors/configure.zcml:14
 msgid "Classification Categories"
-msgstr ""
-
-#: ../behaviors/classification.py:27
-msgid "Classification categories"
 msgstr ""
 
 #: ../profiles/default/types/ClassificationContainer.xml

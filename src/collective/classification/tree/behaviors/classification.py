@@ -24,7 +24,7 @@ class IClassificationCategory(model.Schema):
 
     form.widget(classification_categories=AutocompleteMultiFieldWidget)
     classification_categories = schema.List(
-        title=_(u"Classification categories"),
+        title=_(u"Classification Categories"),
         description=_(u"List of folders / subfolders in which this content is filed"),
         value_type=schema.Choice(
             source=ClassificationTreeSourceBinder(),
