@@ -15,7 +15,8 @@ def iterable_to_vocabulary(values):
 
 
 def classification_tree_vocabulary_factory(context):
-    containers = api.content.find(portal_type="ClassificationContainer")
+    query = {"portal_type": "ClassificationContainer", "context": api.portal.get()}
+    containers = api.content.find(**query)
     results = []
     for container in containers:
         results.extend(
