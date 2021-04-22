@@ -148,6 +148,7 @@ class BaseImportFormSecondStep(BaseForm):
         import_data = self._get_data()
         mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
         encoding = "utf-8"
+        data = []
         with import_data["source"].open() as f:
             sniffer = csv.Sniffer()
             has_header = sniffer.has_header(f.read(4096))
@@ -156,8 +157,8 @@ class BaseImportFormSecondStep(BaseForm):
             if has_header:
                 reader.next()
             data = self._process_csv(reader, mapping, encoding, import_data)
-            for node in self._process_data(data):
-                self._import_node(node)
+        for node in self._process_data(data):
+            self._import_node(node)
 
     @button.buttonAndHandler(_(u"Import"), name="import")
     def handleApply(self, action):
