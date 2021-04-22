@@ -131,11 +131,6 @@ class BaseImportFormSecondStep(BaseForm):
         annotation = IAnnotations(self.context)
         return annotation[ANNOTATION_KEY]
 
-    def _process_data_children(self, key, data):
-        """Return a list of dict containing object keys and a special key
-        `_children` for hierarchy"""
-        raise NotImplementedError("_process_data_children must be defined by subclass")
-
     def _process_data(self, data):
         """Return a list of dict containing object keys and a special key
         `_children` for hierarchy"""
@@ -190,7 +185,8 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
     # - Ensure that all required columns have values
     # - Return explicit error message containing line numbers
 
-    def _process_data_children(self, key, data):
+    def _process_data(self, data, key=None):
+        """Consolidate data before import"""
         if key not in data:
             return []
         return [
@@ -198,24 +194,10 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                 "identifier": k,
                 "title": v[0],
                 "informations": v[1].get("informations"),
-                "_children": self._process_data_children(k, data),
+                "_children": self._process_data(data, key=k),
             }
             for k, v in data[key].items()
         ]
-
-    def _process_data(self, data):
-        """Consolidate data before import"""
-        processed_data = []
-        for key, value in data[None].items():
-            processed_data.append(
-                {
-                    "identifier": key,
-                    "title": value[0],
-                    "informations": value[1].get("informations"),
-                    "_children": self._process_data_children(key, data),
-                }
-            )
-        return processed_data
 
     def _process_csv(self, csv_reader, mapping, encoding, import_data):
         data = {}

@@ -48,7 +48,7 @@ def importer(
     Expected structure for _children (iterable) with dict element that contains :
         * identifier (String)
         * title (String)
-        * data (Dict)
+        * informations (String) or None
         * _children (Iterable of dicts)
 
     Return a set with chain of elements that were added or updated
