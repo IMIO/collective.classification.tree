@@ -146,7 +146,7 @@ class BaseImportFormSecondStep(BaseForm):
 
     def _import(self, data):
         import_data = self._get_data()
-        mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
+        mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
         data = []
         with import_data["source"].open() as f:
