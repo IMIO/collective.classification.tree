@@ -98,8 +98,18 @@ class TestUtils(unittest.TestCase):
             title="Container2", type="ClassificationContainer", container=self.folder
         )
         _children = [
-            {"identifier": u"key1.1", "title": u"Key 1.1", "informations": None, "_children": []},
-            {"identifier": u"key1.2", "title": u"Key 1.2", "informations": None, "_children": []},
+            {
+                "identifier": u"key1.1",
+                "title": u"Key 1.1",
+                "informations": None,
+                "_children": [],
+            },
+            {
+                "identifier": u"key1.2",
+                "title": u"Key 1.2",
+                "informations": None,
+                "_children": [],
+            },
         ]
         utils.importer(container, None, u"key1", u"Key 1", None, _children)
         utils.importer(container, None, u"key2", u"Key 1", None, None)
@@ -139,8 +149,18 @@ class TestUtils(unittest.TestCase):
             title="Container2", type="ClassificationContainer", container=self.folder
         )
         _children = [
-            {"identifier": u"key1.1", "title": u"Key 1.1", "informations": None, "_children": []},
-            {"identifier": u"key1.2", "title": u"Key 1.2", "informations": None, "_children": []},
+            {
+                "identifier": u"key1.1",
+                "title": u"Key 1.1",
+                "informations": None,
+                "_children": [],
+            },
+            {
+                "identifier": u"key1.2",
+                "title": u"Key 1.2",
+                "informations": None,
+                "_children": [],
+            },
         ]
         modified = utils.importer(container, None, u"key1", u"Key 1", None, _children)
         expected_results = [
@@ -194,7 +214,12 @@ class TestUtils(unittest.TestCase):
                     },
                 ],
             },
-            {"identifier": u"key1.2", "title": u"Key 1.2", "informations": None, "_children": []},
+            {
+                "identifier": u"key1.2",
+                "title": u"Key 1.2",
+                "informations": None,
+                "_children": [],
+            },
         ]
         utils.importer(container, None, u"key1", u"Key 1", None, _children)
         utils.importer(container, None, u"key2", u"Key 1", None, None)
@@ -226,7 +251,12 @@ class TestUtils(unittest.TestCase):
         """Ensure that the content is correctly modified"""
         container = self.container
         children = [
-            {"identifier": u"001.1", "title": u"first", "informations": None, "_children": []},
+            {
+                "identifier": u"001.1",
+                "title": u"first",
+                "informations": None,
+                "_children": [],
+            },
             {
                 "identifier": u"001.2",
                 "title": u"second modified",
@@ -277,7 +307,12 @@ class TestUtils(unittest.TestCase):
                     },
                 ],
             },
-            {"identifier": u"key1.2", "title": u"Key 1.2", "informations": None, "_children": []},
+            {
+                "identifier": u"key1.2",
+                "title": u"Key 1.2",
+                "informations": None,
+                "_children": [],
+            },
         ]
         modified = utils.importer(container, None, u"key1", u"Key 1", None, _children)
         expected_results = [
@@ -296,7 +331,12 @@ class TestUtils(unittest.TestCase):
         """Ensure that the returned list is correct"""
         container = self.container
         children = [
-            {"identifier": u"001.1", "title": u"first", "informations": None, "_children": []},
+            {
+                "identifier": u"001.1",
+                "title": u"first",
+                "informations": None,
+                "_children": [],
+            },
             {
                 "identifier": u"001.2",
                 "title": u"second modified",
