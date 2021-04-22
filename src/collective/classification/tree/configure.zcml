@@ -57,7 +57,7 @@
 
   <utility
     component=".vocabularies.import_keys_vocabulary_factory"
-    name="collective.classification.vocabularies:import_keys"
+    name="collective.classification.vocabularies:categories_import_keys"
     provides="zope.schema.interfaces.IVocabularyFactory"
     />
 

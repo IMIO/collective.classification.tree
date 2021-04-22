@@ -79,12 +79,13 @@ class ImportFirstStepView(FormWrapper):
 
 
 @implementer(IFieldsForm)
-class ImportFormSecondStep(BaseForm):
+class BaseImportFormSecondStep(BaseForm):
+    """Baseclass for import form"""
     ignoreContext = True
-    # TODO:
-    # - Ensure that all required columns are defined (identifier + name)
-    # - Ensure that all required columns have values
-    # - Return explicit error message containing line numbers
+
+    @property
+    def _vocabulary(self):
+        raise NotImplementedError("_vocabulary must be defined by subclass")
 
     @property
     def schema(self):
@@ -117,7 +118,7 @@ class ImportFormSecondStep(BaseForm):
                 schema.Choice(
                     title=_("Column ${name}", mapping={"name": name}),
                     description=_("Sample data : ${data}", mapping={"data": sample}),
-                    vocabulary=u"collective.classification.vocabularies:import_keys",
+                    vocabulary=self._vocabulary,
                     required=False,
                 )
             )
@@ -129,6 +130,65 @@ class ImportFormSecondStep(BaseForm):
     def _get_data(self):
         annotation = IAnnotations(self.context)
         return annotation[ANNOTATION_KEY]
+
+    def _process_data_children(self, key, data):
+        """Return a list of dict containing object keys and a special key
+        `_children` for hierarchy"""
+        raise NotImplementedError("_process_data_children must be defined by subclass")
+
+    def _process_data(self, data):
+        """Return a list of dict containing object keys and a special key
+        `_children` for hierarchy"""
+        raise NotImplementedError("_process_data must be defined by subclass")
+
+    def _process_csv(self, csv_reader, mapping, encoding, import_data):
+        """Return a dict with every elements"""
+        raise NotImplementedError("_process_csv must be defined by subclass")
+
+    def _import_node(self, node):
+        """Import a node (element with is children)"""
+        raise NotImplementedError("_import_node must be defined by subclass")
+
+    def _import(self, data):
+        import_data = self._get_data()
+        mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
+        encoding = "utf-8"
+        with import_data["source"].open() as f:
+            sniffer = csv.Sniffer()
+            has_header = sniffer.has_header(f.read(4096))
+            f.seek(0)
+            reader = csv.reader(f, delimiter=import_data["separator"].encode(encoding))
+            if has_header:
+                reader.next()
+            data = self._process_csv(reader, mapping, encoding, import_data)
+            for node in self._process_data(data):
+                self._import_node(node)
+
+    @button.buttonAndHandler(_(u"Import"), name="import")
+    def handleApply(self, action):
+        data, errors = self.extractData()
+        if errors:
+            self.status = self.formErrorsMessage
+            return
+        begin = time()
+        self._import(data)
+        duration = int((time() - begin) * 100) / 100.0
+        api.portal.show_message(
+            message=_(
+                u"Import completed in ${duration} seconds",
+                mapping={"duration": str(duration)},
+            ),
+            request=self.request,
+        )
+        self.request.response.redirect(self.context.absolute_url())
+
+
+class ImportFormSecondStep(BaseImportFormSecondStep):
+    _vocabulary = u"collective.classification.vocabularies:categories_import_keys"
+    # TODO:
+    # - Ensure that all required columns are defined (identifier + name)
+    # - Ensure that all required columns have values
+    # - Return explicit error message containing line numbers
 
     def _process_data_children(self, key, data):
         if key not in data:
@@ -157,49 +217,23 @@ class ImportFormSecondStep(BaseForm):
             )
         return processed_data
 
-    def _import(self, data):
-        import_data = self._get_data()
-        mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
-        encoding = "utf-8"
-        with import_data["source"].open() as f:
-            sniffer = csv.Sniffer()
-            has_header = sniffer.has_header(f.read(4096))
-            f.seek(0)
-            reader = csv.reader(f, delimiter=import_data["separator"].encode(encoding))
-            if has_header:
-                reader.next()
-            data = {}
-            for line in reader:
-                line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
-                parent_identifier = line_data.pop("parent_identifier") or None
-                identifier = line_data.pop("identifier")
-                title = line_data.pop("title")
-                if parent_identifier not in data:
-                    # Using dictionary avoid duplicated informations
-                    data[parent_identifier] = {}
-                data[parent_identifier][identifier] = (title, line_data)
-            for node in self._process_data(data):
-                args = (None, node.pop("identifier"), node.pop("title"))
-                modified = utils.importer(self.context, *args, **node)
-                utils.trigger_event(modified, ContainerModifiedEvent)
+    def _process_csv(self, csv_reader, mapping, encoding, import_data):
+        data = {}
+        for line in csv_reader:
+            line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
+            parent_identifier = line_data.pop("parent_identifier") or None
+            identifier = line_data.pop("identifier")
+            title = line_data.pop("title")
+            if parent_identifier not in data:
+                # Using dictionary avoid duplicated informations
+                data[parent_identifier] = {}
+            data[parent_identifier][identifier] = (title, line_data)
+        return data
 
-    @button.buttonAndHandler(_(u"Import"), name="import")
-    def handleApply(self, action):
-        data, errors = self.extractData()
-        if errors:
-            self.status = self.formErrorsMessage
-            return
-        begin = time()
-        self._import(data)
-        duration = int((time() - begin) * 100) / 100.0
-        api.portal.show_message(
-            message=_(
-                u"Import completed in ${duration} seconds",
-                mapping={"duration": str(duration)},
-            ),
-            request=self.request,
-        )
-        self.request.response.redirect(self.context.absolute_url())
+    def _import_node(self, node):
+        args = (None, node.pop("identifier"), node.pop("title"))
+        modified = utils.importer(self.context, *args, **node)
+        utils.trigger_event(modified, ContainerModifiedEvent)
 
 
 class ImportSecondStepView(FormWrapper):
