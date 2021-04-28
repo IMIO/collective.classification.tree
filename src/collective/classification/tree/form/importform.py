@@ -144,7 +144,14 @@ class BaseImportFormSecondStep(BaseForm):
         """Import a node (element with is children)"""
         raise NotImplementedError("_import_node must be defined by subclass")
 
+    def _before_import(self):
+        """Method that is called before import process"""
+
+    def _after_import(self):
+        """Method that is called after import process"""
+
     def _import(self, data):
+        self._before_import()
         import_data = self._get_data()
         mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
@@ -159,6 +166,7 @@ class BaseImportFormSecondStep(BaseForm):
             data = self._process_csv(reader, mapping, encoding, import_data)
         for node in self._process_data(data):
             self._import_node(node)
+        self._after_import()
 
     @button.buttonAndHandler(_(u"Import"), name="import")
     def handleApply(self, action):
@@ -166,17 +174,7 @@ class BaseImportFormSecondStep(BaseForm):
         if errors:
             self.status = self.formErrorsMessage
             return
-        begin = time()
         self._import(data)
-        duration = int((time() - begin) * 100) / 100.0
-        api.portal.show_message(
-            message=_(
-                u"Import completed in ${duration} seconds",
-                mapping={"duration": str(duration)},
-            ),
-            request=self.request,
-        )
-        self.request.response.redirect(self.context.absolute_url())
 
 
 class ImportFormSecondStep(BaseImportFormSecondStep):
@@ -217,6 +215,20 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
         args = (None, node.pop("identifier"), node.pop("title"))
         modified = utils.importer(self.context, *args, **node)
         utils.trigger_event(modified, ContainerModifiedEvent)
+
+    def _before_import(self):
+        self.begin = time()
+
+    def _after_import(self):
+        duration = int((time() - self.begin) * 100) / 100.0
+        api.portal.show_message(
+            message=_(
+                u"Import completed in ${duration} seconds",
+                mapping={"duration": str(duration)},
+            ),
+            request=self.request,
+        )
+        self.request.response.redirect(self.context.absolute_url())
 
 
 class ImportSecondStepView(FormWrapper):
