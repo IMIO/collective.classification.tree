@@ -32,6 +32,36 @@ def classification_tree_vocabulary_factory(context):
     return iterable_to_vocabulary(results)
 
 
+def classification_tree_id_mapping_vocabulary_factory(context):
+    query = {"portal_type": "ClassificationContainer", "context": api.portal.get()}
+    containers = api.content.find(**query)
+    results = []
+    for container in containers:
+        results.extend(
+            [
+                (e.identifier, e.UID())
+                for e in utils.iterate_over_tree(container.getObject())
+            ]
+        )
+    results = sorted(results, key=itemgetter(1))
+    return iterable_to_vocabulary(results)
+
+
+def classification_tree_title_mapping_vocabulary_factory(context):
+    query = {"portal_type": "ClassificationContainer", "context": api.portal.get()}
+    containers = api.content.find(**query)
+    results = []
+    for container in containers:
+        results.extend(
+            [
+                (e.title, e.UID())
+                for e in utils.iterate_over_tree(container.getObject())
+            ]
+        )
+    results = sorted(results, key=itemgetter(1))
+    return iterable_to_vocabulary(results)
+
+
 def csv_separator_vocabulary_factory(context):
     values = (
         (u";", u";"),

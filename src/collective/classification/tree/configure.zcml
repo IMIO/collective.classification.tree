@@ -50,6 +50,18 @@
     />
 
   <utility
+    component=".vocabularies.classification_tree_id_mapping_vocabulary_factory"
+    name="collective.classification.vocabularies:tree_id_mapping"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    />
+
+  <utility
+    component=".vocabularies.classification_tree_title_mapping_vocabulary_factory"
+    name="collective.classification.vocabularies:tree_title_mapping"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    />
+
+  <utility
     component=".vocabularies.csv_separator_vocabulary_factory"
     name="collective.classification.vocabularies:csv_separator"
     provides="zope.schema.interfaces.IVocabularyFactory"
