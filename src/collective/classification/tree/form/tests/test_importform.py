@@ -62,7 +62,7 @@ class TestImportForm(unittest.TestCase):
         return data
 
     def test_first_step_set_data(self):
-        form = importform.ImportFormFirstStep(self.container, {})
+        form = importform.ImportFormFirstStep(self.container, self.layer["request"])
         data = {
             "source": NamedBlobFile(
                 data=self._csv.read(), contentType=u"text/csv", filename=u"test.csv",
@@ -79,7 +79,7 @@ class TestImportForm(unittest.TestCase):
 
     def test_second_step_import_basic(self):
         """Test importing csv data"""
-        form = importform.ImportFormSecondStep(self.container, {})
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["separator"] = u";"
@@ -114,7 +114,7 @@ class TestImportForm(unittest.TestCase):
 
     def test_second_step_import_extra_columns(self):
         """Test importing csv data"""
-        form = importform.ImportFormSecondStep(self.container, {})
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["separator"] = u";"
@@ -162,7 +162,7 @@ class TestImportForm(unittest.TestCase):
 
     def test_second_step_import_order(self):
         """Test importing csv data were order is not logic"""
-        form = importform.ImportFormSecondStep(self.container, {})
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["separator"] = u";"
@@ -210,7 +210,7 @@ class TestImportForm(unittest.TestCase):
 
     def test_second_step_import_duplicate(self):
         """Test importing csv data were there is duplicated values"""
-        form = importform.ImportFormSecondStep(self.container, {})
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["separator"] = u";"
@@ -266,7 +266,7 @@ class TestImportForm(unittest.TestCase):
 
     def test_process_data_basic(self):
         """Tests _process_data with basic data structure"""
-        form = importform.ImportFormSecondStep(self.container, {})
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
             None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {})},
             u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {})},
@@ -317,7 +317,7 @@ class TestImportForm(unittest.TestCase):
 
     def test_process_data_multilevel(self):
         """Tests _process_data with multi levels data structure"""
-        form = importform.ImportFormSecondStep(self.container, {})
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
             None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {})},
             u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {})},
