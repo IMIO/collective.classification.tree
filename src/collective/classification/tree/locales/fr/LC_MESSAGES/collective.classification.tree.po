@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-04-21 14:14+0000\n"
+"POT-Creation-Date: 2021-05-20 13:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,11 +31,15 @@ msgstr "Ajouter une catégorie"
 msgid "Add Classification Category"
 msgstr "Ajouter une catégorie de classification"
 
-#: ../form/importform.py:43
+#: ../form/importform.py:44
 msgid "CSV Separator"
 msgstr "Séparateur du CSV"
 
-#: ../form/importform.py:38
+#: ../utils.py:140
+msgid "CSV file must contains at least 2 columns"
+msgstr "Le fichier CSV doit contenir au moins 2 colonnes"
+
+#: ../form/importform.py:39
 msgid "CSV file that contains the classification tree"
 msgstr "Fichier CSV qui contient l'arbre de classement"
 
@@ -60,7 +64,7 @@ msgstr "Catégories de classificaton"
 msgid "ClassificationContainer"
 msgstr "Arbre de classification"
 
-#: ../form/importform.py:118
+#: ../form/importform.py:119
 msgid "Column ${name}"
 msgstr "Colonne ${name}"
 
@@ -80,13 +84,17 @@ msgstr "Modifier"
 msgid "Edit Classification Category"
 msgstr "Modifier une catégorie de classification"
 
-#: ../form/importform.py:37
+#: ../form/importform.py:38
 msgid "File"
 msgstr "Fichier"
 
+#: ../utils.py:135
+msgid "File encoding is not utf8"
+msgstr "L'encodage du fichier doit être de l'UTF-8"
+
 #: ../browser/templates/container.pt:63
 #: ../contents/category.py:32
-#: ../vocabularies.py:49
+#: ../vocabularies.py:79
 msgid "Identifier"
 msgstr "Identifiant"
 
@@ -95,17 +103,17 @@ msgid "Identifier of the category"
 msgstr "Identifiant de la catégorie"
 
 #: ../browser/templates/container.pt:50
-#: ../form/importform.py:186
+#: ../form/importform.py:171
 msgid "Import"
 msgstr "Importer"
 
-#: ../form/importform.py:196
+#: ../form/importform.py:225
 msgid "Import completed in ${duration} seconds"
 msgstr "Import fini en ${duration} seconds"
 
 #: ../browser/templates/container.pt:65
 #: ../contents/category.py:41
-#: ../vocabularies.py:51
+#: ../vocabularies.py:81
 msgid "Informations"
 msgstr "Informations"
 
@@ -113,13 +121,17 @@ msgstr "Informations"
 msgid "Installs the collective.classification.tree add-on."
 msgstr ""
 
+#: ../utils.py:147
+msgid "Lines ${lines} does not contains the same number of element"
+msgstr "Les lignes ${lines} n'ont pas le bon nombre d'éléments"
+
 #: ../behaviors/classification.py:28
 msgid "List of folders / subfolders in which this content is filed"
 msgstr ""
 
 #: ../browser/templates/container.pt:64
 #: ../contents/category.py:38
-#: ../vocabularies.py:50
+#: ../vocabularies.py:80
 msgid "Name"
 msgstr "Nom"
 
@@ -127,11 +139,11 @@ msgstr "Nom"
 msgid "Name of the category"
 msgstr "Nom de la catégorie"
 
-#: ../vocabularies.py:48
+#: ../vocabularies.py:78
 msgid "Parent Identifier"
 msgstr "Identifiant du parent"
 
-#: ../form/importform.py:119
+#: ../form/importform.py:120
 msgid "Sample data : ${data}"
 msgstr "Exemple de données : ${data}"
 
@@ -139,7 +151,7 @@ msgstr "Exemple de données : ${data}"
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: ../form/importform.py:44
+#: ../form/importform.py:45
 msgid "Separator character to use"
 msgstr "Caractère de séparation à utiliser"
 
@@ -168,10 +180,10 @@ msgstr ""
 msgid "label_cancel"
 msgstr "Annuler"
 
-#: ../vocabularies.py:40
+#: ../vocabularies.py:70
 msgid "tab"
 msgstr "Tabulation"
 
-#: ../vocabularies.py:41
+#: ../vocabularies.py:71
 msgid "whitespace"
 msgstr "Espace"

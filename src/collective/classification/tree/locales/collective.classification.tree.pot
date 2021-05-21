@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-04-21 14:14+0000\n"
+"POT-Creation-Date: 2021-05-20 13:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,11 +38,15 @@ msgstr ""
 msgid "Add Classification Category"
 msgstr ""
 
-#: ../form/importform.py:43
+#: ../form/importform.py:44
 msgid "CSV Separator"
 msgstr ""
 
-#: ../form/importform.py:38
+#: ../utils.py:140
+msgid "CSV file must contains at least 2 columns"
+msgstr ""
+
+#: ../form/importform.py:39
 msgid "CSV file that contains the classification tree"
 msgstr ""
 
@@ -67,7 +71,7 @@ msgstr ""
 msgid "ClassificationContainer"
 msgstr ""
 
-#: ../form/importform.py:118
+#: ../form/importform.py:119
 msgid "Column ${name}"
 msgstr ""
 
@@ -87,13 +91,17 @@ msgstr ""
 msgid "Edit Classification Category"
 msgstr ""
 
-#: ../form/importform.py:37
+#: ../form/importform.py:38
 msgid "File"
+msgstr ""
+
+#: ../utils.py:135
+msgid "File encoding is not utf8"
 msgstr ""
 
 #: ../browser/templates/container.pt:63
 #: ../contents/category.py:32
-#: ../vocabularies.py:49
+#: ../vocabularies.py:79
 msgid "Identifier"
 msgstr ""
 
@@ -102,22 +110,26 @@ msgid "Identifier of the category"
 msgstr ""
 
 #: ../browser/templates/container.pt:50
-#: ../form/importform.py:186
+#: ../form/importform.py:171
 msgid "Import"
 msgstr ""
 
-#: ../form/importform.py:196
+#: ../form/importform.py:225
 msgid "Import completed in ${duration} seconds"
 msgstr ""
 
 #: ../browser/templates/container.pt:65
 #: ../contents/category.py:41
-#: ../vocabularies.py:51
+#: ../vocabularies.py:81
 msgid "Informations"
 msgstr ""
 
 #: ../configure.zcml:30
 msgid "Installs the collective.classification.tree add-on."
+msgstr ""
+
+#: ../utils.py:147
+msgid "Lines ${lines} does not contains the same number of element"
 msgstr ""
 
 #: ../behaviors/classification.py:28
@@ -126,7 +138,7 @@ msgstr ""
 
 #: ../browser/templates/container.pt:64
 #: ../contents/category.py:38
-#: ../vocabularies.py:50
+#: ../vocabularies.py:80
 msgid "Name"
 msgstr ""
 
@@ -134,11 +146,11 @@ msgstr ""
 msgid "Name of the category"
 msgstr ""
 
-#: ../vocabularies.py:48
+#: ../vocabularies.py:78
 msgid "Parent Identifier"
 msgstr ""
 
-#: ../form/importform.py:119
+#: ../form/importform.py:120
 msgid "Sample data : ${data}"
 msgstr ""
 
@@ -146,7 +158,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: ../form/importform.py:44
+#: ../form/importform.py:45
 msgid "Separator character to use"
 msgstr ""
 
@@ -171,10 +183,10 @@ msgstr ""
 msgid "label_cancel"
 msgstr ""
 
-#: ../vocabularies.py:40
+#: ../vocabularies.py:70
 msgid "tab"
 msgstr ""
 
-#: ../vocabularies.py:41
+#: ../vocabularies.py:71
 msgid "whitespace"
 msgstr ""
