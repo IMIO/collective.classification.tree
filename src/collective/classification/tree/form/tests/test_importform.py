@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from StringIO import StringIO
+from ZPublisher.HTTPRequest import FileUpload
 from collective.classification.tree import testing
 from collective.classification.tree.form import importform
 from operator import itemgetter
@@ -9,6 +10,7 @@ from plone import api
 from plone.namedfile import NamedBlobFile
 from zope.annotation import IAnnotations
 from zope.component import createObject
+from zope.i18n import translate
 
 import unittest
 
@@ -65,7 +67,9 @@ class TestImportForm(unittest.TestCase):
         form = importform.ImportFormFirstStep(self.container, self.layer["request"])
         data = {
             "source": NamedBlobFile(
-                data=self._csv.read(), contentType=u"text/csv", filename=u"test.csv",
+                data=self._csv.read(),
+                contentType=u"text/csv",
+                filename=u"test.csv",
             ),
             "separator": u";",
         }
@@ -77,6 +81,164 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(data["separator"], annotation["separator"])
         self.assertEqual(data["source"], annotation["source"])
 
+    def test_first_step_validate_columns_number_correct(self):
+        """Ensure that csv file contains at least 2 columns"""
+        request = self.layer["request"]
+        source = FileUpload(
+            type(
+                "obj",
+                (object,),
+                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv"},
+            )()
+        )
+        request.form = {
+            "form.buttons.continue": u"Continuer",
+            "form.widgets.separator": [u";"],
+            "form.widgets.separator-empty-marker": u"1",
+            "form.widgets.source": source,
+        }
+        form = importform.ImportFormFirstStep(self.container, request)
+        form.update()
+        data, errors = form.extractData()
+        self.assertEqual(0, len(errors))
+
+    def test_first_step_validate_columns_number_nok(self):
+        """Ensure that csv file contains at least 2 columns"""
+        request = self.layer["request"]
+        csv = StringIO()
+        lines = [
+            [""],
+            ["key1"],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        source = FileUpload(
+            type(
+                "obj",
+                (object,),
+                {"file": csv, "filename": "foo.csv", "headers": "text/csv"},
+            )()
+        )
+        request.form = {
+            "form.buttons.continue": u"Continuer",
+            "form.widgets.separator": [u";"],
+            "form.widgets.separator-empty-marker": u"1",
+            "form.widgets.source": source,
+        }
+        form = importform.ImportFormFirstStep(self.container, request)
+        form.update()
+        data, errors = form.extractData()
+        self.assertEqual(1, len(errors))
+        self.assertEqual(
+            "CSV file must contains at least 2 columns", errors[0].error.message
+        )
+
+    def test_first_step_validate_csv_encoding_ok(self):
+        """Ensure that we can decode csv file"""
+        request = self.layer["request"]
+        source = FileUpload(
+            type(
+                "obj",
+                (object,),
+                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv"},
+            )()
+        )
+        request.form = {
+            "form.buttons.continue": u"Continuer",
+            "form.widgets.separator": [u";"],
+            "form.widgets.separator-empty-marker": u"1",
+            "form.widgets.source": source,
+        }
+        form = importform.ImportFormFirstStep(self.container, request)
+        form.update()
+        data, errors = form.extractData()
+        self.assertEqual(0, len(errors))
+
+    def test_first_step_validate_csv_encoding_nok(self):
+        """Ensure that we can decode csv file"""
+        request = self.layer["request"]
+        csv = StringIO()
+        lines = [
+            ["", "key1", "Key 1"],
+            [u"猫", u"ààà", u"ééé"],
+        ]
+        for line in lines:
+            csv.write(";".join(line).encode("utf-16") + "\n")
+        csv.seek(0)
+        source = FileUpload(
+            type(
+                "obj",
+                (object,),
+                {"file": csv, "filename": "foo.csv", "headers": "text/csv"},
+            )()
+        )
+        request.form = {
+            "form.buttons.continue": u"continuer",
+            "form.widgets.separator": [u";"],
+            "form.widgets.separator-empty-marker": u"1",
+            "form.widgets.source": source,
+        }
+        form = importform.ImportFormFirstStep(self.container, request)
+        form.update()
+        data, errors = form.extractData()
+        self.assertEqual(1, len(errors))
+        self.assertEqual(
+            "File encoding is not utf8", errors[0].error.message
+        )
+
+    def test_first_step_validate_line_columns_ok(self):
+        """Ensure that every lines have the same number of columns"""
+        request = self.layer["request"]
+        source = FileUpload(
+            type(
+                "obj",
+                (object,),
+                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv"},
+            )()
+        )
+        request.form = {
+            "form.buttons.continue": u"continuer",
+            "form.widgets.separator": [u";"],
+            "form.widgets.separator-empty-marker": u"1",
+            "form.widgets.source": source,
+        }
+        form = importform.ImportFormFirstStep(self.container, request)
+        form.update()
+        data, errors = form.extractData()
+        self.assertEqual(0, len(errors))
+
+    def test_first_step_validate_line_columns_nok(self):
+        """Ensure that every lines have the same number of columns"""
+        request = self.layer["request"]
+        csv = StringIO()
+        lines = [
+            ["", "key1", "Key 1"],
+            ["key1", "key1.1"],
+            ["key1.1", "key1.1.1", "Key 1.1.1", "foo"],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        source = FileUpload(
+            type(
+                "obj",
+                (object,),
+                {"file": csv, "filename": "foo.csv", "headers": "text/csv"},
+            )()
+        )
+        request.form = {
+            "form.buttons.continue": u"continuer",
+            "form.widgets.separator": [u";"],
+            "form.widgets.separator-empty-marker": u"1",
+            "form.widgets.source": source,
+        }
+        form = importform.ImportFormFirstStep(self.container, request)
+        form.update()
+        data, errors = form.extractData()
+        self.assertEqual(1, len(errors))
+        self.assertTrue("Lines 2, 3" in translate(errors[0].error.message))
+
     def test_second_step_import_basic(self):
         """Test importing csv data"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
@@ -84,7 +246,9 @@ class TestImportForm(unittest.TestCase):
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["separator"] = u";"
         annotation["source"] = NamedBlobFile(
-            data=self._csv.read(), contentType=u"text/csv", filename=u"test.csv",
+            data=self._csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
         )
         data = {
             "column_0": "parent_identifier",
@@ -132,7 +296,9 @@ class TestImportForm(unittest.TestCase):
             csv.write(";".join(line) + "\n")
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
-            data=csv.read(), contentType=u"text/csv", filename=u"test.csv",
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
         )
         data = {
             "column_1": "parent_identifier",
@@ -180,7 +346,9 @@ class TestImportForm(unittest.TestCase):
             csv.write(";".join(line) + "\n")
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
-            data=csv.read(), contentType=u"text/csv", filename=u"test.csv",
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
         )
         data = {
             "column_0": "parent_identifier",
@@ -236,7 +404,9 @@ class TestImportForm(unittest.TestCase):
             csv.write(";".join(line) + "\n")
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
-            data=csv.read(), contentType=u"text/csv", filename=u"test.csv",
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
         )
         data = {
             "column_0": "parent_identifier",

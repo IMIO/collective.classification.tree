@@ -16,6 +16,7 @@ from zope import schema
 from zope.annotation import IAnnotations
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implementer
+from zope.interface import invariant
 from zope.interface.interface import InterfaceClass
 
 import csv
@@ -46,16 +47,15 @@ class IImportFirstStep(model.Schema):
         required=True,
     )
 
+    @invariant
+    def validate_csv_data(obj):
+        return utils.validate_csv_data(obj)
+
 
 @implementer(IFieldsForm)
 class ImportFormFirstStep(BaseForm):
     schema = IImportFirstStep
     ignoreContext = True
-    # TODO:
-    # - Ensure that the csv file contains the miminum number of columns
-    # - Ensure that all lines of the csv file contains the same number of columns
-    # - Detect encoding issues
-    # - Return explicit error message containing line numbers
 
     def _set_data(self, data):
         annotation = IAnnotations(self.context)

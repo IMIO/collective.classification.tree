@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from Acquisition import aq_parent
+from collective.classification.tree import _
 from collective.classification.tree.caching import forever_context_cache_key
 from plone.memoize import ram
 from zope.component import createObject
 from zope.event import notify
+from zope.interface import Invalid
+
+import csv
 
 
 @ram.cache(forever_context_cache_key)
@@ -120,3 +124,29 @@ def trigger_event(chains, eventcls, excluded=[]):
     """Trigger the event only once for each element"""
     for element in filter_chains(chains):
         notify(eventcls(element))
+
+
+def validate_csv_data(obj):
+    source, separator = [obj._Data_data___.get(k) for k in ("source", "separator")]
+    with source.open() as f:
+        try:
+            f.read().decode("utf8")
+        except UnicodeDecodeError:
+            raise Invalid(_("File encoding is not utf8"))
+    with source.open() as f:
+        reader = csv.reader(f, delimiter=separator.encode("utf-8"))
+        first_line = reader.next()
+        if len(first_line) < 2:
+            raise Invalid(_("CSV file must contains at least 2 columns"))
+        base_length = len(first_line)
+        wrong_lines = [
+            str(i + 2) for i, v in enumerate(reader) if len(v) != base_length
+        ]
+        if wrong_lines:
+            raise Invalid(
+                _(
+                    "Lines ${lines} does not contains the same number of element",
+                    mapping={"lines": ", ".join(wrong_lines)},
+                )
+            )
+    return True
