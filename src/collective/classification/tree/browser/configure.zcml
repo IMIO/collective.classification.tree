@@ -55,6 +55,22 @@
     template="templates/container.pt"
     />
 
+  <browser:page
+    name="classification_helper"
+    for="*"
+    class=".helper.ClassificationPublicHelper"
+    permission="zope.Public"
+    allowed_interface=".helper.IClassificationHelper"
+    />
+
+  <browser:page
+    name="classification_helper"
+    for="collective.classification.tree.contents.container.IClassificationContainer"
+    class=".helper.ClassificationHelper"
+    permission="cmf.AddPortalContent"
+    allowed_interface=".helper.IClassificationHelper"
+    />
+
   <!-- actions -->
 
   <browser:page
