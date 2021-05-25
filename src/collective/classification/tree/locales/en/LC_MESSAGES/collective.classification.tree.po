@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-05-20 13:37+0000\n"
+"POT-Creation-Date: 2021-05-25 10:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -126,7 +126,7 @@ msgid "Lines ${lines} does not contains the same number of element"
 msgstr ""
 
 #: ../behaviors/classification.py:28
-msgid "List of folders / subfolders in which this content is filed"
+msgid "List of categories in which this content is filed"
 msgstr ""
 
 #: ../browser/templates/container.pt:64

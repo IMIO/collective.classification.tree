@@ -8,8 +8,8 @@ from plone.autoform.interfaces import IFormFieldProvider
 from plone.formwidget.autocomplete import AutocompleteMultiFieldWidget
 from plone.supermodel import model
 from zope.component import adapter
-from zope.interface import Interface
 from zope.interface import implementer
+from zope.interface import Interface
 from zope.interface import provider
 
 
@@ -25,7 +25,7 @@ class IClassificationCategory(model.Schema):
     form.widget(classification_categories=AutocompleteMultiFieldWidget)
     classification_categories = schema.List(
         title=_(u"Classification Categories"),
-        description=_(u"List of folders / subfolders in which this content is filed"),
+        description=_(u"List of categories in which this content is filed"),
         value_type=schema.Choice(
             source=ClassificationTreeSourceBinder(),
         ),
