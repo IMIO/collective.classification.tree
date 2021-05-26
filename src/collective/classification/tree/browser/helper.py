@@ -8,6 +8,7 @@ from zope import schema
 
 class IClassificationHelper(Interface):
     can_import = schema.Bool(title=u"Can import data", readonly=True)
+    can_add_category = schema.Bool(title=u"Can add a new category", readonly=True)
 
 
 @implementer(IClassificationHelper)
@@ -15,8 +16,14 @@ class ClassificationPublicHelper(BrowserView):
     def can_import(self):
         return False
 
+    def can_add_category(self):
+        return False
+
 
 @implementer(IClassificationHelper)
-class ClassificationHelper(BrowserView):
+class ClassificationHelper(ClassificationPublicHelper):
     def can_import(self):
+        return True
+
+    def can_add_category(self):
         return True
