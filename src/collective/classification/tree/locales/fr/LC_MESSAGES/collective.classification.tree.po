@@ -25,11 +25,11 @@ msgstr "Ajouter"
 
 #: ../browser/templates/container.pt:47
 msgid "Add Category"
-msgstr "Ajouter une catégorie"
+msgstr "Ajouter un code"
 
 #: ../browser/category.py:63
 msgid "Add Classification Category"
-msgstr "Ajouter une catégorie de classification"
+msgstr "Ajouter un code de classement"
 
 #: ../form/importform.py:44
 msgid "CSV Separator"
@@ -49,7 +49,7 @@ msgstr "Annuler"
 
 #: ../browser/category.py:70
 msgid "Category added"
-msgstr "Catégorie ajoutée"
+msgstr "Code ajouté"
 
 #: ../browser/category.py:32
 msgid "Changes saved"
@@ -58,11 +58,11 @@ msgstr "Changements sauvegardés"
 #: ../behaviors/classification.py:27
 #: ../behaviors/configure.zcml:14
 msgid "Classification Categories"
-msgstr "Catégories de classificaton"
+msgstr "Codes de classement"
 
 #: ../profiles/default/types/ClassificationContainer.xml
 msgid "ClassificationContainer"
-msgstr "Arbre de classification"
+msgstr "Arbre de classement"
 
 #: ../form/importform.py:119
 msgid "Column ${name}"
@@ -82,7 +82,7 @@ msgstr "Modifier"
 
 #: ../browser/category.py:25
 msgid "Edit Classification Category"
-msgstr "Modifier une catégorie de classification"
+msgstr "Modifier un code de classement"
 
 #: ../form/importform.py:38
 msgid "File"
@@ -100,7 +100,7 @@ msgstr "Identifiant"
 
 #: ../contents/category.py:33
 msgid "Identifier of the category"
-msgstr "Identifiant de la catégorie"
+msgstr "Identifiant du code"
 
 #: ../browser/templates/container.pt:50
 #: ../form/importform.py:171
@@ -127,7 +127,7 @@ msgstr "Les lignes ${lines} n'ont pas le bon nombre d'éléments"
 
 #: ../behaviors/classification.py:28
 msgid "List of categories in which this content is filed"
-msgstr "Liste des catégories dans lesquelles ce contenu est classé"
+msgstr "Codes dans lesquels ce contenu est classé: le premier étant le principal"
 
 #: ../browser/templates/container.pt:64
 #: ../contents/category.py:38
@@ -137,7 +137,7 @@ msgstr "Nom"
 
 #: ../contents/category.py:38
 msgid "Name of the category"
-msgstr "Nom de la catégorie"
+msgstr "Nom du code"
 
 #: ../vocabularies.py:78
 msgid "Parent Identifier"
@@ -157,7 +157,7 @@ msgstr "Caractère de séparation à utiliser"
 
 #: ../behaviors/configure.zcml:14
 msgid "This behavior provides a classification categories selection field"
-msgstr "Ce behavior ajoute un champ avec les catégories de classification"
+msgstr "Ce behavior ajoute un champ avec les codes de classement"
 
 #: ../configure.zcml:39
 msgid "Uninstalls the collective.classification.tree add-on."
