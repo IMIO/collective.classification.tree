@@ -239,7 +239,7 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertTrue("Lines 2, 3" in translate(errors[0].error.message))
 
-    def test_second_step_encoding(self):
+    def test_second_step_basic_encoding(self):
         """Ensure that form can be displayed even with special characters"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
@@ -268,6 +268,33 @@ class TestImportForm(unittest.TestCase):
         try:
             form.update()
         except UnicodeDecodeError as e:
+            exception = e
+        self.assertIsNone(exception)
+
+    def test_second_step_basic_delimiter(self):
+        """Test edge case related to csv delimiter"""
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["separator"] = u","
+        csv = StringIO()
+        lines = [
+            ["", "key1", "Key 1"],
+            ["key1", "key1.1", '"Key 1,1"'],
+            ["key1.1", "key1.1.1", '"Key 1.1.1"'],
+        ]
+        for line in lines:
+            csv.write(",".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        exception = None
+        try:
+            form.update()
+        except Exception as e:
             exception = e
         self.assertIsNone(exception)
 

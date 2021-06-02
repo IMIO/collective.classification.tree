@@ -161,9 +161,10 @@ class BaseImportFormSecondStep(BaseForm):
         data = []
         with import_data["source"].open() as f:
             sniffer = csv.Sniffer()
-            has_header = sniffer.has_header(f.read(4096))
+            delimiter = import_data["separator"].encode(encoding)
+            has_header = sniffer.has_header(f.read(4096), delimiters=[delimiter])
             f.seek(0)
-            reader = csv.reader(f, delimiter=import_data["separator"].encode(encoding))
+            reader = csv.reader(f, delimiter=delimiter)
             if has_header:
                 reader.next()
             data = self._process_csv(reader, mapping, encoding, import_data)
