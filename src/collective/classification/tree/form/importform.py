@@ -16,6 +16,7 @@ from zope import schema
 from zope.annotation import IAnnotations
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implementer
+from zope.interface import Interface
 from zope.interface import invariant
 from zope.interface.interface import InterfaceClass
 
@@ -23,6 +24,10 @@ import csv
 
 
 ANNOTATION_KEY = "collective.classification:import"
+
+
+class IImportFormView(Interface):
+    """Marker interface for import form views"""
 
 
 class BaseForm(AutoExtensibleForm, Form):
@@ -74,6 +79,7 @@ class ImportFormFirstStep(BaseForm):
         self.request.response.redirect(redirect_url)
 
 
+@implementer(IImportFormView)
 class ImportFirstStepView(FormWrapper):
     form = ImportFormFirstStep
 
@@ -235,6 +241,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
         self.request.response.redirect(self.context.absolute_url())
 
 
+@implementer(IImportFormView)
 class ImportSecondStepView(FormWrapper):
     form = ImportFormSecondStep
 

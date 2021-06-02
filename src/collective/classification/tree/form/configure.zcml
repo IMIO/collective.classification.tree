@@ -19,4 +19,11 @@
     permission="cmf.AddPortalContent"
     />
 
+  <browser:page
+    name="z3cform_validate_field"
+    for=".importform.IImportFormView"
+    class=".validation.InlineValidationView"
+    permission="zope.Public"
+    />
+
 </configure>
