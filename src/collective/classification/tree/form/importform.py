@@ -94,11 +94,12 @@ class BaseImportFormSecondStep(BaseForm):
         data_lines = []
         has_header = False
         data = self._get_data()
+        encoding = "utf-8"
         with data["source"].open() as f:
             sniffer = csv.Sniffer()
             has_header = sniffer.has_header(f.read(4096))
             f.seek(0)
-            reader = csv.reader(f, delimiter=data["separator"].encode("utf-8"))
+            reader = csv.reader(f, delimiter=data["separator"].encode(encoding))
             first_line = reader.next()
             try:
                 for i in range(0, 2):
@@ -112,7 +113,9 @@ class BaseImportFormSecondStep(BaseForm):
                 name = element
             else:
                 name = str(idx + 1)
-            sample = ", ".join(["'{0}'".format(l[idx]) for l in data_lines])
+            sample = u", ".join(
+                [u"'{0}'".format(l[idx].decode(encoding)) for l in data_lines]
+            )
 
             fields.append(
                 schema.Choice(

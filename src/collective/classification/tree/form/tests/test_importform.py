@@ -239,6 +239,38 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertTrue("Lines 2, 3" in translate(errors[0].error.message))
 
+    def test_second_step_encoding(self):
+        """Ensure that form can be displayed even with special characters"""
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["separator"] = u";"
+        csv = StringIO()
+        lines = [
+            ["null", "key1", "key1.1", "Key 1.1", "informations"],
+            [
+                "null",
+                "",
+                u"key1 éà$€".encode("utf8"),
+                u"Key 1 éà$€".encode("utf8"),
+                u"informations éà$€".encode("utf8"),
+            ],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        exception = None
+        try:
+            form.update()
+        except UnicodeDecodeError as e:
+            exception = e
+        self.assertIsNone(exception)
+
     def test_second_step_import_basic(self):
         """Test importing csv data"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
