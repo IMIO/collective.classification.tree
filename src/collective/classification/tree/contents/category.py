@@ -47,7 +47,10 @@ class ClassificationCategory(
 ):
     __parent__ = None
     __allow_access_to_unprotected_subobjects__ = True
-    portal_type = "ClassificationCategory"
+
+    meta_type = portal_type = "ClassificationCategory"
+    # This needs to be kept in sync with types/ClassificationCategory.xml title
+    fti_title = "ClassificationCategory"
 
     identifier = FieldProperty(IClassificationCategory["identifier"])
     title = FieldProperty(IClassificationCategory["title"])
