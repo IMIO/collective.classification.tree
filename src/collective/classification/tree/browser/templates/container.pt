@@ -20,8 +20,8 @@
 <body>
 
 <metal:main fill-slot="main">
-
-  <h1 class="documentFirstHeading" tal:content="context/Title" />
+  <div tal:replace="structure provider:plone.abovecontenttitle" />
+  <h1 class="documentFirstHeading" id="parent-fieldname-title" tal:content="context/Title" />
 
   <p class="documentDescription" tal:content="context/Description" />
 
