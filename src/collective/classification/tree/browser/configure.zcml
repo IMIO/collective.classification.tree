@@ -66,7 +66,15 @@
   <browser:page
     name="classification_helper"
     for="collective.classification.tree.contents.container.IClassificationContainer"
-    class=".helper.ClassificationHelper"
+    class=".helper.ClassificationContainerHelper"
+    permission="cmf.AddPortalContent"
+    allowed_interface=".helper.IClassificationHelper"
+    />
+
+  <browser:page
+    name="classification_helper"
+    for="collective.classification.tree.contents.category.IClassificationCategory"
+    class=".helper.ClassificationCategoryHelper"
     permission="cmf.AddPortalContent"
     allowed_interface=".helper.IClassificationHelper"
     />

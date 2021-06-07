@@ -21,9 +21,15 @@ class ClassificationPublicHelper(BrowserView):
 
 
 @implementer(IClassificationHelper)
-class ClassificationHelper(ClassificationPublicHelper):
+class ClassificationContainerHelper(ClassificationPublicHelper):
     def can_import(self):
         return True
 
+    def can_add_category(self):
+        return True
+
+
+@implementer(IClassificationHelper)
+class ClassificationCategoryHelper(ClassificationPublicHelper):
     def can_add_category(self):
         return True
