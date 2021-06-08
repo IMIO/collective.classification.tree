@@ -28,4 +28,10 @@
     handler=".category.category_modified"
     />
 
+  <subscriber
+    for=".category.IClassificationCategory
+         zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+    handler=".category.category_deleted"
+    />
+
 </configure>
