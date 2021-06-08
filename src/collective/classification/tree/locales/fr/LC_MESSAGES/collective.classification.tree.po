@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-05-25 10:21+0000\n"
+"POT-Creation-Date: 2021-06-08 14:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr "${title} a été supprimé"
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../browser/templates/container.pt:47
+#: ../profiles/default/actions.xml
 msgid "Add Category"
 msgstr "Ajouter un code"
 
@@ -31,7 +31,7 @@ msgstr "Ajouter un code"
 msgid "Add Classification Category"
 msgstr "Ajouter un code de classement"
 
-#: ../form/importform.py:44
+#: ../form/importform.py:49
 msgid "CSV Separator"
 msgstr "Séparateur du CSV"
 
@@ -39,7 +39,7 @@ msgstr "Séparateur du CSV"
 msgid "CSV file must contains at least 2 columns"
 msgstr "Le fichier CSV doit contenir au moins 2 colonnes"
 
-#: ../form/importform.py:39
+#: ../form/importform.py:44
 msgid "CSV file that contains the classification tree"
 msgstr "Fichier CSV qui contient l'arbre de classement"
 
@@ -64,11 +64,11 @@ msgstr "Codes de classement"
 msgid "ClassificationContainer"
 msgstr "Arbre de classement"
 
-#: ../form/importform.py:119
+#: ../form/importform.py:128
 msgid "Column ${name}"
 msgstr "Colonne ${name}"
 
-#: ../form/importform.py:66
+#: ../form/importform.py:71
 msgid "Continue"
 msgstr "Continuer"
 
@@ -84,7 +84,7 @@ msgstr "Modifier"
 msgid "Edit Classification Category"
 msgstr "Modifier un code de classement"
 
-#: ../form/importform.py:38
+#: ../form/importform.py:43
 msgid "File"
 msgstr "Fichier"
 
@@ -92,27 +92,27 @@ msgstr "Fichier"
 msgid "File encoding is not utf8"
 msgstr "L'encodage du fichier doit être de l'UTF-8"
 
-#: ../browser/templates/container.pt:63
-#: ../contents/category.py:32
+#: ../browser/templates/container.pt:53
+#: ../contents/category.py:35
 #: ../vocabularies.py:79
 msgid "Identifier"
 msgstr "Identifiant"
 
-#: ../contents/category.py:33
+#: ../contents/category.py:36
 msgid "Identifier of the category"
 msgstr "Identifiant du code"
 
-#: ../browser/templates/container.pt:50
-#: ../form/importform.py:171
+#: ../form/importform.py:181
+#: ../profiles/default/actions.xml
 msgid "Import"
 msgstr "Importer"
 
-#: ../form/importform.py:225
+#: ../form/importform.py:235
 msgid "Import completed in ${duration} seconds"
 msgstr "Import fini en ${duration} seconds"
 
-#: ../browser/templates/container.pt:65
-#: ../contents/category.py:41
+#: ../browser/templates/container.pt:55
+#: ../contents/category.py:44
 #: ../vocabularies.py:81
 msgid "Informations"
 msgstr "Informations"
@@ -129,13 +129,13 @@ msgstr "Les lignes ${lines} n'ont pas le bon nombre d'éléments"
 msgid "List of categories in which this content is filed"
 msgstr "Codes dans lesquels ce contenu est classé: le premier étant le principal"
 
-#: ../browser/templates/container.pt:64
-#: ../contents/category.py:38
+#: ../browser/templates/container.pt:54
+#: ../contents/category.py:41
 #: ../vocabularies.py:80
 msgid "Name"
 msgstr "Nom"
 
-#: ../contents/category.py:38
+#: ../contents/category.py:41
 msgid "Name of the category"
 msgstr "Nom du code"
 
@@ -143,7 +143,7 @@ msgstr "Nom du code"
 msgid "Parent Identifier"
 msgstr "Identifiant du parent"
 
-#: ../form/importform.py:120
+#: ../form/importform.py:129
 msgid "Sample data : ${data}"
 msgstr "Exemple de données : ${data}"
 
@@ -151,7 +151,7 @@ msgstr "Exemple de données : ${data}"
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: ../form/importform.py:45
+#: ../form/importform.py:50
 msgid "Separator character to use"
 msgstr "Caractère de séparation à utiliser"
 
@@ -166,6 +166,11 @@ msgstr ""
 #: ../browser/actions.py:117
 msgid "\"${title}\" has already been deleted"
 msgstr "\"${title}\" a déjà été supprimé"
+
+#. Default: "This category cannot be deleted because it is referenced elsewhere"
+#: ../contents/category.py:163
+msgid "cannot_delete_referenced_category"
+msgstr "Ce code de classement ne peut être supprimé car il est référencé autre part"
 
 #: ../configure.zcml:30
 msgid "collective.classification.tree"
