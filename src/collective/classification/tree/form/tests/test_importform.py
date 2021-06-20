@@ -165,6 +165,7 @@ class TestImportForm(unittest.TestCase):
         request = self.layer["request"]
         csv = StringIO()
         lines = [
+            [u"猫", u"èè", u"ùù"],
             ["", "key1", "Key 1"],
             [u"猫", u"ààà", u"ééé"],
         ]
@@ -183,7 +184,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.separator": [u";"],
             "form.widgets.separator-empty-marker": u"1",
             "form.widgets.source": source,
-            "form.widgets.has_header": u"False",
+            "form.widgets.has_header": u"True",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
@@ -378,6 +379,74 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(
             ["key1", "key2"], sorted([e.title for e in self.container.values()])
         )
+
+    def test_second_step_import_encoding(self):
+        """Test importing csv data with special chars in header and content"""
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = True
+        annotation["separator"] = u";"
+        csv = StringIO()
+        lines = [
+            [u"猫".encode("utf8"), u"èè".encode("utf8"), u"ùù".encode("utf8")],
+            ["", u"kéy1".encode("utf8"), u"Kèy 1".encode("utf8")],
+            [u"kéy1".encode("utf8"), u"kéy1.1".encode("utf8"), u"猫".encode("utf8")],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        data = {
+            "column_0": "parent_identifier",
+            "column_1": "identifier",
+            "column_2": "title",
+            "decimal_import": False,
+        }
+        form._import(data)
+        self.assertEqual(1, len(self.container))
+        self.assertEqual([u"kéy1"], [e.identifier for e in self.container.values()])
+
+        key1 = self.container.get_by("identifier", u"kéy1")
+        self.assertEqual(1, len(key1))
+        self.assertEqual([u"kéy1.1"], [e.identifier for e in key1.values()])
+
+        key1_1 = key1.get_by("identifier", u"kéy1.1")
+        self.assertEqual(u"猫", key1_1.title)
+
+    def test_second_step_import_encoding_form(self):
+        """Test importing csv data with special chars in header and content"""
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = True
+        annotation["separator"] = u";"
+        csv = StringIO()
+        lines = [
+            [u"猫".encode("utf8"), u"èè".encode("utf8"), u"ùù".encode("utf8")],
+            ["", u"kéy1".encode("utf8"), u"Kèy 1".encode("utf8")],
+            [u"kéy1".encode("utf8"), u"kéy1.1".encode("utf8"), u"猫".encode("utf8")],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        form.update()
+        exception = None
+        try:
+            render = form.render()
+        except UnicodeDecodeError as e:
+            exception = e
+        self.assertIsNone(exception)
+        self.assertTrue(u"Column {0}".format(u"猫") in render)
 
     def test_second_step_import_extra_columns(self):
         """Test importing csv data"""

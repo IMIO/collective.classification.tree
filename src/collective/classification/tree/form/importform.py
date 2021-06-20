@@ -151,7 +151,7 @@ class BaseImportFormSecondStep(BaseForm):
         fields = []
         for idx, element in enumerate(first_line):
             if has_header:
-                name = element
+                name = element.decode(encoding)
             else:
                 name = str(idx + 1)
             sample = u", ".join(
