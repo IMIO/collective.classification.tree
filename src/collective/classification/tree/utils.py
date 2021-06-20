@@ -139,6 +139,7 @@ def validate_csv_data(obj):
         if len(first_line) < 2:
             raise Invalid(_("CSV file must contains at least 2 columns"))
         base_length = len(first_line)
+
         wrong_lines = [
             str(i + 2) for i, v in enumerate(reader) if len(v) != base_length
         ]
@@ -146,6 +147,58 @@ def validate_csv_data(obj):
             raise Invalid(
                 _(
                     "Lines ${lines} does not contains the same number of element",
+                    mapping={"lines": ", ".join(wrong_lines)},
+                )
+            )
+    return True
+
+
+def validate_csv_columns(obj, required_columns):
+    """Verify that all required columns are present"""
+    columns = [v for k, v in obj._Data_data___.items() if k.startswith("column_")]
+    missing_columns = []
+    for column in required_columns:
+        if column not in columns:
+            missing_columns.append(column)
+    if len(missing_columns) > 0:
+        raise Invalid(
+            _(
+                "The following required columns are missing: ${columns}",
+                mapping={"columns": ", ".join(missing_columns)},
+            )
+        )
+    return True
+
+
+def validate_csv_content(obj, annotation, required_columns):
+    """Verify csv content"""
+    columns = {
+        v: int(k.replace("column_", ""))
+        for k, v in obj._Data_data___.items()
+        if k.startswith("column_") and v
+    }
+    if not columns:
+        # Validation of columns is made by another function
+        return True
+    separator = annotation["separator"]
+    has_header = annotation["has_header"]
+    source = annotation["source"]
+    with source.open() as f:
+        reader = csv.reader(f, delimiter=separator.encode("utf-8"))
+        base_idx = 1
+        if has_header:
+            base_idx += 1
+            reader.next()
+        expected_length = len(required_columns)
+        wrong_lines = []
+        for idx, line in enumerate(reader):
+            values = [line[columns[n]] for n in required_columns if line[columns[n]]]
+            if len(values) != expected_length:
+                wrong_lines.append(str(idx + base_idx))
+        if wrong_lines:
+            raise Invalid(
+                _(
+                    "Lines ${lines} have missing required value(s)",
                     mapping={"lines": ", ".join(wrong_lines)},
                 )
             )

@@ -26,4 +26,8 @@
     permission="zope.Public"
     />
 
+  <adapter
+    factory=".importform.GeneratedChoiceAttributeField"
+    />
+
 </configure>

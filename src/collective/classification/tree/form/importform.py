@@ -10,10 +10,12 @@ from plone.supermodel import model
 from plone.z3cform.layout import FormWrapper
 from time import time
 from z3c.form import button
+from z3c.form.datamanager import AttributeField
 from z3c.form.form import Form
 from z3c.form.interfaces import IFieldsForm
 from zope import schema
 from zope.annotation import IAnnotations
+from zope.component import adapter
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implementer
 from zope.interface import Interface
@@ -24,6 +26,18 @@ import csv
 
 
 ANNOTATION_KEY = "collective.classification:import"
+
+
+class IGeneratedField(Interface):
+    """
+    Marker interface for generated interface field
+    This is required for AttributeField adapter
+    """
+
+
+@implementer(IGeneratedField)
+class GeneratedChoice(schema.Choice):
+    pass
 
 
 class IImportFormView(Interface):
@@ -64,6 +78,19 @@ class IImportFirstStep(model.Schema):
         return utils.validate_csv_data(obj)
 
 
+class IImportSecondStepBase(Interface):
+    @invariant
+    def validate_columns(obj):
+        return utils.validate_csv_columns(obj, ("identifier",))
+
+    @invariant
+    def validate_data(obj):
+        annotations = IAnnotations(obj.__context__)
+        return utils.validate_csv_content(
+            obj, annotations[ANNOTATION_KEY], ("identifier",)
+        )
+
+
 @implementer(IFieldsForm)
 class ImportFormFirstStep(BaseForm):
     schema = IImportFirstStep
@@ -94,7 +121,9 @@ class ImportFirstStepView(FormWrapper):
 @implementer(IFieldsForm)
 class BaseImportFormSecondStep(BaseForm):
     """Baseclass for import form"""
-    ignoreContext = True
+
+    ignoreContext = False
+    base_schema = IImportSecondStepBase
 
     @property
     def _vocabulary(self):
@@ -130,16 +159,18 @@ class BaseImportFormSecondStep(BaseForm):
             )
 
             fields.append(
-                schema.Choice(
+                GeneratedChoice(
                     title=_("Column ${name}", mapping={"name": name}),
                     description=_("Sample data : ${data}", mapping={"data": sample}),
                     vocabulary=self._vocabulary,
                     required=False,
                 )
             )
+
         return InterfaceClass(
             "IImportSecondStep",
             attrs={"column_{0}".format(idx): field for idx, field in enumerate(fields)},
+            bases=(self.base_schema,),
         )
 
     def _get_data(self):
@@ -252,3 +283,13 @@ class ImportSecondStepView(FormWrapper):
 
     def set_data(self, data):
         self.data = data
+
+
+@adapter(Interface, IGeneratedField)
+class GeneratedChoiceAttributeField(AttributeField):
+    @property
+    def adapted_context(self):
+        return self.context
+
+    def get(self):
+        return

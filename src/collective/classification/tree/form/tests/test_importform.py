@@ -505,6 +505,155 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(key2))
         self.assertEqual(["key2.1"], sorted([e.identifier for e in key2.values()]))
 
+    def test_second_step_required_columns_ok(self):
+        """Test validation of required columns"""
+        request = self.layer["request"]
+        request.form = {
+            "form.buttons.import": u"Importer",
+            "form.widgets.column_0": u"parent_identifier",
+            "form.widgets.column_1": u"identifier",
+            "form.widgets.column_2": u"title",
+        }
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
+        annotation["separator"] = u";"
+        annotation["source"] = NamedBlobFile(
+            data=self._csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        form = importform.ImportFormSecondStep(self.container, request)
+        form.updateFieldsFromSchemata()
+        form.updateWidgets()
+        data, errors = form.extractData()
+        self.assertEqual(0, len(errors))
+
+    def test_second_step_required_columns_nok(self):
+        """Test validation of required columns"""
+        request = self.layer["request"]
+        request.form = {
+            "form.buttons.import": u"Importer",
+            "form.widgets.column_0": u"--NOVALUE--",
+            "form.widgets.column_1": u"--NOVALUE--",
+            "form.widgets.column_2": u"--NOVALUE--",
+        }
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
+        annotation["separator"] = u";"
+        annotation["source"] = NamedBlobFile(
+            data=self._csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        form = importform.ImportFormSecondStep(self.container, request)
+        form.updateFieldsFromSchemata()
+        form.updateWidgets()
+        data, errors = form.extractData()
+        self.assertEqual(1, len(errors))
+        self.assertEqual(
+            "The following required columns are missing: identifier",
+            translate(errors[0].error.message),
+        )
+
+    def test_second_step_required_columns_data_ok(self):
+        """Test validation of required columns data"""
+        request = self.layer["request"]
+        request.form = {
+            "form.buttons.import": u"Importer",
+            "form.widgets.column_0": u"parent_identifier",
+            "form.widgets.column_1": u"identifier",
+            "form.widgets.column_2": u"title",
+        }
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
+        annotation["separator"] = u";"
+        annotation["source"] = NamedBlobFile(
+            data=self._csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        form = importform.ImportFormSecondStep(self.container, request)
+        form.updateFieldsFromSchemata()
+        form.updateWidgets()
+        data, errors = form.extractData()
+        self.assertEqual(0, len(errors))
+
+    def test_second_step_required_columns_data_nok(self):
+        """Test validation of required columns data"""
+        request = self.layer["request"]
+        request.form = {
+            "form.buttons.import": u"Importer",
+            "form.widgets.column_0": u"parent_identifier",
+            "form.widgets.column_1": u"identifier",
+            "form.widgets.column_2": u"title",
+        }
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
+        annotation["separator"] = u";"
+        csv = StringIO()
+        lines = [
+            ["", "key1", "Key 1"],
+            ["key1", "key1.1", "Key 1.1"],
+            ["key1.1", "key1.1.1", "Key 1.1.1"],
+            ["key1", "", "Key 1.2"],
+            ["key1", "key1.3", ""],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        form = importform.ImportFormSecondStep(self.container, request)
+        form.updateFieldsFromSchemata()
+        form.updateWidgets()
+        data, errors = form.extractData()
+        self.assertEqual(1, len(errors))
+        self.assertEqual(
+            "Lines 4 have missing required value(s)",
+            translate(errors[0].error.message),
+        )
+
+    def test_second_step_optional_columns_data_ok(self):
+        """Test validation of optional columns data"""
+        request = self.layer["request"]
+        request.form = {
+            "form.buttons.import": u"Importer",
+            "form.widgets.column_0": u"parent_identifier",
+            "form.widgets.column_1": u"identifier",
+            "form.widgets.column_2": u"title",
+            "form.widgets.column_3": u"informations",
+        }
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
+        annotation["separator"] = u";"
+        csv = StringIO()
+        lines = [
+            ["", "key1", "Key 1", "infos"],
+            ["key1", "key1.1", "Key 1.1", ""],
+            ["key1.1", "key1.1.1", "Key 1.1.1", ""],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        form = importform.ImportFormSecondStep(self.container, request)
+        form.updateFieldsFromSchemata()
+        form.updateWidgets()
+        data, errors = form.extractData()
+        self.assertEqual(0, len(errors))
+
     def test_process_data_basic(self):
         """Tests _process_data with basic data structure"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
