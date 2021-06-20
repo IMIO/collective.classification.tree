@@ -344,6 +344,41 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(key2))
         self.assertEqual(["key2.1"], sorted([e.identifier for e in key2.values()]))
 
+    def test_second_step_import_single_column(self):
+        """Test importing csv data"""
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
+        annotation["separator"] = u";"
+        csv = StringIO()
+        lines = [
+            ["", "key1", "Key 1"],
+            ["", "key2", "Key 2"],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        data = {
+            "column_0": None,
+            "column_1": "identifier",
+            "column_2": None,
+            "decimal_import": False,
+        }
+        form._import(data)
+        self.assertEqual(2, len(self.container))
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
+        )
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.title for e in self.container.values()])
+        )
+
     def test_second_step_import_extra_columns(self):
         """Test importing csv data"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])

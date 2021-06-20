@@ -250,7 +250,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
             line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
             parent_identifier = line_data.pop("parent_identifier") or None
             identifier = line_data.pop("identifier")
-            title = line_data.pop("title")
+            title = line_data.pop("title", None) or identifier
             if parent_identifier not in data:
                 # Using dictionary avoid duplicated informations
                 data[parent_identifier] = {}
