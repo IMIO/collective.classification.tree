@@ -72,6 +72,7 @@ class TestImportForm(unittest.TestCase):
                 filename=u"test.csv",
             ),
             "separator": u";",
+            "has_header": False,
         }
         form._set_data(data)
         annotations = IAnnotations(self.container)
@@ -80,6 +81,7 @@ class TestImportForm(unittest.TestCase):
         annotation = annotations[importform.ANNOTATION_KEY]
         self.assertEqual(data["separator"], annotation["separator"])
         self.assertEqual(data["source"], annotation["source"])
+        self.assertEqual(data["has_header"], annotation["has_header"])
 
     def test_first_step_validate_columns_number_correct(self):
         """Ensure that csv file contains at least 2 columns"""
@@ -96,6 +98,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.separator": [u";"],
             "form.widgets.separator-empty-marker": u"1",
             "form.widgets.source": source,
+            "form.widgets.has_header": u"False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
@@ -125,6 +128,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.separator": [u";"],
             "form.widgets.separator-empty-marker": u"1",
             "form.widgets.source": source,
+            "form.widgets.has_header": u"False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
@@ -149,6 +153,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.separator": [u";"],
             "form.widgets.separator-empty-marker": u"1",
             "form.widgets.source": source,
+            "form.widgets.has_header": u"False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
@@ -178,14 +183,13 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.separator": [u";"],
             "form.widgets.separator-empty-marker": u"1",
             "form.widgets.source": source,
+            "form.widgets.has_header": u"False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertEqual(
-            "File encoding is not utf8", errors[0].error.message
-        )
+        self.assertEqual("File encoding is not utf8", errors[0].error.message)
 
     def test_first_step_validate_line_columns_ok(self):
         """Ensure that every lines have the same number of columns"""
@@ -202,6 +206,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.separator": [u";"],
             "form.widgets.separator-empty-marker": u"1",
             "form.widgets.source": source,
+            "form.widgets.has_header": u"False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
@@ -232,6 +237,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.separator": [u";"],
             "form.widgets.separator-empty-marker": u"1",
             "form.widgets.source": source,
+            "form.widgets.has_header": u"False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
@@ -244,6 +250,7 @@ class TestImportForm(unittest.TestCase):
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
         annotation["separator"] = u";"
         csv = StringIO()
         lines = [
@@ -276,6 +283,7 @@ class TestImportForm(unittest.TestCase):
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
         annotation["separator"] = u","
         csv = StringIO()
         lines = [
@@ -303,6 +311,7 @@ class TestImportForm(unittest.TestCase):
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
         annotation["separator"] = u";"
         annotation["source"] = NamedBlobFile(
             data=self._csv.read(),
@@ -340,6 +349,7 @@ class TestImportForm(unittest.TestCase):
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
         annotation["separator"] = u";"
         csv = StringIO()
         lines = [
@@ -390,6 +400,7 @@ class TestImportForm(unittest.TestCase):
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
         annotation["separator"] = u";"
         csv = StringIO()
         lines = [
@@ -440,6 +451,7 @@ class TestImportForm(unittest.TestCase):
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
         annotation["separator"] = u";"
         csv = StringIO()
         lines = [

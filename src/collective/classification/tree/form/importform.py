@@ -52,6 +52,13 @@ class IImportFirstStep(model.Schema):
         required=True,
     )
 
+    has_header = schema.Bool(
+        title=_(u"Include CSV header"),
+        description=_(u"The CSV file contains an header row"),
+        default=True,
+        required=False,
+    )
+
     @invariant
     def validate_csv_data(obj):
         return utils.validate_csv_data(obj)
@@ -102,8 +109,7 @@ class BaseImportFormSecondStep(BaseForm):
         data = self._get_data()
         encoding = "utf-8"
         with data["source"].open() as f:
-            sniffer = csv.Sniffer()
-            has_header = sniffer.has_header(f.read(4096))
+            has_header = data["has_header"]
             f.seek(0)
             reader = csv.reader(f, delimiter=data["separator"].encode(encoding))
             first_line = reader.next()
@@ -166,9 +172,8 @@ class BaseImportFormSecondStep(BaseForm):
         encoding = "utf-8"
         data = []
         with import_data["source"].open() as f:
-            sniffer = csv.Sniffer()
             delimiter = import_data["separator"].encode(encoding)
-            has_header = sniffer.has_header(f.read(4096))
+            has_header = import_data["has_header"]
             f.seek(0)
             reader = csv.reader(f, delimiter=delimiter)
             if has_header:
