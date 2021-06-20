@@ -10,6 +10,8 @@ from zope.interface import Invalid
 
 import csv
 
+DECIMAL_SEPARATORS = ("-", ".", ";", "/", "|", ":")
+
 
 @ram.cache(forever_context_cache_key)
 def iterate_over_tree(obj):
@@ -43,6 +45,37 @@ def get_chain(obj, include_self=True):
         else:
             chain.append(obj)
     return chain
+
+
+def generate_decimal_structure(code):
+    """Generate a structure based on a decimal code"""
+    levels = []
+    level = ""
+    for char in code:
+        level = u"{0}{1}".format(level, char)
+        if char in DECIMAL_SEPARATORS:
+            continue
+        else:
+            levels.append(level)
+
+    results = {}
+    last_element = None
+    for level in levels:
+        results[last_element] = {level: (level, {"informations": None})}
+        last_element = level
+    return results
+
+
+def get_decimal_parent(code):
+    """Return the parent decimal code from a given code e.g. 100 from 100.1"""
+    length = 1
+    for char in list(reversed(list(code)))[1:]:
+        if char in DECIMAL_SEPARATORS:
+            length += 1
+            continue
+        else:
+            break
+    return code[:length * -1] or None
 
 
 def importer(

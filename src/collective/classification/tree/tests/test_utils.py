@@ -381,3 +381,173 @@ class TestUtils(unittest.TestCase):
         result = utils.filter_chains(data)
         expected_results = ["key1.1.1", "key1.2", "key2", "key3.1"]
         self.assertEqual(sorted(result), sorted(expected_results))
+
+    def test_decimal_structure_basic(self):
+        result = utils.generate_decimal_structure("1000")
+        expected_results = {
+            None: {
+                u"1": (u"1", {"informations": None}),
+            },
+            u"1": {
+                u"10": (u"10", {"informations": None}),
+            },
+            u"10": {
+                u"100": (u"100", {"informations": None}),
+            },
+            u"100": {
+                u"1000": (u"1000", {"informations": None}),
+            },
+        }
+        # expected_results = [
+            # {
+                # "identifier": u"1",
+                # "title": u"1",
+                # "informations": None,
+                # "_children": [
+                    # {
+                        # "identifier": u"10",
+                        # "title": u"10",
+                        # "informations": None,
+                        # "_children": [
+                            # {
+                                # "identifier": u"100",
+                                # "title": u"100",
+                                # "informations": None,
+                                # "_children": [
+                                    # {
+                                        # "identifier": u"1000",
+                                        # "title": u"1000",
+                                        # "informations": None,
+                                        # "_children": [],
+                                    # }
+                                # ],
+                            # }
+                        # ],
+                    # }
+                # ],
+            # }
+        # ]
+        self.assertEqual(expected_results, result)
+
+    def test_decimal_structure_with_basic_separator(self):
+        """Ensure that separator are ignored during structure generation"""
+        result = utils.generate_decimal_structure("10.0.0")
+        expected_results = {
+            None: {
+                u"1": (u"1", {"informations": None}),
+            },
+            u"1": {
+                u"10": (u"10", {"informations": None}),
+            },
+            u"10": {
+                u"10.0": (u"10.0", {"informations": None}),
+            },
+            u"10.0": {
+                u"10.0.0": (u"10.0.0", {"informations": None}),
+            },
+        }
+        # expected_results = [
+            # {
+                # "identifier": u"1",
+                # "title": u"1",
+                # "informations": None,
+                # "_children": [
+                    # {
+                        # "identifier": u"10",
+                        # "title": u"10",
+                        # "informations": None,
+                        # "_children": [
+                            # {
+                                # "identifier": u"10.0",
+                                # "title": u"10.0",
+                                # "informations": None,
+                                # "_children": [
+                                    # {
+                                        # "identifier": u"10.0.0",
+                                        # "title": u"10.0.0",
+                                        # "informations": None,
+                                        # "_children": [],
+                                    # }
+                                # ],
+                            # }
+                        # ],
+                    # }
+                # ],
+            # }
+        # ]
+        self.assertEqual(expected_results, result)
+
+    def test_decimal_structure_with_mixed_separator(self):
+        """Ensure that mixed separator are ignored during structure generation"""
+        result = utils.generate_decimal_structure("1-0.0/0")
+        expected_results = {
+            None: {
+                u"1": (u"1", {"informations": None}),
+            },
+            u"1": {
+                u"1-0": (u"1-0", {"informations": None}),
+            },
+            u"1-0": {
+                u"1-0.0": (u"1-0.0", {"informations": None}),
+            },
+            u"1-0.0": {
+                u"1-0.0/0": (u"1-0.0/0", {"informations": None}),
+            },
+        }
+        # expected_results = [
+            # {
+                # "identifier": u"1",
+                # "title": u"1",
+                # "informations": None,
+                # "_children": [
+                    # {
+                        # "identifier": u"1-0",
+                        # "title": u"1-0",
+                        # "informations": None,
+                        # "_children": [
+                            # {
+                                # "identifier": u"1-0.0",
+                                # "title": u"1-0.0",
+                                # "informations": None,
+                                # "_children": [
+                                    # {
+                                        # "identifier": u"1-0.0/0",
+                                        # "title": u"1-0.0/0",
+                                        # "informations": None,
+                                        # "_children": [],
+                                    # }
+                                # ],
+                            # }
+                        # ],
+                    # }
+                # ],
+            # }
+        # ]
+        self.assertEqual(expected_results, result)
+
+    def test_decimal_parent_basic(self):
+        self.assertEqual("1", utils.get_decimal_parent("10"))
+        self.assertEqual("10", utils.get_decimal_parent("100"))
+        self.assertEqual("100", utils.get_decimal_parent("1000"))
+
+    def test_decimal_parent_first_level(self):
+        """Test when there is no parent for the given decimal code"""
+        self.assertEqual(None, utils.get_decimal_parent("1"))
+        self.assertEqual(None, utils.get_decimal_parent("."))
+        self.assertEqual(None, utils.get_decimal_parent(".1"))
+        self.assertEqual(None, utils.get_decimal_parent("/."))
+        self.assertEqual(None, utils.get_decimal_parent("..1"))
+
+    def test_decimal_parent_single_separator(self):
+        """Test when the decimal code have a separator"""
+        self.assertEqual("10", utils.get_decimal_parent("10.0"))
+        self.assertEqual("10", utils.get_decimal_parent("10-0"))
+        self.assertEqual("10", utils.get_decimal_parent("10/0"))
+        self.assertEqual("1.0", utils.get_decimal_parent("1.0.0"))
+        self.assertEqual("1.0.0", utils.get_decimal_parent("1.0.0.0"))
+
+    def test_decimal_parent_multi_separators(self):
+        """Test when the decimal code have multiple separators"""
+        self.assertEqual("1.0", utils.get_decimal_parent("1.0..0"))
+        self.assertEqual("1.0", utils.get_decimal_parent("1.0./0"))
+        self.assertEqual("1.0", utils.get_decimal_parent("1.0-/0"))

@@ -323,6 +323,7 @@ class TestImportForm(unittest.TestCase):
             "column_0": "parent_identifier",
             "column_1": "identifier",
             "column_2": "title",
+            "decimal_import": False,
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
@@ -448,6 +449,84 @@ class TestImportForm(unittest.TestCase):
         self.assertIsNone(exception)
         self.assertTrue(u"Column {0}".format(u"猫") in render)
 
+    def test_second_step_import_decimal_basic(self):
+        """Test importing csv data with decimal codes"""
+        form = importform.ImportFormSecondStep(self.container, self.layer["request"])
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
+        annotation["separator"] = u";"
+        csv = StringIO()
+        lines = [
+            ["100", "Key 1"],
+            ["100.1", "Key 1.1"],
+            ["100.2", "Key 1.2"],
+            ["200", "Key 2"],
+            ["200.1", "Key 2.1"],
+            ["200.10", "Key 2.10"],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        data = {
+            "column_0": "identifier",
+            "column_1": "title",
+            "decimal_import": True,
+        }
+        form._import(data)
+        self.assertEqual(2, len(self.container))
+        self.assertEqual(
+            ["1", "2"], sorted([e.identifier for e in self.container.values()])
+        )
+
+        code_1 = self.container.get_by("identifier", "1")
+        self.assertEqual("1", code_1.title)
+        self.assertEqual(1, len(code_1))
+        self.assertEqual(["10"], [e.identifier for e in code_1.values()])
+
+        code_10 = code_1.get_by("identifier", "10")
+        self.assertEqual("10", code_10.title)
+        self.assertEqual(1, len(code_10))
+        self.assertEqual(["100"], [e.identifier for e in code_10.values()])
+
+        code_100 = code_10.get_by("identifier", "100")
+        self.assertEqual("Key 1", code_100.title)
+        self.assertEqual(2, len(code_100))
+        self.assertEqual(
+            ["100.1", "100.2"],
+            sorted([e.identifier for e in code_100.values()]),
+        )
+        self.assertEqual(
+            ["Key 1.1", "Key 1.2"],
+            sorted([e.title for e in code_100.values()]),
+        )
+
+        code_2 = self.container.get_by("identifier", "2")
+        self.assertEqual("2", code_2.title)
+        self.assertEqual(1, len(code_2))
+        self.assertEqual(["20"], [e.identifier for e in code_2.values()])
+
+        code_20 = code_2.get_by("identifier", "20")
+        self.assertEqual("20", code_20.title)
+        self.assertEqual(1, len(code_20))
+        self.assertEqual(["200"], [e.identifier for e in code_20.values()])
+
+        code_200 = code_20.get_by("identifier", "200")
+        self.assertEqual("Key 2", code_200.title)
+        self.assertEqual(1, len(code_200))
+        self.assertEqual(["200.1"], [e.identifier for e in code_200.values()])
+
+        code_2001 = code_200.get_by("identifier", "200.1")
+        self.assertEqual("Key 2.1", code_2001.title)
+        self.assertEqual(1, len(code_2001))
+        self.assertEqual(["200.10"], [e.identifier for e in code_2001.values()])
+        self.assertEqual(["Key 2.10"], [e.title for e in code_2001.values()])
+
     def test_second_step_import_extra_columns(self):
         """Test importing csv data"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
@@ -528,6 +607,7 @@ class TestImportForm(unittest.TestCase):
             "column_0": "parent_identifier",
             "column_1": "identifier",
             "column_2": "title",
+            "decimal_import": False,
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
@@ -587,6 +667,7 @@ class TestImportForm(unittest.TestCase):
             "column_0": "parent_identifier",
             "column_1": "identifier",
             "column_2": "title",
+            "decimal_import": False,
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
@@ -617,6 +698,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.column_0": u"parent_identifier",
             "form.widgets.column_1": u"identifier",
             "form.widgets.column_2": u"title",
+            "form.widgets.decimal_import": u"False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
@@ -641,6 +723,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.column_0": u"--NOVALUE--",
             "form.widgets.column_1": u"--NOVALUE--",
             "form.widgets.column_2": u"--NOVALUE--",
+            "form.widgets.decimal_import": u"False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
@@ -669,6 +752,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.column_0": u"parent_identifier",
             "form.widgets.column_1": u"identifier",
             "form.widgets.column_2": u"title",
+            "form.widgets.decimal_import": u"False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
@@ -693,6 +777,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.column_0": u"parent_identifier",
             "form.widgets.column_1": u"identifier",
             "form.widgets.column_2": u"title",
+            "form.widgets.decimal_import": u"False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
@@ -733,6 +818,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.column_1": u"identifier",
             "form.widgets.column_2": u"title",
             "form.widgets.column_3": u"informations",
+            "form.widgets.decimal_import": u"False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()

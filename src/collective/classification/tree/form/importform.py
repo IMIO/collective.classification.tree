@@ -22,6 +22,7 @@ from zope.interface import Interface
 from zope.interface import invariant
 from zope.interface.interface import InterfaceClass
 
+import copy
 import csv
 
 
@@ -37,6 +38,11 @@ class IGeneratedField(Interface):
 
 @implementer(IGeneratedField)
 class GeneratedChoice(schema.Choice):
+    pass
+
+
+@implementer(IGeneratedField)
+class GeneratedBool(schema.Bool):
     pass
 
 
@@ -89,6 +95,12 @@ class IImportSecondStepBase(Interface):
         return utils.validate_csv_content(
             obj, annotations[ANNOTATION_KEY], ("identifier",)
         )
+
+    decimal_import = GeneratedBool(
+        title=_(u"Identifier are decimal codes"),
+        default=True,
+        required=False,
+    )
 
 
 @implementer(IFieldsForm)
@@ -199,6 +211,11 @@ class BaseImportFormSecondStep(BaseForm):
     def _import(self, data):
         self._before_import()
         import_data = self._get_data()
+        kwargs = {
+            k: data.pop(k)
+            for k in copy.deepcopy(data.keys())
+            if not k.startswith("column_")
+        }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
         data = []
@@ -209,7 +226,7 @@ class BaseImportFormSecondStep(BaseForm):
             reader = csv.reader(f, delimiter=delimiter)
             if has_header:
                 reader.next()
-            data = self._process_csv(reader, mapping, encoding, import_data)
+            data = self._process_csv(reader, mapping, encoding, import_data, **kwargs)
         for node in self._process_data(data):
             self._import_node(node)
         self._after_import()
@@ -240,12 +257,28 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
             for k, v in data[key].items()
         ]
 
-    def _process_csv(self, csv_reader, mapping, encoding, import_data):
+    def _generate_decimal_structure(self, data, identifier):
+        structure = utils.generate_decimal_structure(identifier)
+        for k, v in structure.items():
+            if k not in data:
+                data[k] = v
+            else:
+                for sk, sv in v.items():
+                    if sk not in data[k]:
+                        data[k][sk] = sv
+
+    def _process_csv(
+        self, csv_reader, mapping, encoding, import_data, decimal_import=False
+    ):
         data = {}
         for line in csv_reader:
             line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
-            parent_identifier = line_data.pop("parent_identifier") or None
             identifier = line_data.pop("identifier")
+            if decimal_import is True:
+                self._generate_decimal_structure(data, identifier)
+                parent_identifier = utils.get_decimal_parent(identifier)
+            else:
+                parent_identifier = line_data.pop("parent_identifier", None) or None
             title = line_data.pop("title", None) or identifier
             if parent_identifier not in data:
                 # Using dictionary avoid duplicated informations
