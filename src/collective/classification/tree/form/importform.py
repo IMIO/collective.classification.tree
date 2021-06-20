@@ -225,10 +225,6 @@ class BaseImportFormSecondStep(BaseForm):
 
 class ImportFormSecondStep(BaseImportFormSecondStep):
     _vocabulary = u"collective.classification.vocabularies:categories_import_keys"
-    # TODO:
-    # - Ensure that all required columns are defined (identifier + name)
-    # - Ensure that all required columns have values
-    # - Return explicit error message containing line numbers
 
     def _process_data(self, data, key=None):
         """Consolidate data before import"""
