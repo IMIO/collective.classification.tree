@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-06-20 15:18+0000\n"
+"POT-Creation-Date: 2021-06-21 19:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,10 @@ msgstr ""
 
 #: ../browser/category.py:63
 msgid "Add Classification Category"
+msgstr ""
+
+#: ../form/importform.py:107
+msgid "Allow empty column value"
 msgstr ""
 
 #: ../form/importform.py:69
@@ -64,11 +68,11 @@ msgstr ""
 msgid "ClassificationContainer"
 msgstr ""
 
-#: ../form/importform.py:175
+#: ../form/importform.py:181
 msgid "Column ${name}"
 msgstr ""
 
-#: ../form/importform.py:117
+#: ../form/importform.py:124
 msgid "Continue"
 msgstr ""
 
@@ -98,7 +102,7 @@ msgstr ""
 msgid "Identifier"
 msgstr ""
 
-#: ../form/importform.py:100
+#: ../form/importform.py:101
 msgid "Identifier are decimal codes"
 msgstr ""
 
@@ -106,12 +110,12 @@ msgstr ""
 msgid "Identifier of the category"
 msgstr ""
 
-#: ../form/importform.py:234
+#: ../form/importform.py:241
 #: ../profiles/default/actions.xml
 msgid "Import"
 msgstr ""
 
-#: ../form/importform.py:300
+#: ../form/importform.py:309
 msgid "Import completed in ${duration} seconds"
 msgstr ""
 
@@ -155,7 +159,7 @@ msgstr ""
 msgid "Parent Identifier"
 msgstr ""
 
-#: ../form/importform.py:176
+#: ../form/importform.py:182
 msgid "Sample data : ${data}"
 msgstr ""
 
