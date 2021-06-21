@@ -91,14 +91,21 @@ class IImportSecondStepBase(Interface):
 
     @invariant
     def validate_data(obj):
-        annotations = IAnnotations(obj.__context__)
-        return utils.validate_csv_content(
-            obj, annotations[ANNOTATION_KEY], ("identifier",)
-        )
+        if not obj.allow_empty:
+            annotations = IAnnotations(obj.__context__)
+            return utils.validate_csv_content(
+                obj, annotations[ANNOTATION_KEY], ("identifier",)
+            )
 
     decimal_import = GeneratedBool(
         title=_(u"Identifier are decimal codes"),
         default=True,
+        required=False,
+    )
+
+    allow_empty = GeneratedBool(
+        title=_(u"Allow empty column value"),
+        default=False,
         required=False,
     )
 
@@ -146,11 +153,10 @@ class BaseImportFormSecondStep(BaseForm):
         """Generated schema based on csv file columns"""
         first_line = []
         data_lines = []
-        has_header = False
         data = self._get_data()
         encoding = "utf-8"
+        has_header = data["has_header"]
         with data["source"].open() as f:
-            has_header = data["has_header"]
             f.seek(0)
             reader = csv.reader(f, delimiter=data["separator"].encode(encoding))
             first_line = reader.next()
@@ -211,10 +217,11 @@ class BaseImportFormSecondStep(BaseForm):
     def _import(self, data):
         self._before_import()
         import_data = self._get_data()
+        ignored_data = ("allow_empty",)
         kwargs = {
             k: data.pop(k)
             for k in copy.deepcopy(data.keys())
-            if not k.startswith("column_")
+            if not k.startswith("column_") and k not in ignored_data
         }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
@@ -273,7 +280,9 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
         data = {}
         for line in csv_reader:
             line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
-            identifier = line_data.pop("identifier")
+            identifier = line_data.pop("identifier") or None
+            if not identifier:
+                continue
             if decimal_import is True:
                 self._generate_decimal_structure(data, identifier)
                 parent_identifier = utils.get_decimal_parent(identifier)

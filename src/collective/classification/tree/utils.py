@@ -159,7 +159,7 @@ def trigger_event(chains, eventcls, excluded=[]):
         notify(eventcls(element))
 
 
-def validate_csv_data(obj):
+def validate_csv_data(obj, min_length=2):
     source, separator = [obj._Data_data___.get(k) for k in ("source", "separator")]
     with source.open() as f:
         try:

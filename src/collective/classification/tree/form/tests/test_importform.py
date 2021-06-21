@@ -324,6 +324,7 @@ class TestImportForm(unittest.TestCase):
             "column_1": "identifier",
             "column_2": "title",
             "decimal_import": False,
+            "allow_empty": False,
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
@@ -371,6 +372,7 @@ class TestImportForm(unittest.TestCase):
             "column_1": "identifier",
             "column_2": None,
             "decimal_import": False,
+            "allow_empty": False,
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
@@ -407,6 +409,7 @@ class TestImportForm(unittest.TestCase):
             "column_1": "identifier",
             "column_2": "title",
             "decimal_import": False,
+            "allow_empty": False,
         }
         form._import(data)
         self.assertEqual(1, len(self.container))
@@ -477,6 +480,7 @@ class TestImportForm(unittest.TestCase):
             "column_0": "identifier",
             "column_1": "title",
             "decimal_import": True,
+            "allow_empty": False,
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
@@ -556,6 +560,8 @@ class TestImportForm(unittest.TestCase):
             "column_1": "parent_identifier",
             "column_2": "identifier",
             "column_3": "title",
+            "decimal_import": False,
+            "allow_empty": False,
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
@@ -608,6 +614,7 @@ class TestImportForm(unittest.TestCase):
             "column_1": "identifier",
             "column_2": "title",
             "decimal_import": False,
+            "allow_empty": False,
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
@@ -668,6 +675,7 @@ class TestImportForm(unittest.TestCase):
             "column_1": "identifier",
             "column_2": "title",
             "decimal_import": False,
+            "allow_empty": False,
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
@@ -699,6 +707,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.column_1": u"identifier",
             "form.widgets.column_2": u"title",
             "form.widgets.decimal_import": u"False",
+            "form.widgets.allow_empty": u"False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
@@ -724,6 +733,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.column_1": u"--NOVALUE--",
             "form.widgets.column_2": u"--NOVALUE--",
             "form.widgets.decimal_import": u"False",
+            "form.widgets.allow_empty": u"False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
@@ -778,6 +788,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.column_1": u"identifier",
             "form.widgets.column_2": u"title",
             "form.widgets.decimal_import": u"False",
+            "form.widgets.allow_empty": u"False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
@@ -809,6 +820,43 @@ class TestImportForm(unittest.TestCase):
             translate(errors[0].error.message),
         )
 
+    def test_second_step_required_columns_data_nok_allow_empty(self):
+        """Test validation of required columns data"""
+        request = self.layer["request"]
+        request.form = {
+            "form.buttons.import": u"Importer",
+            "form.widgets.column_0": u"parent_identifier",
+            "form.widgets.column_1": u"identifier",
+            "form.widgets.column_2": u"title",
+            "form.widgets.decimal_import": u"False",
+            "form.widgets.allow_empty": u"selected",
+        }
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
+        annotation["separator"] = u";"
+        csv = StringIO()
+        lines = [
+            ["", "key1", "Key 1"],
+            ["key1", "key1.1", "Key 1.1"],
+            ["key1.1", "key1.1.1", "Key 1.1.1"],
+            ["key1", "", "Key 1.2"],
+            ["key1", "key1.3", ""],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        form = importform.ImportFormSecondStep(self.container, request)
+        form.updateFieldsFromSchemata()
+        form.updateWidgets()
+        data, errors = form.extractData()
+        self.assertEqual(0, len(errors))
+
     def test_second_step_optional_columns_data_ok(self):
         """Test validation of optional columns data"""
         request = self.layer["request"]
@@ -819,6 +867,7 @@ class TestImportForm(unittest.TestCase):
             "form.widgets.column_2": u"title",
             "form.widgets.column_3": u"informations",
             "form.widgets.decimal_import": u"False",
+            "form.widgets.allow_empty": u"False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
