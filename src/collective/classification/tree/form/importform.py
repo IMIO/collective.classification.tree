@@ -217,11 +217,10 @@ class BaseImportFormSecondStep(BaseForm):
     def _import(self, data):
         self._before_import()
         import_data = self._get_data()
-        ignored_data = ("allow_empty",)
         kwargs = {
             k: data.pop(k)
             for k in copy.deepcopy(data.keys())
-            if not k.startswith("column_") and k not in ignored_data
+            if not k.startswith("column_")
         }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
@@ -275,7 +274,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                         data[k][sk] = sv
 
     def _process_csv(
-        self, csv_reader, mapping, encoding, import_data, decimal_import=False
+        self, csv_reader, mapping, encoding, import_data, decimal_import=False, **kw
     ):
         data = {}
         for line in csv_reader:
