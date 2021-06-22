@@ -44,6 +44,23 @@ class TestCategoriesContents(unittest.TestCase):
             [e.title for e in vocabulary],
         )
 
+    def test_vocabulary_missing_title(self):
+        """Test vocabulary values when title and identifier are the same"""
+        container = api.content.create(
+            title="Container", type="ClassificationContainer", container=self.folder
+        )
+        for id, title in ((u"001", u"001"), (u"002", u"002"), (u"003", u"003")):
+            category = self._create_category(id, title)
+            container._add_element(category)
+
+        vocabulary = getUtility(
+            IVocabularyFactory, "collective.classification.vocabularies:tree"
+        )(self.folder)
+        self.assertEqual(
+            [u"001", u"002", u"003"],
+            [e.title for e in vocabulary],
+        )
+
     def test_multilevel_vocabulary(self):
         """Test vocabulary values when there is multiple category levels"""
         container = api.content.create(

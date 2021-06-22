@@ -67,6 +67,8 @@ class ClassificationCategory(
         return self.UID()
 
     def Title(self):
+        if self.identifier == self.title:
+            return self.title
         return u"{0} - {1}".format(self.identifier, self.title)
 
     def UID(self):
