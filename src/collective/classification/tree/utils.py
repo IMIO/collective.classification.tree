@@ -24,6 +24,20 @@ def iterate_over_tree(obj):
     return result
 
 
+def create_category(parent, data, event=True):
+    """Create a category object.
+    :param parent: container to add object
+    :param data: dictionary containing fields and values
+    :param event: boolean to choose to notify event
+    :rtype: object
+    """
+    element = createObject("ClassificationCategory")
+    for key, value in data.items():
+        setattr(element, key, value)
+    parent._add_element(element, event=event)
+    return element
+
+
 def get_by(context, identifier, key):
     filtered = [e for e in iterate_over_tree(context) if getattr(e, identifier) == key]
     if len(filtered) > 0:
