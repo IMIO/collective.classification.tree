@@ -82,6 +82,4 @@ class ClassificationContainer(Container, BaseContainer):
 
 
 def container_modified(context, event):
-    caching.invalidate_cache(
-        "collective.classification.tree.utils.iterate_over_tree", context.UID()
-    )
+    caching.invalidate_cache("collective.classification.tree.utils.iterate_over_tree", context.UID())
