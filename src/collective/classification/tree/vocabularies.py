@@ -125,8 +125,12 @@ class ClassificationTreeSource(object):
     @property
     def vocabulary(self):
         if not self._vocabulary:
-            with api.env.adopt_user(user=self._verified_user):
-                self._vocabulary = classification_tree_vocabulary_factory(self.context)
+            current_user = self._verified_user
+            if current_user:
+                with api.env.adopt_user(user=current_user):
+                    self._vocabulary = classification_tree_vocabulary_factory(self.context)
+            else:
+                self._vocabulary = SimpleVocabulary([])
         return self._vocabulary
 
     def getTerm(self, value):
