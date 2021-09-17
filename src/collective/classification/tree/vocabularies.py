@@ -4,6 +4,9 @@ from collective.classification.tree import _
 from collective.classification.tree import utils
 from operator import itemgetter
 from plone import api
+from z3c.form import util
+from z3c.form.i18n import MessageFactory as _zf
+from z3c.form.term import MissingCollectionTermsSource
 from z3c.formwidget.query.interfaces import IQuerySource
 from zope.interface import implementer
 from zope.schema.interfaces import IContextSourceBinder
@@ -134,7 +137,17 @@ class ClassificationTreeSource(object):
         return self._vocabulary
 
     def getTerm(self, value):
-        return self.vocabulary.getTerm(value)
+        try:
+            return self.vocabulary.getTerm(value)
+        except LookupError:
+            # all form widgets are called when using plone.formwidget.masterselect on a form field
+            # this is done as anonymous and the vocabulary is then empty
+            # it's not necessary here to render the correct term
+            # see z3c.form.term
+            if '++widget++' in self.context.REQUEST.get('URL', ''):
+                return SimpleTerm(value, util.createCSSId(util.toUnicode(value)),
+                                  title=_zf(u'Missing: ${value}', mapping=dict(value=util.toUnicode(value))))
+            raise
 
     def getTermByToken(self, value):
         return self.vocabulary.getTermByToken(value)
