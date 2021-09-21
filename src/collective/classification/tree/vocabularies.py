@@ -6,7 +6,6 @@ from operator import itemgetter
 from plone import api
 from z3c.form import util
 from z3c.form.i18n import MessageFactory as _zf
-from z3c.form.term import MissingCollectionTermsSource
 from z3c.formwidget.query.interfaces import IQuerySource
 from zope.interface import implementer
 from zope.schema.interfaces import IContextSourceBinder
