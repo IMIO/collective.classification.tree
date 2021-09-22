@@ -61,7 +61,7 @@ class TreeSearchHandler(object):
 
     def _filter(self, results):
         regex = self.query.get("search[regex]", "false") == "true"
-        search = self.query.get("search[value]", "")
+        search = self.query.get("search[value]", "").decode("utf8")
         if not search:
             return results
         columns = self._get_columns(searchable=True)
