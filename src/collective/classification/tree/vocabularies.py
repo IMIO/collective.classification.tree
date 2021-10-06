@@ -153,10 +153,10 @@ class ClassificationTreeSource(object):
         return self.vocabulary.getTermByToken(value)
 
     def search(self, query_string):
-        q = unidecode(query_string).lower()
+        q_parts = unidecode(query_string).lower().split()
         results = []
         for term in self.vocabulary:
-            if q in unidecode(term.title).lower():
+            if all([q in unidecode(term.title).lower() for q in q_parts]):
                 results.append(term)
             if len(results) >= 10:
                 break

@@ -89,8 +89,8 @@ class TestCategoriesContents(unittest.TestCase):
         )
 
     def test_ClassificationtreeSource(self):
-        for cid, title in ((u"001", u"Tâche"), (u"002", u"Tache"), (u"003", u"tâche"), (u"004", u"tache"),
-                           (u'005', u'Other')):
+        for cid, title in ((u"001", u"Tâche"), (u"002", u"Tache import dossier"), (u"003", u"tâche"),
+                           (u"004", u"tache"), (u'005', u'Other')):
             category = self._create_category(cid, title)
             self.container._add_element(category)
         cts = ClassificationTreeSource(self.container)
@@ -99,3 +99,4 @@ class TestCategoriesContents(unittest.TestCase):
         for term in (u'Tâche', u'Tache', u'tâche', u'tache'):
             res = [t.title for t in cts.search(term)]
             self.assertEqual(len(res), 4, term)
+        self.assertEqual(len([t.title for t in cts.search(u'tache doss')]), 1)
