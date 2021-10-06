@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collective.classification.tree import testing
+from collective.classification.tree.vocabularies import ClassificationTreeSource
 from plone import api
 from zope.component import createObject
 from zope.component import getUtility
@@ -14,9 +15,9 @@ class TestCategoriesContents(unittest.TestCase):
 
     def setUp(self):
         self.portal = self.layer["portal"]
-        self.folder = api.content.create(
-            id="folder", type="Folder", container=self.portal
-        )
+        self.folder = api.content.create(id="folder", type="Folder", container=self.portal)
+        self.container = api.content.create(title="Container", type="ClassificationContainer", container=self.folder)
+
 
     def tearDown(self):
         api.content.delete(self.folder)
@@ -29,12 +30,9 @@ class TestCategoriesContents(unittest.TestCase):
 
     def test_simple_vocabulary(self):
         """Test vocabulary values when there is only one category level"""
-        container = api.content.create(
-            title="Container", type="ClassificationContainer", container=self.folder
-        )
         for id, title in ((u"001", u"First"), (u"002", u"Second"), (u"003", u"Third")):
             category = self._create_category(id, title)
-            container._add_element(category)
+            self.container._add_element(category)
 
         vocabulary = getUtility(
             IVocabularyFactory, "collective.classification.vocabularies:tree"
@@ -46,12 +44,9 @@ class TestCategoriesContents(unittest.TestCase):
 
     def test_vocabulary_missing_title(self):
         """Test vocabulary values when title and identifier are the same"""
-        container = api.content.create(
-            title="Container", type="ClassificationContainer", container=self.folder
-        )
         for id, title in ((u"001", u"001"), (u"002", u"002"), (u"003", u"003")):
             category = self._create_category(id, title)
-            container._add_element(category)
+            self.container._add_element(category)
 
         vocabulary = getUtility(
             IVocabularyFactory, "collective.classification.vocabularies:tree"
@@ -63,16 +58,13 @@ class TestCategoriesContents(unittest.TestCase):
 
     def test_multilevel_vocabulary(self):
         """Test vocabulary values when there is multiple category levels"""
-        container = api.content.create(
-            title="Container", type="ClassificationContainer", container=self.folder
-        )
         structure = (
             (u"001", u"First", ((u"001.1", u"first"), (u"001.2", u"second"))),
             (u"002", u"Second", ((u"002.1", u"first"),)),
         )
         for id, title, subelements in structure:
             category = self._create_category(id, title)
-            container._add_element(category)
+            self.container._add_element(category)
             if subelements:
                 for id, title in subelements:
                     subcategory = self._create_category(id, title)
@@ -95,3 +87,15 @@ class TestCategoriesContents(unittest.TestCase):
             ],
             [e.title for e in vocabulary],
         )
+
+    def test_ClassificationtreeSource(self):
+        for cid, title in ((u"001", u"Tâche"), (u"002", u"Tache"), (u"003", u"tâche"), (u"004", u"tache"),
+                           (u'005', u'Other')):
+            category = self._create_category(cid, title)
+            self.container._add_element(category)
+        cts = ClassificationTreeSource(self.container)
+        self.assertEqual(len([t.title for t in cts.search(u'Othe')]), 1)
+        self.assertEqual(len([t.title for t in cts.search(u'Unfound')]), 0)
+        for term in (u'Tâche', u'Tache', u'tâche', u'tache'):
+            res = [t.title for t in cts.search(term)]
+            self.assertEqual(len(res), 4, term)

@@ -4,6 +4,7 @@ from collective.classification.tree import _
 from collective.classification.tree import utils
 from operator import itemgetter
 from plone import api
+from unidecode import unidecode
 from z3c.form import util
 from z3c.form.i18n import MessageFactory as _zf
 from z3c.formwidget.query.interfaces import IQuerySource
@@ -152,10 +153,10 @@ class ClassificationTreeSource(object):
         return self.vocabulary.getTermByToken(value)
 
     def search(self, query_string):
-        q = query_string.lower()
+        q = unidecode(query_string).lower()
         results = []
         for term in self.vocabulary:
-            if q in term.title.lower():
+            if q in unidecode(term.title).lower():
                 results.append(term)
             if len(results) >= 10:
                 break
