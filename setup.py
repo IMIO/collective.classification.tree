@@ -60,6 +60,7 @@ setup(
         "plone.app.lockingbehavior",
         "plone.schema",
         "collective.js.datatables",
+        "Unidecode",
     ],
     extras_require={
         "test": [

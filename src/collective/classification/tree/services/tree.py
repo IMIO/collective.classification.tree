@@ -5,6 +5,7 @@ from operator import attrgetter
 from plone.restapi.interfaces import ISerializeToJson
 from plone.restapi.search.utils import unflatten_dotted_dict
 from plone.restapi.services import Service
+from unidecode import unidecode
 from zope.component import queryMultiAdapter
 
 
@@ -61,7 +62,7 @@ class TreeSearchHandler(object):
 
     def _filter(self, results):
         regex = self.query.get("search[regex]", "false") == "true"
-        search = self.query.get("search[value]", "").decode("utf8").lower()
+        search = unidecode(self.query.get("search[value]", "").decode("utf8")).lower()
         if not search:
             return results
         columns = self._get_columns(searchable=True)
@@ -71,12 +72,12 @@ class TreeSearchHandler(object):
     def _object_filter(obj, columns, search, regex):
         if regex is True:
             for key in columns:
-                if search in (getattr(obj, key) or "").lower():
+                if search in unidecode(getattr(obj, key) or u"").lower():
                     return True
             return False
         else:
             for key in columns:
-                if search == (getattr(obj, key) or "").lower():
+                if search == unidecode(getattr(obj, key) or u"").lower():
                     return True
             return False
 
