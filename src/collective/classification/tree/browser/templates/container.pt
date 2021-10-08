@@ -22,6 +22,7 @@
 <metal:main fill-slot="main">
   <div tal:replace="structure provider:plone.abovecontenttitle" />
   <h1 class="documentFirstHeading" id="parent-fieldname-title" tal:content="context/Title" />
+  <!--div id="viewlet-below-content-title" tal:content="structure provider:plone.belowcontenttitle" tal:condition="not:ajax_load" /-->
 
   <p class="documentDescription" tal:content="context/Description" />
 
