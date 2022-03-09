@@ -109,6 +109,12 @@ class IImportSecondStepBase(Interface):
         required=False,
     )
 
+    replace_slash = GeneratedBool(
+        title=_(u"Replace slash in title"),
+        default=True,
+        required=False,
+    )
+
 
 @implementer(IFieldsForm)
 class ImportFormFirstStep(BaseForm):
@@ -173,7 +179,7 @@ class BaseImportFormSecondStep(BaseForm):
             else:
                 name = str(idx + 1)
             sample = u", ".join(
-                [u"'{0}'".format(l[idx].decode(encoding)) for l in data_lines]
+                [u"'{0}'".format(ln[idx].decode(encoding)) for ln in data_lines]
             )
 
             fields.append(
@@ -216,6 +222,7 @@ class BaseImportFormSecondStep(BaseForm):
 
     def _import(self, data):
         self._before_import()
+        # {'source': <plone.namedfile.file.NamedBlobFile object at ...>, 'has_header': True, 'separator': u';'}
         import_data = self._get_data()
         kwargs = {
             k: data.pop(k)
@@ -287,7 +294,12 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                 parent_identifier = utils.get_decimal_parent(identifier)
             else:
                 parent_identifier = line_data.pop("parent_identifier", None) or None
-            title = line_data.pop("title", None) or identifier
+            title = line_data.pop("title", None)
+            if title:
+                if kw.get('replace_slash', False):
+                    title = title.replace(' / ', ' - ').replace('/', '-')
+            else:
+                title = identifier
             if parent_identifier not in data:
                 # Using dictionary avoid duplicated informations
                 data[parent_identifier] = {}
