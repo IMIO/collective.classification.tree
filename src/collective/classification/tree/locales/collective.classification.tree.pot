@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-06-21 19:42+0000\n"
+"POT-Creation-Date: 2022-03-09 15:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr ""
 msgid "CSV Separator"
 msgstr ""
 
-#: ../utils.py:173
+#: ../utils.py:187
 msgid "CSV file must contains at least 2 columns"
 msgstr ""
 
@@ -75,11 +75,11 @@ msgstr ""
 msgid "ClassificationContainer"
 msgstr ""
 
-#: ../form/importform.py:181
+#: ../form/importform.py:187
 msgid "Column ${name}"
 msgstr ""
 
-#: ../form/importform.py:124
+#: ../form/importform.py:130
 msgid "Continue"
 msgstr ""
 
@@ -99,13 +99,13 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: ../utils.py:168
+#: ../utils.py:182
 msgid "File encoding is not utf8"
 msgstr ""
 
-#: ../browser/templates/container.pt:53
+#: ../browser/templates/container.pt:54
 #: ../contents/category.py:35
-#: ../vocabularies.py:79
+#: ../vocabularies.py:82
 msgid "Identifier"
 msgstr ""
 
@@ -117,12 +117,12 @@ msgstr ""
 msgid "Identifier of the category"
 msgstr ""
 
-#: ../form/importform.py:241
+#: ../form/importform.py:247
 #: ../profiles/default/actions.xml
 msgid "Import"
 msgstr ""
 
-#: ../form/importform.py:309
+#: ../form/importform.py:320
 msgid "Import completed in ${duration} seconds"
 msgstr ""
 
@@ -130,9 +130,9 @@ msgstr ""
 msgid "Include CSV header"
 msgstr ""
 
-#: ../browser/templates/container.pt:55
+#: ../browser/templates/container.pt:56
 #: ../contents/category.py:44
-#: ../vocabularies.py:81
+#: ../vocabularies.py:84
 msgid "Informations"
 msgstr ""
 
@@ -140,11 +140,11 @@ msgstr ""
 msgid "Installs the collective.classification.tree add-on."
 msgstr ""
 
-#: ../utils.py:181
+#: ../utils.py:195
 msgid "Lines ${lines} does not contains the same number of element"
 msgstr ""
 
-#: ../utils.py:233
+#: ../utils.py:247
 msgid "Lines ${lines} have missing required value(s)"
 msgstr ""
 
@@ -152,9 +152,9 @@ msgstr ""
 msgid "List of categories in which this content is filed"
 msgstr ""
 
-#: ../browser/templates/container.pt:54
+#: ../browser/templates/container.pt:55
 #: ../contents/category.py:41
-#: ../vocabularies.py:80
+#: ../vocabularies.py:83
 msgid "Name"
 msgstr ""
 
@@ -162,11 +162,15 @@ msgstr ""
 msgid "Name of the category"
 msgstr ""
 
-#: ../vocabularies.py:78
+#: ../vocabularies.py:81
 msgid "Parent Identifier"
 msgstr ""
 
-#: ../form/importform.py:182
+#: ../form/importform.py:113
+msgid "Replace slash in title"
+msgstr ""
+
+#: ../form/importform.py:188
 msgid "Sample data : ${data}"
 msgstr ""
 
@@ -182,7 +186,7 @@ msgstr ""
 msgid "The CSV file contains an header row"
 msgstr ""
 
-#: ../utils.py:198
+#: ../utils.py:212
 msgid "The following required columns are missing: ${columns}"
 msgstr ""
 
@@ -195,7 +199,7 @@ msgid "Uninstalls the collective.classification.tree add-on."
 msgstr ""
 
 #. Default: "This category cannot be deleted because it is referenced elsewhere"
-#: ../contents/category.py:163
+#: ../contents/category.py:165
 msgid "cannot_delete_referenced_category"
 msgstr ""
 
@@ -212,10 +216,10 @@ msgstr ""
 msgid "label_cancel"
 msgstr ""
 
-#: ../vocabularies.py:70
+#: ../vocabularies.py:73
 msgid "tab"
 msgstr ""
 
-#: ../vocabularies.py:71
+#: ../vocabularies.py:74
 msgid "whitespace"
 msgstr ""

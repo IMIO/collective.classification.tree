@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-06-21 19:42+0000\n"
+"POT-Creation-Date: 2022-03-09 15:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr "Autoriser l'absence de valeur pour les colonnes"
 msgid "CSV Separator"
 msgstr "Séparateur du CSV"
 
-#: ../utils.py:173
+#: ../utils.py:187
 msgid "CSV file must contains at least 2 columns"
 msgstr "Le fichier CSV doit contenir au moins 2 colonnes"
 
@@ -68,11 +68,11 @@ msgstr "Codes de classement"
 msgid "ClassificationContainer"
 msgstr "Arbre de classement"
 
-#: ../form/importform.py:181
+#: ../form/importform.py:187
 msgid "Column ${name}"
 msgstr "Colonne ${name}"
 
-#: ../form/importform.py:124
+#: ../form/importform.py:130
 msgid "Continue"
 msgstr "Continuer"
 
@@ -92,13 +92,13 @@ msgstr "Modifier un code de classement"
 msgid "File"
 msgstr "Fichier"
 
-#: ../utils.py:168
+#: ../utils.py:182
 msgid "File encoding is not utf8"
 msgstr "L'encodage du fichier doit être de l'UTF-8"
 
-#: ../browser/templates/container.pt:53
+#: ../browser/templates/container.pt:54
 #: ../contents/category.py:35
-#: ../vocabularies.py:79
+#: ../vocabularies.py:82
 msgid "Identifier"
 msgstr "Identifiant"
 
@@ -110,12 +110,12 @@ msgstr "Les identifiants sont des codes décimaux"
 msgid "Identifier of the category"
 msgstr "Identifiant du code"
 
-#: ../form/importform.py:241
+#: ../form/importform.py:247
 #: ../profiles/default/actions.xml
 msgid "Import"
 msgstr "Importer"
 
-#: ../form/importform.py:309
+#: ../form/importform.py:320
 msgid "Import completed in ${duration} seconds"
 msgstr "Import fini en ${duration} seconds"
 
@@ -123,9 +123,9 @@ msgstr "Import fini en ${duration} seconds"
 msgid "Include CSV header"
 msgstr "Inclut un entête CSV"
 
-#: ../browser/templates/container.pt:55
+#: ../browser/templates/container.pt:56
 #: ../contents/category.py:44
-#: ../vocabularies.py:81
+#: ../vocabularies.py:84
 msgid "Informations"
 msgstr "Informations"
 
@@ -133,11 +133,11 @@ msgstr "Informations"
 msgid "Installs the collective.classification.tree add-on."
 msgstr "Installs the collective.classification.tree add-on."
 
-#: ../utils.py:181
+#: ../utils.py:195
 msgid "Lines ${lines} does not contains the same number of element"
 msgstr "Les lignes ${lines} n'ont pas le bon nombre d'éléments"
 
-#: ../utils.py:233
+#: ../utils.py:247
 msgid "Lines ${lines} have missing required value(s)"
 msgstr "Les lignes ${lines} ont des valeurs requises manquantes"
 
@@ -145,9 +145,9 @@ msgstr "Les lignes ${lines} ont des valeurs requises manquantes"
 msgid "List of categories in which this content is filed"
 msgstr "Codes dans lesquels ce contenu est classé: le premier étant le principal"
 
-#: ../browser/templates/container.pt:54
+#: ../browser/templates/container.pt:55
 #: ../contents/category.py:41
-#: ../vocabularies.py:80
+#: ../vocabularies.py:83
 msgid "Name"
 msgstr "Nom"
 
@@ -155,11 +155,15 @@ msgstr "Nom"
 msgid "Name of the category"
 msgstr "Nom du code"
 
-#: ../vocabularies.py:78
+#: ../vocabularies.py:81
 msgid "Parent Identifier"
 msgstr "Identifiant du parent"
 
-#: ../form/importform.py:182
+#: ../form/importform.py:113
+msgid "Replace slash in title"
+msgstr "Remplacer le caractère \" / \" dans le titre"
+
+#: ../form/importform.py:188
 msgid "Sample data : ${data}"
 msgstr "Exemple de données : ${data}"
 
@@ -175,7 +179,7 @@ msgstr "Caractère de séparation à utiliser"
 msgid "The CSV file contains an header row"
 msgstr "Le fichier CSV contient une ligne d'entête"
 
-#: ../utils.py:198
+#: ../utils.py:212
 msgid "The following required columns are missing: ${columns}"
 msgstr "Les colonnes requises suivantes sont manquantes: ${columns}"
 
@@ -192,7 +196,7 @@ msgid "\"${title}\" has already been deleted"
 msgstr "\"${title}\" a déjà été supprimé"
 
 #. Default: "This category cannot be deleted because it is referenced elsewhere"
-#: ../contents/category.py:163
+#: ../contents/category.py:165
 msgid "cannot_delete_referenced_category"
 msgstr "Ce code de classement ne peut être supprimé car il est référencé autre part"
 
@@ -209,10 +213,10 @@ msgstr "collective.classification.tree (uninstall)"
 msgid "label_cancel"
 msgstr "Annuler"
 
-#: ../vocabularies.py:70
+#: ../vocabularies.py:73
 msgid "tab"
 msgstr "Tabulation"
 
-#: ../vocabularies.py:71
+#: ../vocabularies.py:74
 msgid "whitespace"
 msgstr "Espace"
