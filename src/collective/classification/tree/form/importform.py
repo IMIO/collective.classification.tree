@@ -297,7 +297,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
             title = line_data.pop("title", None)
             if title:
                 if kw.get('replace_slash', False):
-                    title = title.replace(' / ', ' - ').replace('/', '-')
+                    title = title.replace('/', '-')
             else:
                 title = identifier
             if parent_identifier not in data:
