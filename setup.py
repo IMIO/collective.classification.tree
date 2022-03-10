@@ -60,6 +60,7 @@ setup(
         "plone.app.lockingbehavior",
         "plone.schema",
         "collective.js.datatables",
+        "imio.pyutils",
         "Unidecode",
     ],
     extras_require={
@@ -78,5 +79,6 @@ setup(
     target = plone
     [console_scripts]
     update_locale = collective.classification.tree.locales.update:update_locale
+    compare_tree_files = collective.classification.tree.script:compare_tree_files
     """,
 )
