@@ -9,6 +9,7 @@ from zope.event import notify
 from zope.interface import Invalid
 
 import csv
+import re
 
 DECIMAL_SEPARATORS = ("-", ".", ";", "/", "|", ":")
 
@@ -217,8 +218,12 @@ def validate_csv_columns(obj, required_columns):
     return True
 
 
-def validate_csv_content(obj, annotation, required_columns):
-    """Verify csv content"""
+def validate_csv_content(obj, annotation, required_columns, format_dic={}):
+    """Verify csv content:
+
+        * check if all required columns have values
+        * check some columns format with re pattern {'identifier': pattern}
+    """
     columns = {
         v: int(k.replace("column_", ""))
         for k, v in obj._Data_data___.items()
@@ -238,10 +243,16 @@ def validate_csv_content(obj, annotation, required_columns):
             reader.next()
         expected_length = len(required_columns)
         wrong_lines = []
+        wrong_values = []
         for idx, line in enumerate(reader):
-            values = [line[columns[n]] for n in required_columns if line[columns[n]]]
-            if len(values) != expected_length:
-                wrong_lines.append(str(idx + base_idx))
+            if not getattr(obj, 'allow_empty', False):  # option only in tree import
+                values = [line[columns[n]] for n in required_columns if line[columns[n]]]
+                if len(values) != expected_length:
+                    wrong_lines.append(str(idx + base_idx))
+            for col in format_dic:
+                val = line[columns[col]]
+                if not re.match(format_dic[col], val):
+                    wrong_values.append("Line {}, col {}: '{}'".format(idx+base_idx, columns[col]+1, val))
         if wrong_lines:
             raise Invalid(
                 _(
@@ -249,4 +260,6 @@ def validate_csv_content(obj, annotation, required_columns):
                     mapping={"lines": ", ".join(wrong_lines)},
                 )
             )
+        if wrong_values:
+            raise Invalid(_("Bad format values: ${errors}", mapping={'errors': ' || '.join(wrong_values)}))
     return True

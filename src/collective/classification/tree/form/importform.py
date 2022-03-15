@@ -91,11 +91,13 @@ class IImportSecondStepBase(Interface):
 
     @invariant
     def validate_data(obj):
-        if not obj.allow_empty:
-            annotations = IAnnotations(obj.__context__)
-            return utils.validate_csv_content(
-                obj, annotations[ANNOTATION_KEY], ("identifier",)
-            )
+        annotations = IAnnotations(obj.__context__)
+        format_dic = {}
+        if obj._Data_data___.get('decimal_import', False):
+            format_dic = {'identifier': r'-?[.\d]+$'}
+        return utils.validate_csv_content(
+            obj, annotations[ANNOTATION_KEY], ("identifier",), format_dic,
+        )
 
     decimal_import = GeneratedBool(
         title=_(u"Identifier are decimal codes"),
@@ -289,6 +291,8 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
             identifier = line_data.pop("identifier") or None
             if not identifier:
                 continue
+            # TODO multi values ??
+            # TODO clean code ? (replace : with .)
             if decimal_import is True:
                 self._generate_decimal_structure(data, identifier)
                 parent_identifier = utils.get_decimal_parent(identifier)
