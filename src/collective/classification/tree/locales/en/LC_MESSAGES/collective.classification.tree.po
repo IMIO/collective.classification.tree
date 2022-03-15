@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-03-09 15:29+0000\n"
+"POT-Creation-Date: 2022-03-15 09:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,15 +31,19 @@ msgstr ""
 msgid "Add Classification Category"
 msgstr ""
 
-#: ../form/importform.py:107
+#: ../form/importform.py:109
 msgid "Allow empty column value"
+msgstr ""
+
+#: ../utils.py:265
+msgid "Bad format values: ${errors}"
 msgstr ""
 
 #: ../form/importform.py:69
 msgid "CSV Separator"
 msgstr ""
 
-#: ../utils.py:187
+#: ../utils.py:188
 msgid "CSV file must contains at least 2 columns"
 msgstr ""
 
@@ -68,11 +72,11 @@ msgstr ""
 msgid "ClassificationContainer"
 msgstr ""
 
-#: ../form/importform.py:187
+#: ../form/importform.py:189
 msgid "Column ${name}"
 msgstr ""
 
-#: ../form/importform.py:130
+#: ../form/importform.py:132
 msgid "Continue"
 msgstr ""
 
@@ -92,7 +96,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: ../utils.py:182
+#: ../utils.py:183
 msgid "File encoding is not utf8"
 msgstr ""
 
@@ -102,7 +106,7 @@ msgstr ""
 msgid "Identifier"
 msgstr ""
 
-#: ../form/importform.py:101
+#: ../form/importform.py:103
 msgid "Identifier are decimal codes"
 msgstr ""
 
@@ -110,12 +114,12 @@ msgstr ""
 msgid "Identifier of the category"
 msgstr ""
 
-#: ../form/importform.py:247
+#: ../form/importform.py:249
 #: ../profiles/default/actions.xml
 msgid "Import"
 msgstr ""
 
-#: ../form/importform.py:320
+#: ../form/importform.py:325
 msgid "Import completed in ${duration} seconds"
 msgstr ""
 
@@ -133,11 +137,11 @@ msgstr ""
 msgid "Installs the collective.classification.tree add-on."
 msgstr ""
 
-#: ../utils.py:195
+#: ../utils.py:196
 msgid "Lines ${lines} does not contains the same number of element"
 msgstr ""
 
-#: ../utils.py:247
+#: ../utils.py:259
 msgid "Lines ${lines} have missing required value(s)"
 msgstr ""
 
@@ -159,11 +163,11 @@ msgstr ""
 msgid "Parent Identifier"
 msgstr ""
 
-#: ../form/importform.py:113
+#: ../form/importform.py:115
 msgid "Replace slash in title"
 msgstr ""
 
-#: ../form/importform.py:188
+#: ../form/importform.py:190
 msgid "Sample data : ${data}"
 msgstr ""
 
@@ -179,7 +183,7 @@ msgstr ""
 msgid "The CSV file contains an header row"
 msgstr ""
 
-#: ../utils.py:212
+#: ../utils.py:213
 msgid "The following required columns are missing: ${columns}"
 msgstr ""
 

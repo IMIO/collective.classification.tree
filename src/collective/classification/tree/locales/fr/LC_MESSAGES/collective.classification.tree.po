@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-03-09 15:29+0000\n"
+"POT-Creation-Date: 2022-03-15 09:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,15 +31,19 @@ msgstr "Ajouter un code"
 msgid "Add Classification Category"
 msgstr "Ajouter un code de classement"
 
-#: ../form/importform.py:107
+#: ../form/importform.py:109
 msgid "Allow empty column value"
 msgstr "Autoriser l'absence de valeur pour les colonnes"
+
+#: ../utils.py:265
+msgid "Bad format values: ${errors}"
+msgstr "Valeurs au format erroné: ${errors}"
 
 #: ../form/importform.py:69
 msgid "CSV Separator"
 msgstr "Séparateur du CSV"
 
-#: ../utils.py:187
+#: ../utils.py:188
 msgid "CSV file must contains at least 2 columns"
 msgstr "Le fichier CSV doit contenir au moins 2 colonnes"
 
@@ -68,11 +72,11 @@ msgstr "Codes de classement"
 msgid "ClassificationContainer"
 msgstr "Arbre de classement"
 
-#: ../form/importform.py:187
+#: ../form/importform.py:189
 msgid "Column ${name}"
 msgstr "Colonne ${name}"
 
-#: ../form/importform.py:130
+#: ../form/importform.py:132
 msgid "Continue"
 msgstr "Continuer"
 
@@ -92,7 +96,7 @@ msgstr "Modifier un code de classement"
 msgid "File"
 msgstr "Fichier"
 
-#: ../utils.py:182
+#: ../utils.py:183
 msgid "File encoding is not utf8"
 msgstr "L'encodage du fichier doit être de l'UTF-8"
 
@@ -102,7 +106,7 @@ msgstr "L'encodage du fichier doit être de l'UTF-8"
 msgid "Identifier"
 msgstr "Identifiant"
 
-#: ../form/importform.py:101
+#: ../form/importform.py:103
 msgid "Identifier are decimal codes"
 msgstr "Les identifiants sont des codes décimaux"
 
@@ -110,12 +114,12 @@ msgstr "Les identifiants sont des codes décimaux"
 msgid "Identifier of the category"
 msgstr "Identifiant du code"
 
-#: ../form/importform.py:247
+#: ../form/importform.py:249
 #: ../profiles/default/actions.xml
 msgid "Import"
 msgstr "Importer"
 
-#: ../form/importform.py:320
+#: ../form/importform.py:325
 msgid "Import completed in ${duration} seconds"
 msgstr "Import fini en ${duration} seconds"
 
@@ -133,11 +137,11 @@ msgstr "Informations"
 msgid "Installs the collective.classification.tree add-on."
 msgstr "Installs the collective.classification.tree add-on."
 
-#: ../utils.py:195
+#: ../utils.py:196
 msgid "Lines ${lines} does not contains the same number of element"
 msgstr "Les lignes ${lines} n'ont pas le bon nombre d'éléments"
 
-#: ../utils.py:247
+#: ../utils.py:259
 msgid "Lines ${lines} have missing required value(s)"
 msgstr "Les lignes ${lines} ont des valeurs requises manquantes"
 
@@ -159,11 +163,11 @@ msgstr "Nom du code"
 msgid "Parent Identifier"
 msgstr "Identifiant du parent"
 
-#: ../form/importform.py:113
+#: ../form/importform.py:115
 msgid "Replace slash in title"
 msgstr "Remplacer le caractère \" / \" dans le titre"
 
-#: ../form/importform.py:188
+#: ../form/importform.py:190
 msgid "Sample data : ${data}"
 msgstr "Exemple de données : ${data}"
 
@@ -179,7 +183,7 @@ msgstr "Caractère de séparation à utiliser"
 msgid "The CSV file contains an header row"
 msgstr "Le fichier CSV contient une ligne d'entête"
 
-#: ../utils.py:212
+#: ../utils.py:213
 msgid "The following required columns are missing: ${columns}"
 msgstr "Les colonnes requises suivantes sont manquantes: ${columns}"
 
