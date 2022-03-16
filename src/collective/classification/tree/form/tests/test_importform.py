@@ -1112,3 +1112,43 @@ class TestImportForm(unittest.TestCase):
             }
         }
         self.assertEqual(expected_result, result)
+
+    def test_process_csv_multiple_identifiers(self):
+        """Test _process_csv with csv data that contains multiple identifiers"""
+        form = importform.ImportFormSecondStep(self.container, {})
+        _csv = StringIO()
+        lines = [
+            ["1", "First level"],
+            ["11", "Second level"],
+            ["11, 12", "Other level in / Tesla"],
+            ["21, 22", "New sub levels"],
+            ["111", "Yet one"],
+        ]
+        for line in lines:
+            _csv.write(";".join(line) + "\n")
+        _csv.seek(0)
+        reader = csv.reader(_csv, delimiter=";")
+        data = {
+            "column_0": "identifier",
+            "column_1": "title",
+        }
+        mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
+        result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
+        expected_result = {
+            None: {
+                u'1': (u'First level', {}),
+                u'2': (u'2', {'informations': None}),
+            },
+            u'1': {
+                u'11': (u'Second level', {}),
+                u'12': (u'Other level in - Tesla', {})
+            },
+            u'11': {
+                u'111': (u'Yet one', {})
+            },
+            u'2': {
+                u'21': (u'New sub levels', {}),
+                u'22': (u'New sub levels', {})
+            }
+        }
+        self.assertEqual(expected_result, result)

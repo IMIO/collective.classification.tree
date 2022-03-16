@@ -24,6 +24,7 @@ from zope.interface.interface import InterfaceClass
 
 import copy
 import csv
+import re
 
 
 ANNOTATION_KEY = "collective.classification:import"
@@ -288,26 +289,27 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
         data = {}
         for line in csv_reader:
             line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
-            identifier = line_data.pop("identifier") or None
-            if not identifier:
+            orig_identifier = line_data.pop("identifier") or None
+            if not orig_identifier:
                 continue
-            # TODO multi values ??
-            # TODO clean code ? (replace : with .)
-            if decimal_import is True:
-                self._generate_decimal_structure(data, identifier)
-                parent_identifier = utils.get_decimal_parent(identifier)
-            else:
-                parent_identifier = line_data.pop("parent_identifier", None) or None
             title = line_data.pop("title", None)
             if title:
                 if kw.get('replace_slash', False):
                     title = title.replace('/', '-')
-            else:
-                title = identifier
-            if parent_identifier not in data:
-                # Using dictionary avoid duplicated informations
-                data[parent_identifier] = {}
-            data[parent_identifier][identifier] = (title, line_data)
+            for identifier in re.split(' *, *', orig_identifier):
+                if decimal_import is True:
+                    self._generate_decimal_structure(data, identifier)
+                    parent_identifier = utils.get_decimal_parent(identifier)
+                else:
+                    parent_identifier = line_data.pop("parent_identifier", None) or None
+                if not title:
+                    title = identifier
+                if parent_identifier not in data:
+                    # Using dictionary avoid duplicated informations
+                    data[parent_identifier] = {}
+                # if exists, only update if title is identifier and not
+                if identifier not in data[parent_identifier] or data[parent_identifier][identifier][0] == identifier:
+                    data[parent_identifier][identifier] = (title, line_data)
         return data
 
     def _import_node(self, node):
