@@ -76,7 +76,7 @@ def generate_decimal_structure(code):
     results = {}
     last_element = None
     for level in levels:
-        results[last_element] = {level: (level, {"informations": None})}
+        results[last_element] = {level: (level, {})}
         last_element = level
     return results
 

@@ -1137,7 +1137,7 @@ class TestImportForm(unittest.TestCase):
         expected_result = {
             None: {
                 u'1': (u'First level', {}),
-                u'2': (u'2', {'informations': None}),
+                u'2': (u'2', {}),
             },
             u'1': {
                 u'11': (u'Second level', {}),

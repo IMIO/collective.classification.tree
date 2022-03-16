@@ -386,16 +386,16 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("1000")
         expected_results = {
             None: {
-                u"1": (u"1", {"informations": None}),
+                u"1": (u"1", {}),
             },
             u"1": {
-                u"10": (u"10", {"informations": None}),
+                u"10": (u"10", {}),
             },
             u"10": {
-                u"100": (u"100", {"informations": None}),
+                u"100": (u"100", {}),
             },
             u"100": {
-                u"1000": (u"1000", {"informations": None}),
+                u"1000": (u"1000", {}),
             },
         }
         # expected_results = [
@@ -434,16 +434,16 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("10.0.0")
         expected_results = {
             None: {
-                u"1": (u"1", {"informations": None}),
+                u"1": (u"1", {}),
             },
             u"1": {
-                u"10": (u"10", {"informations": None}),
+                u"10": (u"10", {}),
             },
             u"10": {
-                u"10.0": (u"10.0", {"informations": None}),
+                u"10.0": (u"10.0", {}),
             },
             u"10.0": {
-                u"10.0.0": (u"10.0.0", {"informations": None}),
+                u"10.0.0": (u"10.0.0", {}),
             },
         }
         # expected_results = [
@@ -482,16 +482,16 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("1-0.0/0")
         expected_results = {
             None: {
-                u"1": (u"1", {"informations": None}),
+                u"1": (u"1", {}),
             },
             u"1": {
-                u"1-0": (u"1-0", {"informations": None}),
+                u"1-0": (u"1-0", {}),
             },
             u"1-0": {
-                u"1-0.0": (u"1-0.0", {"informations": None}),
+                u"1-0.0": (u"1-0.0", {}),
             },
             u"1-0.0": {
-                u"1-0.0/0": (u"1-0.0/0", {"informations": None}),
+                u"1-0.0/0": (u"1-0.0/0", {}),
             },
         }
         # expected_results = [
