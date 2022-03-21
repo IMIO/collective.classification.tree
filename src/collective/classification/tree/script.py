@@ -92,22 +92,22 @@ def find_parent():
                         default='123')
     parser.add_argument('tree_file', help='Tree file (csv format)')
     parser.add_argument('-c', '--config', dest='tree_conf', required=True,
-                        help='Tree file configuration: "separator|code col|id col" (starting at '
-                             '0). Like: ;|1|')
+                        help='Tree file configuration: "separator|code col|id col|id parent" (starting at 0). '
+                             'Like: ;|1||')
     ns = parser.parse_args()
     verbose("Start of %s" % sys.argv[0])
     verbose("Reading tree file '{}'".format(ns.tree_file))
     tree_confs = ns.tree_conf.split('|')
-    if len(tree_confs) != 3:
+    if len(tree_confs) != 4:
         error("config parameter not well formated: {}".format(ns.tree_conf))
         sys.exit(1)
-    sep, code_col, id_col = tree_confs[0], int(tree_confs[1]), tree_confs[2]
+    sep, code_col, id_col, id_parent = tree_confs[0], int(tree_confs[1]), tree_confs[2], tree_confs[3]
     has_id = id_col != ''
+    has_parent = id_parent != ''
     lines = read_csv(ns.tree_file, strip_chars=' ', delimiter=sep)
-    code_ids = {}  # store ids
+    code_ids = {}  # store code and id
+    all_ids = {}  # store id and code
     titles = lines.pop(0)
-    if not has_id:
-        titles.append('Id')
     titles.append('Parent')
     cols_nb = len(titles)
     new_lines = [titles]
@@ -118,8 +118,9 @@ def find_parent():
             if code in code_ids:
                 error("{}, code already found '{}'".format(ln_nb, code))
             else:
-                code_ids[code] = has_id and int(line[int(id_col)]) or i
-    all_ids = code_ids.values()
+                cid = has_id and int(line[int(id_col)]) or i
+                code_ids[code] = cid
+                all_ids[cid] = code
     next_id = 1
 
     def get_next_id(nid):
@@ -133,11 +134,13 @@ def find_parent():
             ln_nb = i + 1
             code = line[code_col]
             cid = code_ids[code]
-            if re.match(decimal_identifier, code):
+            if has_parent:
+                parent_code = all_ids[cid]
+            elif re.match(decimal_identifier, code):
                 parent_code = get_decimal_parent(code)
                 if parent_code is None:
                     parent_code = ''
-                else:
+                elif False:
                     if parent_code in code_ids:
                         parent_code = code_ids[parent_code]
                     else:
@@ -160,8 +163,6 @@ def find_parent():
             else:
                 error("{}, bad ref identifier value '{}'".format(ln_nb, code))
                 parent_code = '!'
-            if not has_id:
-                line.append(str(cid))
             line.append(str(parent_code))
             new_lines.append(line)
     if '3' in ns.parts:
