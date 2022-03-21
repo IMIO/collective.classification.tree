@@ -62,8 +62,8 @@ def get_chain(obj, include_self=True):
     return chain
 
 
-def generate_decimal_structure(code):
-    """Generate a structure based on a decimal code"""
+def get_parents(code):
+    """Get parents based on a decimal code"""
     levels = []
     level = ""
     for char in code:
@@ -72,7 +72,12 @@ def generate_decimal_structure(code):
             continue
         else:
             levels.append(level)
+    return levels
 
+
+def generate_decimal_structure(code):
+    """Generate a structure based on a decimal code"""
+    levels = get_parents(code)
     results = {}
     last_element = None
     for level in levels:

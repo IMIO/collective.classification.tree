@@ -79,6 +79,7 @@ setup(
     target = plone
     [console_scripts]
     update_locale = collective.classification.tree.locales.update:update_locale
-    compare_tree_files = collective.classification.tree.script:compare_tree_files
+    tree_compare_files = collective.classification.tree.script:compare_tree_files
+    tree_find_parent = collective.classification.tree.script:find_parent
     """,
 )
