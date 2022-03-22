@@ -65,20 +65,24 @@ def compare_tree_files():
                     continue
                 v = tree_tit_col and j == 0 and line[int(tree_tit_col)] or ''
                 if k not in tree_dic:
-                    if not re.match(decimal_identifier, k):
+                    # A. = specific to comblain
+                    if not k.startswith('A.') and not re.match(decimal_identifier, k):
                         error("{},{}, bad tree identifier value '{}', '{}'".format(i, id_col, k, v))
                     tree_dic[k] = {'l': i, 'c': id_col, 't': v}
     if '123' == ns.parts:
         verbose("Comparing...")
-        for k in tree_dic:
+        for k in sorted(tree_dic):
             tdk = tree_dic[k]
+            o_k = k
+            if k[0:1] in ('1', '2', '3', '4'):  # must begin with '-'
+                k = '-{}'.format(k)
             if k in ref_dic:
                 ref_dic[k]['u'] = 'd'  # direct usage
                 if tdk['t'] and tdk['t'] != ref_dic[k]['t']:
                     print("{},{}, id '{}', different titles: '{}' <=> '{}'".format(tdk['l'], tdk['c'], k, tdk['t'],
                                                                                    ref_dic[k]['t']))
-            else:
-                com = "{},{}, id '{}', not found in ref".format(tdk['l'], tdk['c'], k)
+            elif not k.startswith('A.'):  # specific to comblain
+                com = "{},{}, id '{}', not found in ref".format(tdk['l'], tdk['c'], o_k)
                 if tdk['t']:
                     com += " (tit='{}')".format(tdk['t'])
                 print(com)
