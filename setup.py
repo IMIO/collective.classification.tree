@@ -80,6 +80,6 @@ setup(
     [console_scripts]
     update_locale = collective.classification.tree.locales.update:update_locale
     tree_compare_files = collective.classification.tree.script:compare_tree_files
-    tree_find_parent = collective.classification.tree.script:find_parent
+    tree_add_parent = collective.classification.tree.script:add_parent
     """,
 )

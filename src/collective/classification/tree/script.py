@@ -89,8 +89,8 @@ def compare_tree_files():
     verbose("End of %s" % sys.argv[0])
 
 
-def find_parent():
-    """Compares a tree file with a reference tree file"""
+def add_parent():
+    """Add parent column"""
     parser = argparse.ArgumentParser(description='Analyse code to find parent')
     parser.add_argument('-p', '--parts', dest='parts', help='Run parts: 1 (load codes), 2 (get parent), 3 (write)',
                         default='123')
