@@ -176,3 +176,49 @@ def add_parent():
             for line in new_lines:
                 csvwriter.writerow(line)
     verbose("End of %s" % sys.argv[0])
+
+
+def add_archived():
+    """Add archived columns to inforius exported file"""
+    parser = argparse.ArgumentParser(description='From mixed archived column, add 2 new columns')
+    parser.add_argument('-p', '--parts', dest='parts', help='Run parts: 1 (add archived), 2 (write)',
+                        default='12')
+    parser.add_argument('tree_file', help='Tree file (csv format)')
+    parser.add_argument('-c', '--config', dest='tree_conf', required=True,
+                        help='Tree file configuration: "separator|archived col|sf id col|sf tit col" (starting at 0). '
+                             'Like: ;|1||')
+    ns = parser.parse_args()
+    verbose("Start of %s" % sys.argv[0])
+    verbose("Reading tree file '{}'".format(ns.tree_file))
+    tree_confs = ns.tree_conf.split('|')
+    if len(tree_confs) != 4:
+        error("config parameter not well formated: {}".format(ns.tree_conf))
+        sys.exit(1)
+    sep, arc_col, id_col, tit_col = tree_confs[0], int(tree_confs[1]), int(tree_confs[2]), int(tree_confs[3])
+    lines = read_csv(ns.tree_file, strip_chars=' ', delimiter=sep)
+    titles = lines.pop(0)
+    titles.extend(['Archivé farde', 'Archivé chemise'])
+    new_lines = [titles]
+    if '1' in ns.parts:
+        for i, line in enumerate(lines, start=1):
+            ln_nb = i + 1
+            archived = line[arc_col]  # '0', '1'
+            f_arc = sf_arc = ''
+            if archived not in ('0', '1'):
+                error("{}, bad archived value '{}'".format(ln_nb, archived))
+            else:
+                if line[id_col] or line[tit_col]:  # is subfolder
+                    if archived == '1':
+                        sf_arc = '1'
+                else:  # is folder
+                    if archived == '1':
+                        f_arc = '1'
+            line.extend([f_arc, sf_arc])
+            new_lines.append(line)
+    if '2' in ns.parts:
+        new_file = ns.tree_file.replace('.csv', '_archived.csv')
+        with open(new_file, 'wb') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=sep)
+            for line in new_lines:
+                csvwriter.writerow(line)
+    verbose("End of %s" % sys.argv[0])
