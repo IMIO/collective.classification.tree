@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-03-15 09:18+0000\n"
+"POT-Creation-Date: 2022-03-23 14:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,23 +31,23 @@ msgstr ""
 msgid "Add Classification Category"
 msgstr ""
 
-#: ../form/importform.py:109
+#: ../form/importform.py:110
 msgid "Allow empty column value"
 msgstr ""
 
-#: ../utils.py:265
+#: ../utils.py:269
 msgid "Bad format values: ${errors}"
 msgstr ""
 
-#: ../form/importform.py:69
+#: ../form/importform.py:70
 msgid "CSV Separator"
 msgstr ""
 
-#: ../utils.py:188
+#: ../utils.py:193
 msgid "CSV file must contains at least 2 columns"
 msgstr ""
 
-#: ../form/importform.py:64
+#: ../form/importform.py:65
 msgid "CSV file that contains the classification tree"
 msgstr ""
 
@@ -72,11 +72,11 @@ msgstr ""
 msgid "ClassificationContainer"
 msgstr ""
 
-#: ../form/importform.py:189
+#: ../form/importform.py:190
 msgid "Column ${name}"
 msgstr ""
 
-#: ../form/importform.py:132
+#: ../form/importform.py:133
 msgid "Continue"
 msgstr ""
 
@@ -92,44 +92,48 @@ msgstr ""
 msgid "Edit Classification Category"
 msgstr ""
 
-#: ../form/importform.py:63
+#: ../contents/category.py:48
+msgid "Enabled"
+msgstr ""
+
+#: ../form/importform.py:64
 msgid "File"
 msgstr ""
 
-#: ../utils.py:183
+#: ../utils.py:188
 msgid "File encoding is not utf8"
 msgstr ""
 
 #: ../browser/templates/container.pt:54
-#: ../contents/category.py:35
-#: ../vocabularies.py:82
+#: ../contents/category.py:37
+#: ../vocabularies.py:90
 msgid "Identifier"
 msgstr ""
 
-#: ../form/importform.py:103
+#: ../form/importform.py:104
 msgid "Identifier are decimal codes"
 msgstr ""
 
-#: ../contents/category.py:36
+#: ../contents/category.py:38
 msgid "Identifier of the category"
 msgstr ""
 
-#: ../form/importform.py:249
+#: ../form/importform.py:250
 #: ../profiles/default/actions.xml
 msgid "Import"
 msgstr ""
 
-#: ../form/importform.py:325
+#: ../form/importform.py:326
 msgid "Import completed in ${duration} seconds"
 msgstr ""
 
-#: ../form/importform.py:76
+#: ../form/importform.py:77
 msgid "Include CSV header"
 msgstr ""
 
 #: ../browser/templates/container.pt:56
-#: ../contents/category.py:44
-#: ../vocabularies.py:84
+#: ../contents/category.py:53
+#: ../vocabularies.py:92
 msgid "Informations"
 msgstr ""
 
@@ -137,11 +141,11 @@ msgstr ""
 msgid "Installs the collective.classification.tree add-on."
 msgstr ""
 
-#: ../utils.py:196
+#: ../utils.py:201
 msgid "Lines ${lines} does not contains the same number of element"
 msgstr ""
 
-#: ../utils.py:259
+#: ../utils.py:263
 msgid "Lines ${lines} have missing required value(s)"
 msgstr ""
 
@@ -150,24 +154,24 @@ msgid "List of categories in which this content is filed"
 msgstr ""
 
 #: ../browser/templates/container.pt:55
-#: ../contents/category.py:41
-#: ../vocabularies.py:83
+#: ../contents/category.py:43
+#: ../vocabularies.py:91
 msgid "Name"
 msgstr ""
 
-#: ../contents/category.py:41
+#: ../contents/category.py:43
 msgid "Name of the category"
 msgstr ""
 
-#: ../vocabularies.py:81
+#: ../vocabularies.py:89
 msgid "Parent Identifier"
 msgstr ""
 
-#: ../form/importform.py:115
+#: ../form/importform.py:116
 msgid "Replace slash in title"
 msgstr ""
 
-#: ../form/importform.py:190
+#: ../form/importform.py:191
 msgid "Sample data : ${data}"
 msgstr ""
 
@@ -175,15 +179,15 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: ../form/importform.py:70
+#: ../form/importform.py:71
 msgid "Separator character to use"
 msgstr ""
 
-#: ../form/importform.py:77
+#: ../form/importform.py:78
 msgid "The CSV file contains an header row"
 msgstr ""
 
-#: ../utils.py:213
+#: ../utils.py:218
 msgid "The following required columns are missing: ${columns}"
 msgstr ""
 
@@ -200,7 +204,7 @@ msgid "\"${title}\" has already been deleted"
 msgstr ""
 
 #. Default: "This category cannot be deleted because it is referenced elsewhere"
-#: ../contents/category.py:165
+#: ../contents/category.py:175
 msgid "cannot_delete_referenced_category"
 msgstr ""
 
@@ -217,10 +221,10 @@ msgstr ""
 msgid "label_cancel"
 msgstr ""
 
-#: ../vocabularies.py:73
+#: ../vocabularies.py:81
 msgid "tab"
 msgstr ""
 
-#: ../vocabularies.py:74
+#: ../vocabularies.py:82
 msgid "whitespace"
 msgstr ""
