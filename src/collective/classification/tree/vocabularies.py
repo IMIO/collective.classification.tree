@@ -3,6 +3,8 @@
 from collective.classification.tree import _
 from collective.classification.tree import utils
 from operator import itemgetter
+
+from imio.helpers.vocabularies import EnhancedTerm
 from plone import api
 from unidecode import unidecode
 from z3c.form import util
@@ -20,6 +22,12 @@ def iterable_to_vocabulary(values):
     )
 
 
+def category_iterable_to_vocabulary(values):
+    return SimpleVocabulary(
+        [EnhancedTerm(value=pair[0], token=pair[0], title=pair[1], enabled=pair[2]) for pair in values]
+    )
+
+
 def classification_tree_vocabulary_factory(context):
     query = {"portal_type": "ClassificationContainer", "context": api.portal.get()}
     containers = api.content.find(**query)
@@ -27,12 +35,12 @@ def classification_tree_vocabulary_factory(context):
     for container in containers:
         results.extend(
             [
-                (e.UID(), e.Title())
+                (e.UID(), e.Title(), e.enabled)
                 for e in utils.iterate_over_tree(container.getObject())
             ]
         )
     results = sorted(results, key=itemgetter(1))
-    return iterable_to_vocabulary(results)
+    return category_iterable_to_vocabulary(results)
 
 
 def classification_tree_id_mapping_vocabulary_factory(context):
@@ -88,9 +96,10 @@ def import_keys_vocabulary_factory(context):
 
 @implementer(IQuerySource)
 class ClassificationTreeSource(object):
-    def __init__(self, context):
+    def __init__(self, context, enabled=None):
         self.context = context
         self._vocabulary = None
+        self.enabled = enabled
 
     def __contains__(self, term):
         return self.vocabulary.__contains__(term)
@@ -156,6 +165,8 @@ class ClassificationTreeSource(object):
         q_parts = unidecode(query_string).lower().split()
         results = []
         for term in self.vocabulary:
+            if self.enabled is not None and term.attrs.get('enabled') != self.enabled:
+                continue
             if all([q in unidecode(term.title).lower() for q in q_parts]):
                 results.append(term)
             if len(results) >= 10:
@@ -165,5 +176,9 @@ class ClassificationTreeSource(object):
 
 @implementer(IContextSourceBinder)
 class ClassificationTreeSourceBinder(object):
+
+    def __init__(self, enabled=None):
+        self.enabled = enabled  # None for all or True or False
+
     def __call__(self, context):
-        return ClassificationTreeSource(context)
+        return ClassificationTreeSource(context, self.enabled)

@@ -22,10 +22,11 @@ class TestCategoriesContents(unittest.TestCase):
     def tearDown(self):
         api.content.delete(self.folder)
 
-    def _create_category(self, id, title):
+    def _create_category(self, id, title, enabled=True):
         category = createObject("ClassificationCategory")
         category.identifier = id
         category.title = title
+        category.enabled = enabled
         return category
 
     def test_simple_vocabulary(self):
@@ -89,14 +90,25 @@ class TestCategoriesContents(unittest.TestCase):
         )
 
     def test_ClassificationtreeSource(self):
-        for cid, title in ((u"001", u"Tâche"), (u"002", u"Tache import dossier"), (u"003", u"tâche"),
-                           (u"004", u"tache"), (u'005', u'Other')):
-            category = self._create_category(cid, title)
+        for cid, title, enabled in ((u"001", u"Tâche", False), (u"002", u"Tache import dossier", True),
+                                    (u"003", u"tâche", True), (u"004", u"tache", True), (u'005', u'Other', True)):
+            category = self._create_category(cid, title, enabled)
             self.container._add_element(category)
         cts = ClassificationTreeSource(self.container)
+        terms = cts.vocabulary._terms
+        self.assertFalse(terms[0].attrs['enabled'])
+        self.assertTrue(terms[1].attrs['enabled'])
         self.assertEqual(len([t.title for t in cts.search(u'Othe')]), 1)
         self.assertEqual(len([t.title for t in cts.search(u'Unfound')]), 0)
         for term in (u'Tâche', u'Tache', u'tâche', u'tache'):
             res = [t.title for t in cts.search(term)]
             self.assertEqual(len(res), 4, term)
         self.assertEqual(len([t.title for t in cts.search(u'tache doss')]), 1)
+        # find only disabled
+        cts = ClassificationTreeSource(self.container, False)
+        res = [t.title for t in cts.search(u'Tâche')]
+        self.assertEqual(len(res), 1, term)
+        # find only enabled
+        cts = ClassificationTreeSource(self.container, True)
+        res = [t.title for t in cts.search(u'Tâche')]
+        self.assertEqual(len(res), 3, term)

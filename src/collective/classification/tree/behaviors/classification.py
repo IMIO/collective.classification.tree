@@ -27,7 +27,7 @@ class IClassificationCategory(model.Schema):
         title=_(u"Classification Categories"),
         description=_(u"List of categories in which this content is filed"),
         value_type=schema.Choice(
-            source=ClassificationTreeSourceBinder(),
+            source=ClassificationTreeSourceBinder(enabled=True),
         ),
         required=False,
     )
