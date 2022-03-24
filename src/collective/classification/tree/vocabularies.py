@@ -90,6 +90,7 @@ def import_keys_vocabulary_factory(context):
         (u"identifier", _(u"Identifier")),
         (u"title", _(u"Name")),
         (u"informations", _(u"Informations")),
+        (u"enabled", _(u"Enabled"))
     )
     return iterable_to_vocabulary(values)
 

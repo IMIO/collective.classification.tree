@@ -99,13 +99,14 @@ def get_decimal_parent(code):
 
 
 def importer(
-    context, parent_identifier, identifier, title, informations=None, _children=None
+    context, parent_identifier, identifier, title, informations=None, enabled=None, _children=None
 ):
     """
     Expected structure for _children (iterable) with dict element that contains :
         * identifier (String)
         * title (String)
         * informations (String) or None
+        * enabled (Bool) or None
         * _children (Iterable of dicts)
 
     Return a set with chain of elements that were added or updated
@@ -116,12 +117,12 @@ def importer(
 
     modified = []
     modified.extend(
-        element_importer(parent, identifier, title, informations, _children)
+        element_importer(parent, identifier, title, informations, enabled, _children)
     )
     return modified
 
 
-def element_importer(parent, identifier, title, informations, children):
+def element_importer(parent, identifier, title, informations, enabled, children):
     element = parent.get_by("identifier", identifier)
     exist = True
     has_change = False
@@ -133,8 +134,11 @@ def element_importer(parent, identifier, title, informations, children):
     if element.title != title:
         element.title = title
         has_change = True
-    if element.informations != informations:
+    if informations is not None and element.informations != informations:
         element.informations = informations
+        has_change = True
+    if enabled is not None and element.enabled != enabled:
+        element.enabled = enabled
         has_change = True
 
     modified = []
@@ -152,6 +156,7 @@ def element_importer(parent, identifier, title, informations, children):
                 child["identifier"],
                 child["title"],
                 child["informations"],
+                child["enabled"],
                 child["_children"],
             )
             modified.extend(element_importer(*args))

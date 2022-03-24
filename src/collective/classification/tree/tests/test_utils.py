@@ -102,17 +102,19 @@ class TestUtils(unittest.TestCase):
                 "identifier": u"key1.1",
                 "title": u"Key 1.1",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
             {
                 "identifier": u"key1.2",
                 "title": u"Key 1.2",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
         ]
-        utils.importer(container, None, u"key1", u"Key 1", None, _children)
-        utils.importer(container, None, u"key2", u"Key 1", None, None)
+        utils.importer(container, None, u"key1", u"Key 1", None, None, _children)
+        utils.importer(container, None, u"key2", u"Key 1", None, None, None)
 
         self.assertEqual(2, len(container))
         self.assertEqual(
@@ -128,8 +130,8 @@ class TestUtils(unittest.TestCase):
     def test_importer_one_level_modified(self):
         """Ensure that the content is correctly modified"""
         container = self.container
-        utils.importer(container, None, u"001", u"First Modified", None, None)
-        utils.importer(container, None, u"002", u"Second", None, None)
+        utils.importer(container, None, u"001", u"First Modified", None, None, None)
+        utils.importer(container, None, u"002", u"Second", None, None, None)
 
         self.assertEqual(2, len(container))
         self.assertEqual(
@@ -153,16 +155,18 @@ class TestUtils(unittest.TestCase):
                 "identifier": u"key1.1",
                 "title": u"Key 1.1",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
             {
                 "identifier": u"key1.2",
                 "title": u"Key 1.2",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
         ]
-        modified = utils.importer(container, None, u"key1", u"Key 1", None, _children)
+        modified = utils.importer(container, None, u"key1", u"Key 1", None, None, _children)
         expected_results = [
             [None],
             ["key1", None],
@@ -176,13 +180,13 @@ class TestUtils(unittest.TestCase):
     def test_importer_one_level_modified_result(self):
         """Ensure that the returned list is correct"""
         container = self.container
-        modified = utils.importer(container, None, u"001", u"First M", None, None)
+        modified = utils.importer(container, None, u"001", u"First M", None, None, None)
         results = [
             [getattr(e, "identifier", None) for e in element] for element in modified
         ]
         self.assertEqual([[None]], results)
 
-        modified = utils.importer(container, None, u"002", u"Second", None, None)
+        modified = utils.importer(container, None, u"002", u"Second", None, None, None)
         results = [
             [getattr(e, "identifier", None) for e in element] for element in modified
         ]
@@ -198,16 +202,19 @@ class TestUtils(unittest.TestCase):
                 "identifier": u"key1.1",
                 "title": u"Key 1.1",
                 "informations": None,
+                "enabled": None,
                 "_children": [
                     {
                         "identifier": u"key1.1.1",
                         "title": u"Key 1.1.1",
                         "informations": None,
+                        "enabled": None,
                         "_children": [
                             {
                                 "identifier": u"key1.1.1.1",
                                 "title": u"Key 1.1.1.1",
                                 "informations": None,
+                                "enabled": None,
                                 "_children": [],
                             },
                         ],
@@ -218,11 +225,12 @@ class TestUtils(unittest.TestCase):
                 "identifier": u"key1.2",
                 "title": u"Key 1.2",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
         ]
-        utils.importer(container, None, u"key1", u"Key 1", None, _children)
-        utils.importer(container, None, u"key2", u"Key 1", None, None)
+        utils.importer(container, None, u"key1", u"Key 1", None, None, _children)
+        utils.importer(container, None, u"key2", u"Key 1", None, None, None)
 
         self.assertEqual(2, len(container))
         self.assertEqual(
@@ -255,16 +263,18 @@ class TestUtils(unittest.TestCase):
                 "identifier": u"001.1",
                 "title": u"first",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
             {
                 "identifier": u"001.2",
                 "title": u"second modified",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
         ]
-        utils.importer(container, None, u"001", u"First Modified", None, children)
+        utils.importer(container, None, u"001", u"First Modified", None, None, children)
 
         self.assertEqual(2, len(container))
         self.assertEqual(
@@ -281,6 +291,55 @@ class TestUtils(unittest.TestCase):
             ["first", "second modified"], sorted([e.title for e in subelement.values()])
         )
 
+    def test_importer_multi_levels_created_modified(self):
+        """Ensure that the content is correctly created / modified"""
+        container = self.container
+        children = [
+            {
+                "identifier": u"001.1",
+                "title": u"first",
+                "informations": None,
+                "enabled": None,
+                "_children": [],
+            },
+            {
+                "identifier": u"001.2",
+                "title": u"second modified",
+                "informations": u'new infos',
+                "enabled": False,
+                "_children": [],
+            },
+            {
+                "identifier": u"001.3",
+                "title": u"new one",
+                "informations": u'infos',
+                "enabled": False,
+                "_children": [],
+            },
+        ]
+        utils.importer(container, None, u"001", u"First Modified", None, None, children)
+
+        self.assertEqual(2, len(container))
+        self.assertEqual(
+            ["001", "002"], sorted([e.identifier for e in container.values()])
+        )
+
+        subelement = container.get_by("identifier", "001")
+        self.assertEqual(u"First Modified", subelement.title)
+        self.assertEqual(3, len(subelement))
+        self.assertEqual(
+            ["001.1", "001.2", "001.3"], sorted([e.identifier for e in subelement.values()])
+        )
+        self.assertEqual(
+            ["first", "second modified", "new one"], [e.title for e in subelement.values()]
+        )
+        self.assertEqual(
+            [None, "new infos", "infos"], [e.informations for e in subelement.values()]
+        )
+        self.assertEqual(
+            [True, False, False], [e.enabled for e in subelement.values()]
+        )
+
     def test_importer_multi_levels_result(self):
         """Ensure that the returned list is correct"""
         container = api.content.create(
@@ -291,16 +350,19 @@ class TestUtils(unittest.TestCase):
                 "identifier": u"key1.1",
                 "title": u"Key 1.1",
                 "informations": None,
+                "enabled": None,
                 "_children": [
                     {
                         "identifier": u"key1.1.1",
                         "title": u"Key 1.1.1",
                         "informations": None,
+                        "enabled": None,
                         "_children": [
                             {
                                 "identifier": u"key1.1.1.1",
                                 "title": u"Key 1.1.1.1",
                                 "informations": None,
+                                "enabled": None,
                                 "_children": [],
                             },
                         ],
@@ -311,10 +373,11 @@ class TestUtils(unittest.TestCase):
                 "identifier": u"key1.2",
                 "title": u"Key 1.2",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
         ]
-        modified = utils.importer(container, None, u"key1", u"Key 1", None, _children)
+        modified = utils.importer(container, None, u"key1", u"Key 1", None, None, _children)
         expected_results = [
             [None],
             ["key1", None],
@@ -335,17 +398,19 @@ class TestUtils(unittest.TestCase):
                 "identifier": u"001.1",
                 "title": u"first",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
             {
                 "identifier": u"001.2",
                 "title": u"second modified",
                 "informations": None,
+                "enabled": None,
                 "_children": [],
             },
         ]
         modified = utils.importer(
-            container, None, u"001", u"First Modified", None, children
+            container, None, u"001", u"First Modified", None, None, children
         )
 
         expected_results = [[None], ["001", None]]

@@ -971,30 +971,69 @@ class TestImportForm(unittest.TestCase):
         data, errors = form.extractData()
         self.assertEqual(0, len(errors))
 
+    def test_second_step_optional_columns_data_ok(self):
+        """Test validation of optional columns data"""
+        request = self.layer["request"]
+        request.form = {
+            "form.buttons.import": u"Importer",
+            "form.widgets.column_0": u"parent_identifier",
+            "form.widgets.column_1": u"identifier",
+            "form.widgets.column_2": u"title",
+            "form.widgets.column_3": u"informations",
+            "form.widgets.decimal_import": u"False",
+            "form.widgets.allow_empty": u"False",
+        }
+        annotations = IAnnotations(self.container)
+        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
+        annotation["has_header"] = False
+        annotation["separator"] = u";"
+        csv = StringIO()
+        lines = [
+            ["", "key1", "Key 1", "infos"],
+            ["key1", "key1.1", "Key 1.1", ""],
+            ["key1.1", "key1.1.1", "Key 1.1.1", ""],
+        ]
+        for line in lines:
+            csv.write(";".join(line) + "\n")
+        csv.seek(0)
+        annotation["source"] = NamedBlobFile(
+            data=csv.read(),
+            contentType=u"text/csv",
+            filename=u"test.csv",
+        )
+        form = importform.ImportFormSecondStep(self.container, request)
+        form.updateFieldsFromSchemata()
+        form.updateWidgets()
+        data, errors = form.extractData()
+        self.assertEqual(0, len(errors))
+
     def test_process_data_basic(self):
         """Tests _process_data with basic data structure"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
             None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {})},
-            u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {})},
-            u"key2": {u"key2.1": (u"Key 2.1", {}), u"key2.2": (u"Key 2.2", {})},
+            u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {'enabled': True})},
+            u"key2": {u"key2.1": (u"Key 2.1", {}), u"key2.2": (u"Key 2.2", {'enabled': False})},
         }
         expected_results = [
             {
                 "identifier": u"key1",
                 "title": u"Key 1",
                 "informations": None,
+                "enabled": None,
                 "_children": [
                     {
                         "identifier": u"key1.1",
                         "title": u"Key 1.1",
                         "informations": None,
+                        "enabled": None,
                         "_children": [],
                     },
                     {
                         "identifier": u"key1.2",
                         "title": u"Key 1.2",
                         "informations": None,
+                        "enabled": True,
                         "_children": [],
                     },
                 ],
@@ -1003,17 +1042,20 @@ class TestImportForm(unittest.TestCase):
                 "identifier": u"key2",
                 "title": u"Key 2",
                 "informations": None,
+                "enabled": None,
                 "_children": [
                     {
                         "identifier": u"key2.1",
                         "title": u"Key 2.1",
                         "informations": None,
+                        "enabled": None,
                         "_children": [],
                     },
                     {
                         "identifier": u"key2.2",
                         "title": u"Key 2.2",
                         "informations": None,
+                        "enabled": False,
                         "_children": [],
                     },
                 ],
@@ -1026,9 +1068,9 @@ class TestImportForm(unittest.TestCase):
         """Tests _process_data with multi levels data structure"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
-            None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {})},
+            None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {'enabled': False})},
             u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {})},
-            u"key2": {u"key2.1": (u"Key 2.1", {})},
+            u"key2": {u"key2.1": (u"Key 2.1", {'enabled': False})},
             u"key1.1": {u"key1.1.1": (u"Key 1.1.1", {})},
             u"key1.1.1": {u"key1.1.1.1": (u"Key 1.1.1.1", {})},
         }
@@ -1037,21 +1079,25 @@ class TestImportForm(unittest.TestCase):
                 "identifier": u"key1",
                 "title": u"Key 1",
                 "informations": None,
+                "enabled": None,
                 "_children": [
                     {
                         "identifier": u"key1.1",
                         "title": u"Key 1.1",
                         "informations": None,
+                        "enabled": None,
                         "_children": [
                             {
                                 "identifier": u"key1.1.1",
                                 "title": u"Key 1.1.1",
                                 "informations": None,
+                                "enabled": None,
                                 "_children": [
                                     {
                                         "identifier": u"key1.1.1.1",
                                         "title": u"Key 1.1.1.1",
                                         "informations": None,
+                                        "enabled": None,
                                         "_children": [],
                                     },
                                 ],
@@ -1062,6 +1108,7 @@ class TestImportForm(unittest.TestCase):
                         "identifier": u"key1.2",
                         "title": u"Key 1.2",
                         "informations": None,
+                        "enabled": None,
                         "_children": [],
                     },
                 ],
@@ -1070,11 +1117,13 @@ class TestImportForm(unittest.TestCase):
                 "identifier": u"key2",
                 "title": u"Key 2",
                 "informations": None,
+                "enabled": False,
                 "_children": [
                     {
                         "identifier": u"key2.1",
                         "title": u"Key 2.1",
                         "informations": None,
+                        "enabled": False,
                         "_children": [],
                     },
                 ],
@@ -1149,6 +1198,37 @@ class TestImportForm(unittest.TestCase):
             u'2': {
                 u'21': (u'New sub levels', {}),
                 u'22': (u'New sub levels', {})
+            }
+        }
+        self.assertEqual(expected_result, result)
+
+    def test_process_csv_enabled(self):
+        """Test _process_csv with enabled column"""
+        form = importform.ImportFormSecondStep(self.container, {})
+        _csv = StringIO()
+        lines = [
+            ["1", "First/level", ""],
+            ["11", "Second / level", "0"],
+            ["12", "Other / level / in // Tesla", "1"],
+        ]
+        for line in lines:
+            _csv.write(";".join(line) + "\n")
+        _csv.seek(0)
+        reader = csv.reader(_csv, delimiter=";")
+        data = {
+            "column_0": "identifier",
+            "column_1": "title",
+            "column_2": "enabled",
+        }
+        mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
+        result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
+        expected_result = {
+            None: {
+                u'1': (u'First-level', {'enabled': False})
+            },
+            u'1': {
+                u'11': (u'Second - level', {'enabled': True}),
+                u'12': (u'Other - level - in -- Tesla', {'enabled': True})
             }
         }
         self.assertEqual(expected_result, result)

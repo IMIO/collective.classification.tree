@@ -268,6 +268,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                 "identifier": k,
                 "title": v[0],
                 "informations": v[1].get("informations"),
+                "enabled": v[1].get("enabled"),
                 "_children": self._process_data(data, key=k),
             }
             for k, v in data[key].items()
@@ -296,6 +297,8 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
             if title:
                 if kw.get('replace_slash', False):
                     title = title.replace('/', '-')
+            if 'enabled' in line_data:
+                line_data['enabled'] = line_data['enabled'] and True or False
             for identifier in re.split(' *, *', orig_identifier):
                 if decimal_import is True:
                     self._generate_decimal_structure(data, identifier)
@@ -307,7 +310,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                 if parent_identifier not in data:
                     # Using dictionary avoid duplicated informations
                     data[parent_identifier] = {}
-                # if exists, only update if title is identifier and not
+                # if exists, only update if title is identifier
                 if identifier not in data[parent_identifier] or data[parent_identifier][identifier][0] == identifier:
                     data[parent_identifier][identifier] = (title, line_data)
         return data
