@@ -98,6 +98,7 @@ def add_parent():
     parser.add_argument('-c', '--config', dest='tree_conf', required=True,
                         help='Tree file configuration: "separator|code col|id col|id parent" (starting at 0). '
                              'Like: ;|1||')
+    parser.add_argument('-u', '--unicity', action='store_true', dest='check_unicity', help='Check code unicity')
     ns = parser.parse_args()
     verbose("Start of %s" % sys.argv[0])
     verbose("Reading tree file '{}'".format(ns.tree_file))
@@ -119,8 +120,11 @@ def add_parent():
         for i, line in enumerate(lines, start=1):
             ln_nb = i + 1
             code = line[code_col]
+            if not code:
+                continue
             if code in code_ids:
-                error("{}, code already found '{}'".format(ln_nb, code))
+                if ns.check_unicity:
+                    error("{}, code already found '{}'".format(ln_nb, code))
             else:
                 cid = has_id and int(line[int(id_col)]) or i
                 code_ids[code] = cid
@@ -137,8 +141,10 @@ def add_parent():
         for i, line in enumerate(lines, start=1):
             ln_nb = i + 1
             code = line[code_col]
-            cid = code_ids[code]
-            if has_parent:
+            if not code:
+                parent_code = ''
+            elif has_parent:
+                cid = code_ids[code]
                 parent_code = all_ids[cid]
             elif re.match(decimal_identifier, code):
                 parent_code = get_decimal_parent(code)
@@ -172,7 +178,7 @@ def add_parent():
     if '3' in ns.parts:
         new_file = ns.tree_file.replace('.csv', '_parent.csv')
         with open(new_file, 'wb') as csvfile:
-            csvwriter = csv.writer(csvfile, delimiter=sep)
+            csvwriter = csv.writer(csvfile, delimiter=sep, quoting=csv.QUOTE_NONNUMERIC)
             for line in new_lines:
                 csvwriter.writerow(line)
     verbose("End of %s" % sys.argv[0])
