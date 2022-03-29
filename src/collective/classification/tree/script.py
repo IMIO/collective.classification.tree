@@ -202,8 +202,12 @@ def add_archived():
     if '1' in ns.parts:
         for i, line in enumerate(lines, start=1):
             ln_nb = i + 1
-            archived = line[arc_col]  # '0', '1'
+            archived = line[arc_col]  # '0', '1', 'VRAI', 'FAUX'
             f_arc = sf_arc = ''
+            if archived == 'VRAI':
+                archived = '1'
+            elif archived == 'FAUX':
+                archived = '0'
             if archived not in ('0', '1'):
                 error("{}, bad archived value '{}'".format(ln_nb, archived))
             else:
@@ -218,7 +222,7 @@ def add_archived():
     if '2' in ns.parts:
         new_file = ns.tree_file.replace('.csv', '_archived.csv')
         with open(new_file, 'wb') as csvfile:
-            csvwriter = csv.writer(csvfile, delimiter=sep)
+            csvwriter = csv.writer(csvfile, delimiter=sep, quoting=csv.QUOTE_NONNUMERIC)  # csv.QUOTE_ALL
             for line in new_lines:
                 csvwriter.writerow(line)
     verbose("End of %s" % sys.argv[0])
