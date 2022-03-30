@@ -299,13 +299,13 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                     title = title.replace('/', '-')
             if 'enabled' in line_data:
                 line_data['enabled'] = line_data['enabled'] and True or False
-            for identifier in re.split(' *, *', orig_identifier):
+            for i, identifier in enumerate(re.split(' *, *', orig_identifier)):
                 if decimal_import is True:
                     self._generate_decimal_structure(data, identifier)
                     parent_identifier = utils.get_decimal_parent(identifier)
                 else:
                     parent_identifier = line_data.pop("parent_identifier", None) or None
-                if not title:
+                if not title or i:
                     title = identifier
                 if parent_identifier not in data:
                     # Using dictionary avoid duplicated informations
