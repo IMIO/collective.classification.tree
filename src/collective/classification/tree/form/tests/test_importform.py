@@ -1186,18 +1186,18 @@ class TestImportForm(unittest.TestCase):
         expected_result = {
             None: {
                 u'1': (u'First level', {}),
-                u'2': (u'2', {}),
+                u'2': (u'2', {u'enabled': False}),
             },
             u'1': {
                 u'11': (u'Second level', {}),
-                u'12': (u'Other level in - Tesla', {})
+                u'12': (u'12', {})
             },
             u'11': {
                 u'111': (u'Yet one', {})
             },
             u'2': {
                 u'21': (u'New sub levels', {}),
-                u'22': (u'New sub levels', {})
+                u'22': (u'22', {})
             }
         }
         self.assertEqual(expected_result, result)
@@ -1210,6 +1210,7 @@ class TestImportForm(unittest.TestCase):
             ["1", "First/level", ""],
             ["11", "Second / level", "0"],
             ["12", "Other / level / in // Tesla", "1"],
+            ["20", "Sublevel without parent", "1"],
         ]
         for line in lines:
             _csv.write(";".join(line) + "\n")
@@ -1224,11 +1225,15 @@ class TestImportForm(unittest.TestCase):
         result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
         expected_result = {
             None: {
-                u'1': (u'First-level', {'enabled': False})
+                u'1': (u'First-level', {'enabled': False}),
+                u'2': (u'2', {'enabled': False}),
             },
             u'1': {
                 u'11': (u'Second - level', {'enabled': True}),
                 u'12': (u'Other - level - in -- Tesla', {'enabled': True})
+            },
+            u'2': {
+                u'20': (u'Sublevel without parent', {'enabled': True}),
             }
         }
         self.assertEqual(expected_result, result)

@@ -75,13 +75,16 @@ def get_parents(code):
     return levels
 
 
-def generate_decimal_structure(code):
+def generate_decimal_structure(code, enabled=False):
     """Generate a structure based on a decimal code"""
     levels = get_parents(code)
     results = {}
     last_element = None
     for level in levels:
-        results[last_element] = {level: (level, {})}
+        if level == code:  # current elem
+            results[last_element] = {level: (level, {})}
+        else:
+            results[last_element] = {level: (level, {u'enabled': enabled})}
         last_element = level
     return results
 

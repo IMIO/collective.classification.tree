@@ -274,8 +274,8 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
             for k, v in data[key].items()
         ]
 
-    def _generate_decimal_structure(self, data, identifier):
-        structure = utils.generate_decimal_structure(identifier)
+    def _generate_decimal_structure(self, data, identifier, enabled=False):
+        structure = utils.generate_decimal_structure(identifier, enabled=enabled)
         for k, v in structure.items():
             if k not in data:
                 data[k] = v
@@ -310,7 +310,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                 if parent_identifier not in data:
                     # Using dictionary avoid duplicated informations
                     data[parent_identifier] = {}
-                # if exists, only update if title is identifier
+                # if exists, only update if title = identifier
                 if identifier not in data[parent_identifier] or data[parent_identifier][identifier][0] == identifier:
                     data[parent_identifier][identifier] = (title, line_data)
         return data

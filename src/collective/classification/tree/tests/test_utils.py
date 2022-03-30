@@ -2,6 +2,7 @@
 
 from collective.classification.tree import testing
 from collective.classification.tree import utils
+from operator import attrgetter
 from plone import api
 from zope.component import createObject
 
@@ -327,17 +328,18 @@ class TestUtils(unittest.TestCase):
         subelement = container.get_by("identifier", "001")
         self.assertEqual(u"First Modified", subelement.title)
         self.assertEqual(3, len(subelement))
+        values = sorted(subelement.values(), key=attrgetter('identifier'))
         self.assertEqual(
-            ["001.1", "001.2", "001.3"], sorted([e.identifier for e in subelement.values()])
+            ["001.1", "001.2", "001.3"], [e.identifier for e in values]
         )
         self.assertEqual(
-            ["first", "second modified", "new one"], [e.title for e in subelement.values()]
+            [u"first", u"second modified", u"new one"], [e.title for e in values]
         )
         self.assertEqual(
-            [None, "new infos", "infos"], [e.informations for e in subelement.values()]
+            [None, u"new infos", u"infos"], [e.informations for e in values]
         )
         self.assertEqual(
-            [True, False, False], [e.enabled for e in subelement.values()]
+            [True, False, False], [e.enabled for e in values]
         )
 
     def test_importer_multi_levels_result(self):
@@ -451,47 +453,18 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("1000")
         expected_results = {
             None: {
-                u"1": (u"1", {}),
+                u"1": (u"1", {u'enabled': False}),
             },
             u"1": {
-                u"10": (u"10", {}),
+                u"10": (u"10", {u'enabled': False}),
             },
             u"10": {
-                u"100": (u"100", {}),
+                u"100": (u"100", {u'enabled': False}),
             },
             u"100": {
                 u"1000": (u"1000", {}),
             },
         }
-        # expected_results = [
-            # {
-                # "identifier": u"1",
-                # "title": u"1",
-                # "informations": None,
-                # "_children": [
-                    # {
-                        # "identifier": u"10",
-                        # "title": u"10",
-                        # "informations": None,
-                        # "_children": [
-                            # {
-                                # "identifier": u"100",
-                                # "title": u"100",
-                                # "informations": None,
-                                # "_children": [
-                                    # {
-                                        # "identifier": u"1000",
-                                        # "title": u"1000",
-                                        # "informations": None,
-                                        # "_children": [],
-                                    # }
-                                # ],
-                            # }
-                        # ],
-                    # }
-                # ],
-            # }
-        # ]
         self.assertEqual(expected_results, result)
 
     def test_decimal_structure_with_basic_separator(self):
@@ -499,47 +472,18 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("10.0.0")
         expected_results = {
             None: {
-                u"1": (u"1", {}),
+                u"1": (u"1", {u'enabled': False}),
             },
             u"1": {
-                u"10": (u"10", {}),
+                u"10": (u"10", {u'enabled': False}),
             },
             u"10": {
-                u"10.0": (u"10.0", {}),
+                u"10.0": (u"10.0", {u'enabled': False}),
             },
             u"10.0": {
                 u"10.0.0": (u"10.0.0", {}),
             },
         }
-        # expected_results = [
-            # {
-                # "identifier": u"1",
-                # "title": u"1",
-                # "informations": None,
-                # "_children": [
-                    # {
-                        # "identifier": u"10",
-                        # "title": u"10",
-                        # "informations": None,
-                        # "_children": [
-                            # {
-                                # "identifier": u"10.0",
-                                # "title": u"10.0",
-                                # "informations": None,
-                                # "_children": [
-                                    # {
-                                        # "identifier": u"10.0.0",
-                                        # "title": u"10.0.0",
-                                        # "informations": None,
-                                        # "_children": [],
-                                    # }
-                                # ],
-                            # }
-                        # ],
-                    # }
-                # ],
-            # }
-        # ]
         self.assertEqual(expected_results, result)
 
     def test_decimal_structure_with_mixed_separator(self):
@@ -547,47 +491,18 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("1-0.0/0")
         expected_results = {
             None: {
-                u"1": (u"1", {}),
+                u"1": (u"1", {u'enabled': False}),
             },
             u"1": {
-                u"1-0": (u"1-0", {}),
+                u"1-0": (u"1-0", {u'enabled': False}),
             },
             u"1-0": {
-                u"1-0.0": (u"1-0.0", {}),
+                u"1-0.0": (u"1-0.0", {u'enabled': False}),
             },
             u"1-0.0": {
                 u"1-0.0/0": (u"1-0.0/0", {}),
             },
         }
-        # expected_results = [
-            # {
-                # "identifier": u"1",
-                # "title": u"1",
-                # "informations": None,
-                # "_children": [
-                    # {
-                        # "identifier": u"1-0",
-                        # "title": u"1-0",
-                        # "informations": None,
-                        # "_children": [
-                            # {
-                                # "identifier": u"1-0.0",
-                                # "title": u"1-0.0",
-                                # "informations": None,
-                                # "_children": [
-                                    # {
-                                        # "identifier": u"1-0.0/0",
-                                        # "title": u"1-0.0/0",
-                                        # "informations": None,
-                                        # "_children": [],
-                                    # }
-                                # ],
-                            # }
-                        # ],
-                    # }
-                # ],
-            # }
-        # ]
         self.assertEqual(expected_results, result)
 
     def test_decimal_parent_basic(self):
