@@ -18,3 +18,4 @@ class RefreshCache(BrowserView):
 
     def __call__(self):
         caching.invalidate_cache("collective.classification.tree.utils.iterate_over_tree", self.context.UID())
+        self.request.response.redirect(self.context.absolute_url())
