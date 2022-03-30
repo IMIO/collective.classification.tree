@@ -25,6 +25,8 @@ class SerializeToJson(object):
             "identifier": obj.identifier,
             "title": obj.title,
             "informations": obj.informations,
+            "enabled": obj.enabled and translate(_("Yes"), context=self.request) or
+            translate(_("No"), context=self.request),
             "links": self._links,
         }
 

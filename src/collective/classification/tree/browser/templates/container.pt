@@ -54,6 +54,7 @@
             <th i18n:translate="">Identifier</th>
             <th i18n:translate="">Name</th>
             <th i18n:translate="">Informations</th>
+            <th i18n:translate="">Enabled</th>
             <th></th>
         </tr>
     </thead>
@@ -100,6 +101,7 @@
           {"data": "identifier", "render": column_link_renderer},
           {"data": "title", "render": column_link_renderer},
           {"data": "informations"},
+          {"data": "enabled"},
           {"data": "links", "orderable": false, "searchable": false, "render": column_action_renderer},
         ],
         "oLanguage": {
