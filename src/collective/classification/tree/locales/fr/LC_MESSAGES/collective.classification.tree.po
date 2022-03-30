@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-03-30 08:56+0000\n"
+"POT-Creation-Date: 2022-03-30 13:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgid "${title} has been deleted."
 msgstr "${title} a été supprimé"
 
 #: ../browser/category.py:74
-#: ../serializer/category.py:43
+#: ../serializer/category.py:45
 msgid "Add"
 msgstr "Ajouter"
 
@@ -35,7 +35,7 @@ msgstr "Ajouter un code de classement"
 msgid "Allow empty column value"
 msgstr "Autoriser l'absence de valeur pour les colonnes"
 
-#: ../utils.py:274
+#: ../utils.py:277
 msgid "Bad format values: ${errors}"
 msgstr "Valeurs au format erroné: ${errors}"
 
@@ -43,7 +43,7 @@ msgstr "Valeurs au format erroné: ${errors}"
 msgid "CSV Separator"
 msgstr "Séparateur du CSV"
 
-#: ../utils.py:198
+#: ../utils.py:201
 msgid "CSV file must contains at least 2 columns"
 msgstr "Le fichier CSV doit contenir au moins 2 colonnes"
 
@@ -84,7 +84,7 @@ msgstr "Continuer"
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../serializer/category.py:39
+#: ../serializer/category.py:41
 msgid "Edit"
 msgstr "Modifier"
 
@@ -92,6 +92,7 @@ msgstr "Modifier"
 msgid "Edit Classification Category"
 msgstr "Modifier un code de classement"
 
+#: ../browser/templates/container.pt:57
 #: ../contents/category.py:48
 #: ../vocabularies.py:93
 msgid "Enabled"
@@ -101,7 +102,7 @@ msgstr "Activé"
 msgid "File"
 msgstr "Fichier"
 
-#: ../utils.py:193
+#: ../utils.py:196
 msgid "File encoding is not utf8"
 msgstr "L'encodage du fichier doit être de l'UTF-8"
 
@@ -142,11 +143,11 @@ msgstr "Informations"
 msgid "Installs the collective.classification.tree add-on."
 msgstr "Installs the collective.classification.tree add-on."
 
-#: ../utils.py:206
+#: ../utils.py:209
 msgid "Lines ${lines} does not contains the same number of element"
 msgstr "Les lignes ${lines} n'ont pas le bon nombre d'éléments"
 
-#: ../utils.py:268
+#: ../utils.py:271
 msgid "Lines ${lines} have missing required value(s)"
 msgstr "Les lignes ${lines} ont des valeurs requises manquantes"
 
@@ -163,6 +164,10 @@ msgstr "Nom"
 #: ../contents/category.py:43
 msgid "Name of the category"
 msgstr "Nom du code"
+
+#: ../serializer/category.py:29
+msgid "No"
+msgstr "Non"
 
 #: ../vocabularies.py:89
 msgid "Parent Identifier"
@@ -192,7 +197,7 @@ msgstr "Caractère de séparation à utiliser"
 msgid "The CSV file contains an header row"
 msgstr "Le fichier CSV contient une ligne d'entête"
 
-#: ../utils.py:223
+#: ../utils.py:226
 msgid "The following required columns are missing: ${columns}"
 msgstr "Les colonnes requises suivantes sont manquantes: ${columns}"
 
@@ -203,6 +208,10 @@ msgstr "Ce behavior ajoute un champ avec les codes de classement"
 #: ../configure.zcml:39
 msgid "Uninstalls the collective.classification.tree add-on."
 msgstr "Uninstalls the collective.classification.tree add-on."
+
+#: ../serializer/category.py:28
+msgid "Yes"
+msgstr "Oui"
 
 #: ../browser/actions.py:117
 msgid "\"${title}\" has already been deleted"

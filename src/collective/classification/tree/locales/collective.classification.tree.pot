@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-03-30 08:56+0000\n"
+"POT-Creation-Date: 2022-03-30 13:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgid "${title} has been deleted."
 msgstr ""
 
 #: ../browser/category.py:74
-#: ../serializer/category.py:43
+#: ../serializer/category.py:45
 msgid "Add"
 msgstr ""
 
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Allow empty column value"
 msgstr ""
 
-#: ../utils.py:274
+#: ../utils.py:277
 msgid "Bad format values: ${errors}"
 msgstr ""
 
@@ -50,7 +50,7 @@ msgstr ""
 msgid "CSV Separator"
 msgstr ""
 
-#: ../utils.py:198
+#: ../utils.py:201
 msgid "CSV file must contains at least 2 columns"
 msgstr ""
 
@@ -91,7 +91,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: ../serializer/category.py:39
+#: ../serializer/category.py:41
 msgid "Edit"
 msgstr ""
 
@@ -99,6 +99,7 @@ msgstr ""
 msgid "Edit Classification Category"
 msgstr ""
 
+#: ../browser/templates/container.pt:57
 #: ../contents/category.py:48
 #: ../vocabularies.py:93
 msgid "Enabled"
@@ -108,7 +109,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: ../utils.py:193
+#: ../utils.py:196
 msgid "File encoding is not utf8"
 msgstr ""
 
@@ -149,11 +150,11 @@ msgstr ""
 msgid "Installs the collective.classification.tree add-on."
 msgstr ""
 
-#: ../utils.py:206
+#: ../utils.py:209
 msgid "Lines ${lines} does not contains the same number of element"
 msgstr ""
 
-#: ../utils.py:268
+#: ../utils.py:271
 msgid "Lines ${lines} have missing required value(s)"
 msgstr ""
 
@@ -169,6 +170,10 @@ msgstr ""
 
 #: ../contents/category.py:43
 msgid "Name of the category"
+msgstr ""
+
+#: ../serializer/category.py:29
+msgid "No"
 msgstr ""
 
 #: ../vocabularies.py:89
@@ -199,7 +204,7 @@ msgstr ""
 msgid "The CSV file contains an header row"
 msgstr ""
 
-#: ../utils.py:223
+#: ../utils.py:226
 msgid "The following required columns are missing: ${columns}"
 msgstr ""
 
@@ -209,6 +214,10 @@ msgstr ""
 
 #: ../configure.zcml:39
 msgid "Uninstalls the collective.classification.tree add-on."
+msgstr ""
+
+#: ../serializer/category.py:28
+msgid "Yes"
 msgstr ""
 
 #. Default: "This category cannot be deleted because it is referenced elsewhere"
