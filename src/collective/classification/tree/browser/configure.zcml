@@ -56,6 +56,14 @@
     />
 
   <browser:page
+    for="collective.classification.tree.contents.container.IClassificationContainer"
+    class=".container.RefreshCache"
+    name="refresh-cache"
+    permission="zope2.View"
+    template="templates/container.pt"
+    />
+
+  <browser:page
     name="classification_helper"
     for="*"
     class=".helper.ClassificationPublicHelper"
