@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-03-23 14:05+0000\n"
+"POT-Creation-Date: 2022-03-30 08:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr "Ajouter un code de classement"
 msgid "Allow empty column value"
 msgstr "Autoriser l'absence de valeur pour les colonnes"
 
-#: ../utils.py:269
+#: ../utils.py:274
 msgid "Bad format values: ${errors}"
 msgstr "Valeurs au format erroné: ${errors}"
 
@@ -43,7 +43,7 @@ msgstr "Valeurs au format erroné: ${errors}"
 msgid "CSV Separator"
 msgstr "Séparateur du CSV"
 
-#: ../utils.py:193
+#: ../utils.py:198
 msgid "CSV file must contains at least 2 columns"
 msgstr "Le fichier CSV doit contenir au moins 2 colonnes"
 
@@ -93,6 +93,7 @@ msgid "Edit Classification Category"
 msgstr "Modifier un code de classement"
 
 #: ../contents/category.py:48
+#: ../vocabularies.py:93
 msgid "Enabled"
 msgstr "Activé"
 
@@ -100,7 +101,7 @@ msgstr "Activé"
 msgid "File"
 msgstr "Fichier"
 
-#: ../utils.py:188
+#: ../utils.py:193
 msgid "File encoding is not utf8"
 msgstr "L'encodage du fichier doit être de l'UTF-8"
 
@@ -123,7 +124,7 @@ msgstr "Identifiant du code"
 msgid "Import"
 msgstr "Importer"
 
-#: ../form/importform.py:326
+#: ../form/importform.py:329
 msgid "Import completed in ${duration} seconds"
 msgstr "Import fini en ${duration} seconds"
 
@@ -141,11 +142,11 @@ msgstr "Informations"
 msgid "Installs the collective.classification.tree add-on."
 msgstr "Installs the collective.classification.tree add-on."
 
-#: ../utils.py:201
+#: ../utils.py:206
 msgid "Lines ${lines} does not contains the same number of element"
 msgstr "Les lignes ${lines} n'ont pas le bon nombre d'éléments"
 
-#: ../utils.py:263
+#: ../utils.py:268
 msgid "Lines ${lines} have missing required value(s)"
 msgstr "Les lignes ${lines} ont des valeurs requises manquantes"
 
@@ -167,6 +168,10 @@ msgstr "Nom du code"
 msgid "Parent Identifier"
 msgstr "Identifiant du parent"
 
+#: ../profiles/default/actions.xml
+msgid "Refresh cache"
+msgstr "Rafraîchir cache"
+
 #: ../form/importform.py:116
 msgid "Replace slash in title"
 msgstr "Remplacer le caractère \" / \" dans le titre"
@@ -187,7 +192,7 @@ msgstr "Caractère de séparation à utiliser"
 msgid "The CSV file contains an header row"
 msgstr "Le fichier CSV contient une ligne d'entête"
 
-#: ../utils.py:218
+#: ../utils.py:223
 msgid "The following required columns are missing: ${columns}"
 msgstr "Les colonnes requises suivantes sont manquantes: ${columns}"
 

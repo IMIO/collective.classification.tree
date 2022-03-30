@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-03-23 14:05+0000\n"
+"POT-Creation-Date: 2022-03-30 08:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 msgid "Allow empty column value"
 msgstr ""
 
-#: ../utils.py:269
+#: ../utils.py:274
 msgid "Bad format values: ${errors}"
 msgstr ""
 
@@ -50,7 +50,7 @@ msgstr ""
 msgid "CSV Separator"
 msgstr ""
 
-#: ../utils.py:193
+#: ../utils.py:198
 msgid "CSV file must contains at least 2 columns"
 msgstr ""
 
@@ -100,6 +100,7 @@ msgid "Edit Classification Category"
 msgstr ""
 
 #: ../contents/category.py:48
+#: ../vocabularies.py:93
 msgid "Enabled"
 msgstr ""
 
@@ -107,7 +108,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: ../utils.py:188
+#: ../utils.py:193
 msgid "File encoding is not utf8"
 msgstr ""
 
@@ -130,7 +131,7 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
-#: ../form/importform.py:326
+#: ../form/importform.py:329
 msgid "Import completed in ${duration} seconds"
 msgstr ""
 
@@ -148,11 +149,11 @@ msgstr ""
 msgid "Installs the collective.classification.tree add-on."
 msgstr ""
 
-#: ../utils.py:201
+#: ../utils.py:206
 msgid "Lines ${lines} does not contains the same number of element"
 msgstr ""
 
-#: ../utils.py:263
+#: ../utils.py:268
 msgid "Lines ${lines} have missing required value(s)"
 msgstr ""
 
@@ -172,6 +173,10 @@ msgstr ""
 
 #: ../vocabularies.py:89
 msgid "Parent Identifier"
+msgstr ""
+
+#: ../profiles/default/actions.xml
+msgid "Refresh cache"
 msgstr ""
 
 #: ../form/importform.py:116
@@ -194,7 +199,7 @@ msgstr ""
 msgid "The CSV file contains an header row"
 msgstr ""
 
-#: ../utils.py:218
+#: ../utils.py:223
 msgid "The following required columns are missing: ${columns}"
 msgstr ""
 
