@@ -101,7 +101,7 @@
           {"data": "identifier", "render": column_link_renderer},
           {"data": "title", "render": column_link_renderer},
           {"data": "informations"},
-          {"data": "enabled"},
+          {"data": "enabled", "searchable": false},
           {"data": "links", "orderable": false, "searchable": false, "render": column_action_renderer},
         ],
         "oLanguage": {
