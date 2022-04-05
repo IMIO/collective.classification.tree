@@ -11,7 +11,8 @@ from zope.interface import Invalid
 import csv
 import re
 
-DECIMAL_SEPARATORS = ("-", ".", ";", "/", "|", ":")
+# DECIMAL_SEPARATORS = ("-", ".", ";", "/", "|", ":")
+DECIMAL_SEPARATORS = ("-", ".", "/")
 
 
 @ram.cache(forever_context_cache_key)
@@ -66,9 +67,12 @@ def get_parents(code):
     """Get parents based on a decimal code"""
     levels = []
     level = ""
-    for char in code:
+    for i, char in enumerate(code):
         level = u"{0}{1}".format(level, char)
-        if char in DECIMAL_SEPARATORS:
+        if char == u'/':  # we stop when encoutering /
+            levels.append(u"{}{}".format(level, code[i+1:]))
+            break
+        elif char in DECIMAL_SEPARATORS:
             continue
         else:
             levels.append(level)
@@ -76,7 +80,9 @@ def get_parents(code):
 
 
 def generate_decimal_structure(code, enabled=False):
-    """Generate a structure based on a decimal code"""
+    """Generate a structure based on a decimal code.
+
+    If it contains / the parent is considered only before the /"""
     levels = get_parents(code)
     results = {}
     last_element = None
@@ -91,14 +97,16 @@ def generate_decimal_structure(code, enabled=False):
 
 def get_decimal_parent(code):
     """Return the parent decimal code from a given code e.g. 100 from 100.1"""
-    length = 1
-    for char in list(reversed(list(code)))[1:]:
-        if char in DECIMAL_SEPARATORS:
-            length += 1
+    level = lastparent = ""
+    for i, char in enumerate(code[:-1]):
+        level = u"{0}{1}".format(level, char)
+        if char == u'/':  # we stop when encoutering /
+            break
+        elif char in DECIMAL_SEPARATORS:
             continue
         else:
-            break
-    return code[:length * -1] or None
+            lastparent = level
+    return lastparent or None
 
 
 def importer(

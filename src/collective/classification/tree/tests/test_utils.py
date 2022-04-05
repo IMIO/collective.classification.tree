@@ -41,6 +41,13 @@ class TestUtils(unittest.TestCase):
         category.title = title
         return category
 
+    def test_get_parents(self):
+        self.assertListEqual(utils.get_parents('-1.212.7'), [u'-1', u'-1.2', u'-1.21', u'-1.212', u'-1.212.7'])
+        self.assertListEqual(utils.get_parents('-1.212.7/12'),
+                             [u'-1', u'-1.2', u'-1.21', u'-1.212', u'-1.212.7', u'-1.212.7/12'])
+        self.assertListEqual(utils.get_parents('-1.2./12'), [u'-1', u'-1.2', u'-1.2./12'])
+        self.assertListEqual(utils.get_parents('-1.2...'), [u'-1', u'-1.2'])
+
     def test_iterate_over_tree_basic(self):
         """Ensure that returned results are correct"""
         results = utils.iterate_over_tree(self.container)
@@ -488,19 +495,22 @@ class TestUtils(unittest.TestCase):
 
     def test_decimal_structure_with_mixed_separator(self):
         """Ensure that mixed separator are ignored during structure generation"""
-        result = utils.generate_decimal_structure("1-0.0/0")
+        result = utils.generate_decimal_structure("-1.073/074")
         expected_results = {
             None: {
-                u"1": (u"1", {u'enabled': False}),
+                u"-1": (u"-1", {u'enabled': False}),
             },
-            u"1": {
-                u"1-0": (u"1-0", {u'enabled': False}),
+            u"-1": {
+                u"-1.0": (u"-1.0", {u'enabled': False}),
             },
-            u"1-0": {
-                u"1-0.0": (u"1-0.0", {u'enabled': False}),
+            u"-1.0": {
+                u"-1.07": (u"-1.07", {u'enabled': False}),
             },
-            u"1-0.0": {
-                u"1-0.0/0": (u"1-0.0/0", {}),
+            u"-1.07": {
+                u"-1.073": (u"-1.073", {u'enabled': False}),
+            },
+            u'-1.073': {
+                u'-1.073/074': (u'-1.073/074', {}),
             },
         }
         self.assertEqual(expected_results, result)
@@ -523,6 +533,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual("10", utils.get_decimal_parent("10.0"))
         self.assertEqual("10", utils.get_decimal_parent("10-0"))
         self.assertEqual("10", utils.get_decimal_parent("10/0"))
+        self.assertEqual("10", utils.get_decimal_parent("10/073"))
         self.assertEqual("1.0", utils.get_decimal_parent("1.0.0"))
         self.assertEqual("1.0.0", utils.get_decimal_parent("1.0.0.0"))
 
@@ -530,4 +541,5 @@ class TestUtils(unittest.TestCase):
         """Test when the decimal code have multiple separators"""
         self.assertEqual("1.0", utils.get_decimal_parent("1.0..0"))
         self.assertEqual("1.0", utils.get_decimal_parent("1.0./0"))
+        self.assertEqual("1.0", utils.get_decimal_parent("1.0./073"))
         self.assertEqual("1.0", utils.get_decimal_parent("1.0-/0"))

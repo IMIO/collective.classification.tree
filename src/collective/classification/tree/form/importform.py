@@ -95,7 +95,7 @@ class IImportSecondStepBase(Interface):
         annotations = IAnnotations(obj.__context__)
         format_dic = {}
         if obj._Data_data___.get('decimal_import', False):
-            format_dic = {'identifier': r'(-?[.\d]+|( *, *)*)+$'}  # decimal format validation with multiple values
+            format_dic = {'identifier': r'(-?[./\d]+|( *, *)*)+$'}  # decimal format validation with multiple values
         return utils.validate_csv_content(
             obj, annotations[ANNOTATION_KEY], ("identifier",), format_dic,
         )
