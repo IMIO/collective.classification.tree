@@ -295,6 +295,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                 continue
             title = line_data.pop("title", None)
             if title:
+                title = title.strip()
                 if kw.get('replace_slash', False):
                     title = title.replace('/', '-')
             if 'enabled' in line_data:
