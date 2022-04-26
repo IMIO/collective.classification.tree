@@ -28,6 +28,7 @@ def compare_tree_files():
     parser.add_argument('-fc', '--file_config', dest='tree_conf', required=True,
                         help='Tree file configuration: "skip lines|separator|id cols|title col" (starting at 0). '
                              'Like: 1|;|0,4|1')
+    parser.add_argument('-u', '--unicity', action='store_true', dest='check_unicity', help='Check code unicity')
     ns = parser.parse_args()
     verbose("Start of %s" % sys.argv[0])
     if '1' in ns.parts:
@@ -39,6 +40,7 @@ def compare_tree_files():
         ref_confs = ns.ref_conf.split('|')
         if len(ref_confs) != 4:
             error("rc parameter not well formated: {}".format(ns.ref_conf))
+            parser.print_help()
             sys.exit(1)
         skip_lines, ref_id_col, ref_tit_col = int(ref_confs[0]), int(ref_confs[2]), int(ref_confs[3])
         lines = read_csv(ns.ref_file, skip_lines=skip_lines, delimiter=ref_confs[1])
@@ -57,6 +59,7 @@ def compare_tree_files():
         tree_confs = ns.tree_conf.split('|')
         if len(tree_confs) != 4:
             error("fc parameter not well formated: {}".format(ns.tree_conf))
+            parser.print_help()
             sys.exit(1)
         skip_lines, tree_tit_col = int(tree_confs[0]), tree_confs[3]
         tree_id_cols = [int(c) for c in tree_confs[2].split(',')]
@@ -73,6 +76,8 @@ def compare_tree_files():
                     if not k.startswith('A.') and not re.match(decimal_identifier, k):
                         error("{},{}, bad tree identifier value '{}', '{}'".format(i, id_col, k, v))
                     tree_dic[k] = {'l': i, 'c': id_col, 't': v}
+                elif ns.check_unicity:
+                    error("{}, id '{}' already found line {}".format(i, k, tree_dic[k]['l']))
     if '123' == ns.parts:
         verbose("Comparing...")
         for k in sorted(tree_dic):
@@ -109,6 +114,7 @@ def add_parent():
     tree_confs = ns.tree_conf.split('|')
     if len(tree_confs) != 4:
         error("config parameter not well formated: {}".format(ns.tree_conf))
+        parser.print_help()
         sys.exit(1)
     sep, code_col, id_col, id_parent = tree_confs[0], int(tree_confs[1]), tree_confs[2], tree_confs[3]
     has_id = id_col != ''
@@ -203,6 +209,7 @@ def add_archived():
     tree_confs = ns.tree_conf.split('|')
     if len(tree_confs) != 4:
         error("config parameter not well formated: {}".format(ns.tree_conf))
+        parser.print_help()
         sys.exit(1)
     sep, arc_col, id_col, tit_col = tree_confs[0], int(tree_confs[1]), int(tree_confs[2]), int(tree_confs[3])
     lines = read_csv(ns.tree_file, strip_chars=' ', delimiter=sep)
