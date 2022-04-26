@@ -20,8 +20,8 @@ def compare_tree_files():
     parser = argparse.ArgumentParser(description='Compare a tree file with a reference one')
     parser.add_argument('-p', '--parts', dest='parts', help='Run parts: 1 (load ref), 2 (load tree), 3 (compare)',
                         default='123')
-    parser.add_argument('-r', '--reference', dest='ref_file', help='Reference file (csv format)', required=True)
-    parser.add_argument('-rc', '--reference_config', dest='ref_conf', required=True,
+    parser.add_argument('-r', '--reference', dest='ref_file', help='Reference file (csv format)')
+    parser.add_argument('-rc', '--reference_config', dest='ref_conf',
                         help='Reference file configuration: "skip lines|separator|id col|title col" (starting at 0). '
                              'Like: 1|;|0|1')
     parser.add_argument('-f', '--file', dest='tree_file', help='Tree file (csv format)', required=True)
@@ -31,6 +31,10 @@ def compare_tree_files():
     ns = parser.parse_args()
     verbose("Start of %s" % sys.argv[0])
     if '1' in ns.parts:
+        if not ns.ref_file or not ns.ref_conf:
+            error("Missing -r or -rc parameters for part 1 !")
+            parser.print_help()
+            sys.exit(1)
         verbose("Reading ref file '{}'".format(ns.ref_file))
         ref_confs = ns.ref_conf.split('|')
         if len(ref_confs) != 4:
