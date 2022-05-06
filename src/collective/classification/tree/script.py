@@ -67,17 +67,18 @@ def compare_tree_files():
         tree_dic = OrderedDict()
         for i, line in enumerate(lines, start=skip_lines+1):
             for j, id_col in enumerate(tree_id_cols):
-                k = line[id_col]
-                if not k:
+                code = line[id_col]
+                if not code:
                     continue
-                v = tree_tit_col and j == 0 and line[int(tree_tit_col)] or ''
-                if k not in tree_dic:
-                    # A. = specific to comblain
-                    if not k.startswith('A.') and not re.match(decimal_identifier, k):
-                        error("{},{}, bad tree identifier value '{}', '{}'".format(i, id_col, k, v))
-                    tree_dic[k] = {'l': i, 'c': id_col, 't': v}
-                elif ns.check_unicity:
-                    error("{}, id '{}' already found line {}".format(i, k, tree_dic[k]['l']))
+                for k in code.split(','):
+                    v = tree_tit_col and j == 0 and line[int(tree_tit_col)] or ''
+                    if k not in tree_dic:
+                        # A. = specific to comblain
+                        if not k.startswith('A.') and not re.match(decimal_identifier, k):
+                            error("{},{}, bad tree identifier value '{}', '{}'".format(i, id_col, k, v))
+                        tree_dic[k] = {'l': i, 'c': id_col, 't': v}
+                    elif ns.check_unicity:
+                        error("{}, id '{}' already found line {}".format(i, k, tree_dic[k]['l']))
     if '123' == ns.parts:
         verbose("Comparing...")
         for k in sorted(tree_dic):
