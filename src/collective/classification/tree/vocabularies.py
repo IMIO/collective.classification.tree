@@ -2,9 +2,8 @@
 
 from collective.classification.tree import _
 from collective.classification.tree import utils
-from operator import itemgetter
-
 from imio.helpers.vocabularies import EnhancedTerm
+from operator import itemgetter
 from plone import api
 from unidecode import unidecode
 from z3c.form import util
