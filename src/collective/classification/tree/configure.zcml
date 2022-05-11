@@ -50,6 +50,12 @@
     />
 
   <utility
+    component=".vocabularies.full_classification_tree_vocabulary_factory"
+    name="collective.classification.vocabularies:fulltree"
+    provides="zope.schema.interfaces.IVocabularyFactory"
+    />
+
+  <utility
     component=".vocabularies.classification_tree_id_mapping_vocabulary_factory"
     name="collective.classification.vocabularies:tree_id_mapping"
     provides="zope.schema.interfaces.IVocabularyFactory"

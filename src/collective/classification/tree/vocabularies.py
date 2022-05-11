@@ -42,6 +42,21 @@ def classification_tree_vocabulary_factory(context):
     return category_iterable_to_vocabulary(results)
 
 
+def full_classification_tree_vocabulary_factory(context):
+    query = {"portal_type": "ClassificationContainer"}
+    containers = context.portal_catalog.unrestrictedSearchResults(**query)
+    results = []
+    for container in containers:
+        results.extend(
+            [
+                (e.UID(), e.Title(), e.enabled)
+                for e in utils.iterate_over_tree(container._unrestrictedGetObject())
+            ]
+        )
+    results = sorted(results, key=itemgetter(1))
+    return category_iterable_to_vocabulary(results)
+
+
 def classification_tree_id_mapping_vocabulary_factory(context):
     query = {"portal_type": "ClassificationContainer", "context": api.portal.get()}
     containers = api.content.find(**query)
