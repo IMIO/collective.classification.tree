@@ -82,4 +82,7 @@ class ClassificationContainer(Container, BaseContainer):
 
 
 def container_modified(context, event):
+    """Invalidates tree cache node.
+
+    data transfer: ✅"""
     caching.invalidate_cache("collective.classification.tree.utils.iterate_over_tree", context.UID())
