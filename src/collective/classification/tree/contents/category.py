@@ -153,26 +153,20 @@ ClassificationCategoryFactory = Factory(ClassificationCategory)
 
 
 def container_modified(context, event):
-    """Invalidates tree cache node.
-
-    data transfer: ❓"""
+    """Invalidates tree cache node."""
     func = "collective.classification.tree.utils.iterate_over_tree"
     for element in utils.get_chain(context):
         caching.invalidate_cache(func, element.UID())
 
 
 def category_modified(context, event):
-    """Invalidates tree cache node.
-
-    data transfer: ❓"""
+    """Invalidates tree cache node."""
     # This allow cache invalidation on edit
     notify(ContainerModifiedEvent(aq_parent(context)))
 
 
 def category_deleted(obj, event):
-    """Checks if some content is linked to the category to delete.
-
-    data transfer: ❌"""
+    """Checks if some content is linked to the category to delete."""
     # TODO check if a cache invalidation (of all parents) is needed
     obj_uid = api.content.get_uuid(obj)
     try:
