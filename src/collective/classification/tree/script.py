@@ -196,7 +196,7 @@ def add_parent():
 
 
 def add_archived():
-    """Add archived columns to inforius exported file"""
+    """Add archived columns to exported file"""
     parser = argparse.ArgumentParser(description='From mixed archived column, add 2 new columns')
     parser.add_argument('-p', '--parts', dest='parts', help='Run parts: 1 (add archived), 2 (write)',
                         default='12')
