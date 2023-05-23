@@ -18,7 +18,6 @@ class TestCategoriesContents(unittest.TestCase):
         self.folder = api.content.create(id="folder", type="Folder", container=self.portal)
         self.container = api.content.create(title="Container", type="ClassificationContainer", container=self.folder)
 
-
     def tearDown(self):
         api.content.delete(self.folder)
 

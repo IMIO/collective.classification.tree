@@ -45,7 +45,7 @@ def compare_tree_files():
         skip_lines, ref_id_col, ref_tit_col = int(ref_confs[0]), int(ref_confs[2]), int(ref_confs[3])
         lines = read_csv(ns.ref_file, skip_lines=skip_lines, delimiter=ref_confs[1])
         ref_dic = {}
-        for i, line in enumerate(lines, start=skip_lines+1):
+        for i, line in enumerate(lines, start=skip_lines + 1):
             k = line[ref_id_col]
             if k in ref_dic:
                 error("Ref id already exists: {} : {} <=> {}".format(k, ref_dic[k]['t'], line[ref_tit_col]))
@@ -65,7 +65,7 @@ def compare_tree_files():
         tree_id_cols = [int(c) for c in tree_confs[2].split(',')]
         lines = read_csv(ns.tree_file, skip_lines=skip_lines, delimiter=tree_confs[1])
         tree_dic = OrderedDict()
-        for i, line in enumerate(lines, start=skip_lines+1):
+        for i, line in enumerate(lines, start=skip_lines + 1):
             for j, id_col in enumerate(tree_id_cols):
                 code = line[id_col]
                 if not code:

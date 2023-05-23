@@ -70,7 +70,7 @@ def get_parents(code):
     for i, char in enumerate(code):
         level = u"{0}{1}".format(level, char)
         if char == u'/':  # we stop when encoutering /
-            levels.append(u"{}{}".format(level, code[i+1:]))
+            levels.append(u"{}{}".format(level, code[i + 1:]))
             break
         elif char in DECIMAL_SEPARATORS:
             continue
@@ -273,7 +273,7 @@ def validate_csv_content(obj, annotation, required_columns, format_dic={}):
             for col in format_dic:
                 val = line[columns[col]]
                 if not re.match(format_dic[col], val):
-                    wrong_values.append("Line {}, col {}: '{}'".format(idx+base_idx, columns[col]+1, val))
+                    wrong_values.append("Line {}, col {}: '{}'".format(idx + base_idx, columns[col] + 1, val))
         if wrong_lines:
             raise Invalid(
                 _(

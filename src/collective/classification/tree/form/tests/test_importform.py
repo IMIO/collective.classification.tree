@@ -971,42 +971,6 @@ class TestImportForm(unittest.TestCase):
         data, errors = form.extractData()
         self.assertEqual(0, len(errors))
 
-    def test_second_step_optional_columns_data_ok(self):
-        """Test validation of optional columns data"""
-        request = self.layer["request"]
-        request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"parent_identifier",
-            "form.widgets.column_1": u"identifier",
-            "form.widgets.column_2": u"title",
-            "form.widgets.column_3": u"informations",
-            "form.widgets.decimal_import": u"False",
-            "form.widgets.allow_empty": u"False",
-        }
-        annotations = IAnnotations(self.container)
-        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
-        annotation["has_header"] = False
-        annotation["separator"] = u";"
-        csv = StringIO()
-        lines = [
-            ["", "key1", "Key 1", "infos"],
-            ["key1", "key1.1", "Key 1.1", ""],
-            ["key1.1", "key1.1.1", "Key 1.1.1", ""],
-        ]
-        for line in lines:
-            csv.write(";".join(line) + "\n")
-        csv.seek(0)
-        annotation["source"] = NamedBlobFile(
-            data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
-        )
-        form = importform.ImportFormSecondStep(self.container, request)
-        form.updateFieldsFromSchemata()
-        form.updateWidgets()
-        data, errors = form.extractData()
-        self.assertEqual(0, len(errors))
-
     def test_process_data_basic(self):
         """Tests _process_data with basic data structure"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
