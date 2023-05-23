@@ -21,6 +21,9 @@ var/
 # files
 .installed.cfg
 .mr.developer.cfg
+.plone-version
+.plone.versioncheck*
+checkversion*
 lib64
 log.html
 output.xml
