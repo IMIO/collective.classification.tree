@@ -58,6 +58,7 @@ setup(
         # "plone.app.referenceablebehavior",  # not py3 compatible
         "plone.app.relationfield",
         "plone.app.lockingbehavior",
+        "plone.formwidget.autocomplete",
         "plone.schema",
         "collective.js.datatables",
         "imio.helpers",
