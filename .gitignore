@@ -1,4 +1,5 @@
-.coverage
+.coverageA
+.idea
 *.egg-info
 *.log
 *.mo
@@ -23,11 +24,13 @@ var/
 .mr.developer.cfg
 .plone-version
 .plone.versioncheck*
+.python-version
 checkversion*
 lib64
 log.html
 output.xml
 pip-selfcheck.json
+pyvenv.cfg
 report.html
 .vscode/
 .tox/
