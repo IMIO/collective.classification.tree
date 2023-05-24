@@ -335,7 +335,7 @@ class TestUtils(unittest.TestCase):
         subelement = container.get_by("identifier", "001")
         self.assertEqual(u"First Modified", subelement.title)
         self.assertEqual(3, len(subelement))
-        values = sorted(subelement.values(), key=attrgetter('identifier'))
+        values = sorted(list(subelement.values()), key=attrgetter('identifier'))
         self.assertEqual(
             ["001.1", "001.2", "001.3"], [e.identifier for e in values]
         )

@@ -204,7 +204,7 @@ def validate_csv_data(obj, min_length=2):
             raise Invalid(_("File encoding is not utf8"))
     with source.open() as f:
         reader = csv.reader(f, delimiter=separator.encode("utf-8"))
-        first_line = reader.next()
+        first_line = next(reader)
         if len(first_line) < 2:
             raise Invalid(_("CSV file must contains at least 2 columns"))
         base_length = len(first_line)
@@ -261,7 +261,7 @@ def validate_csv_content(obj, annotation, required_columns, format_dic={}):
         base_idx = 1
         if has_header:
             base_idx += 1
-            reader.next()
+            next(reader)
         expected_length = len(required_columns)
         wrong_lines = []
         wrong_values = []

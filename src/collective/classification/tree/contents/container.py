@@ -55,7 +55,7 @@ class ClassificationContainer(Container, BaseContainer):
         return element.__of__(self)
 
     def keys(self):
-        return self._tree.keys()
+        return list(self._tree.keys())
 
     def items(self):
         return [(i[0], i[1].__of__(self),) for i in self._tree.items()]
