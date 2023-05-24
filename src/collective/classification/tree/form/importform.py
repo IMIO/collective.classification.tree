@@ -25,6 +25,7 @@ from zope.interface.interface import InterfaceClass
 import copy
 import csv
 import re
+from six.moves import range
 
 
 ANNOTATION_KEY = "collective.classification:import"
@@ -171,10 +172,10 @@ class BaseImportFormSecondStep(BaseForm):
         with data["source"].open() as f:
             f.seek(0)
             reader = csv.reader(f, delimiter=data["separator"].encode(encoding))
-            first_line = reader.next()
+            first_line = next(reader)
             try:
                 for i in range(0, 2):
-                    data_lines.append(reader.next())
+                    data_lines.append(next(reader))
             except Exception:
                 pass
 
@@ -228,7 +229,11 @@ class BaseImportFormSecondStep(BaseForm):
         self._before_import()
         # {'source': <plone.namedfile.file.NamedBlobFile object at ...>, 'has_header': True, 'separator': u';'}
         import_data = self._get_data()
-        kwargs = {k: data.pop(k) for k in copy.deepcopy(data.keys()) if not k.startswith("column_")}
+        kwargs = {
+            k: data.pop(k)
+            for k in copy.deepcopy(list(data.keys()))
+            if not k.startswith("column_")
+        }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
         data = []
@@ -238,7 +243,7 @@ class BaseImportFormSecondStep(BaseForm):
             f.seek(0)
             reader = csv.reader(f, delimiter=delimiter)
             if has_header:
-                reader.next()
+                next(reader)
             data = self._process_csv(reader, mapping, encoding, import_data, **kwargs)
         for node in self._process_data(data):
             self._import_node(node)

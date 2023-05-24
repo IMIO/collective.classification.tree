@@ -127,7 +127,7 @@ class ClassificationCategory(DynamicType, Traversable, Implicit, Persistent, Bas
         return element.__of__(self)
 
     def keys(self):
-        return self._tree.keys()
+        return list(self._tree.keys())
 
     def items(self):
         return [(i[0], i[1].__of__(self)) for i in self._tree.items()]
@@ -157,7 +157,7 @@ class ClassificationCategory(DynamicType, Traversable, Implicit, Persistent, Bas
         """Delete the contained objects with the specified ids"""
         if ids is None:
             ids = []
-        if isinstance(ids, basestring):
+        if isinstance(ids, six.string_types):
             ids = [ids]
         for id in ids:
             del self[id]

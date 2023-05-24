@@ -357,11 +357,19 @@ class TestUtils(unittest.TestCase):
         subelement = container.get_by("identifier", "001")
         self.assertEqual(u"First Modified", subelement.title)
         self.assertEqual(3, len(subelement))
-        values = sorted(subelement.values(), key=attrgetter("identifier"))
-        self.assertEqual(["001.1", "001.2", "001.3"], [e.identifier for e in values])
-        self.assertEqual([u"first", u"second modified", u"new one"], [e.title for e in values])
-        self.assertEqual([None, u"new infos", u"infos"], [e.informations for e in values])
-        self.assertEqual([True, False, False], [e.enabled for e in values])
+        values = sorted(list(subelement.values()), key=attrgetter('identifier'))
+        self.assertEqual(
+            ["001.1", "001.2", "001.3"], [e.identifier for e in values]
+        )
+        self.assertEqual(
+            [u"first", u"second modified", u"new one"], [e.title for e in values]
+        )
+        self.assertEqual(
+            [None, u"new infos", u"infos"], [e.informations for e in values]
+        )
+        self.assertEqual(
+            [True, False, False], [e.enabled for e in values]
+        )
 
     def test_importer_multi_levels_result(self):
         """Ensure that the returned list is correct"""

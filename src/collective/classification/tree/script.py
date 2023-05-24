@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 from collections import OrderedDict
 from collective.classification.tree.utils import get_decimal_parent
 from collective.classification.tree.utils import get_parents
