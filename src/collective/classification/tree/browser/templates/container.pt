@@ -62,6 +62,7 @@
 
   <script type="text/javascript">
     $(document).ready(function() {
+      //<![CDATA[
       var column_link_renderer = function(data, type, row, meta) {
         if (type === 'display') {
           data = '<a href="' + row["@id"] + '">' + data + '</a>';
@@ -80,7 +81,7 @@
         }
         return render;
       };
-
+     //]]>
 
       $("#table").DataTable({
         "processing": true,
