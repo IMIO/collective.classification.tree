@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-from StringIO import StringIO
 from ZPublisher.HTTPRequest import FileUpload
 from collective.classification.tree import testing
 from collective.classification.tree.form import importform
@@ -8,6 +6,9 @@ from operator import itemgetter
 from persistent.dict import PersistentDict
 from plone import api
 from plone.namedfile import NamedBlobFile
+from six import BytesIO
+from six import ensure_str
+from six import StringIO
 from zope.annotation import IAnnotations
 from zope.component import createObject
 from zope.i18n import translate
@@ -87,7 +88,7 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv"},
+                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
             )()
         )
         request.form = {
@@ -117,7 +118,7 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": csv, "filename": "foo.csv", "headers": "text/csv"},
+                {"file": csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
             )()
         )
         request.form = {
@@ -131,7 +132,9 @@ class TestImportForm(unittest.TestCase):
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertEqual("CSV file must contains at least 2 columns", errors[0].error.message)
+        self.assertEqual(
+            "CSV file must contains at least 2 columns", getattr(errors[0].error, 'message', errors[0].message)
+        )
 
     def test_first_step_validate_csv_encoding_ok(self):
         """Ensure that we can decode csv file"""
@@ -140,7 +143,7 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv"},
+                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
             )()
         )
         request.form = {
@@ -158,20 +161,20 @@ class TestImportForm(unittest.TestCase):
     def test_first_step_validate_csv_encoding_nok(self):
         """Ensure that we can decode csv file"""
         request = self.layer["request"]
-        csv = StringIO()
         lines = [
             [u"猫", u"èè", u"ùù"],
             ["", "key1", "Key 1"],
             [u"猫", u"ààà", u"ééé"],
         ]
+        stream = BytesIO()
         for line in lines:
-            csv.write(";".join(line).encode("utf-16") + "\n")
-        csv.seek(0)
+            stream.write((";".join(line) + "\n").encode("utf-16"))
+        stream.seek(0)
         source = FileUpload(
             type(
                 "obj",
                 (object,),
-                {"file": csv, "filename": "foo.csv", "headers": "text/csv"},
+                {"file": stream, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
             )()
         )
         request.form = {
@@ -185,7 +188,7 @@ class TestImportForm(unittest.TestCase):
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertEqual("File encoding is not utf8", errors[0].error.message)
+        self.assertEqual("File encoding is not utf8", getattr(errors[0].error, 'message', errors[0].message))
 
     def test_first_step_validate_line_columns_ok(self):
         """Ensure that every lines have the same number of columns"""
@@ -194,7 +197,7 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv"},
+                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
             )()
         )
         request.form = {
@@ -225,7 +228,7 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": csv, "filename": "foo.csv", "headers": "text/csv"},
+                {"file": csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
             )()
         )
         request.form = {
@@ -239,7 +242,7 @@ class TestImportForm(unittest.TestCase):
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertTrue("Lines 2, 3" in translate(errors[0].error.message))
+        self.assertTrue("Lines 2, 3" in translate(getattr(errors[0].error, 'message', errors[0].message)))
 
     def test_second_step_basic_encoding(self):
         """Ensure that form can be displayed even with special characters"""
@@ -254,13 +257,13 @@ class TestImportForm(unittest.TestCase):
             [
                 "null",
                 "",
-                u"key1 éà$€".encode("utf8"),
-                u"Key 1 éà$€".encode("utf8"),
-                u"informations éà$€".encode("utf8"),
+                u"key1 éà$€",
+                u"Key 1 éà$€",
+                u"informations éà$€",
             ],
         ]
         for line in lines:
-            csv.write(";".join(line) + "\n")
+            csv.write(ensure_str(";".join(line)) + "\n")
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
@@ -381,12 +384,12 @@ class TestImportForm(unittest.TestCase):
         annotation["separator"] = u";"
         csv = StringIO()
         lines = [
-            [u"猫".encode("utf8"), u"èè".encode("utf8"), u"ùù".encode("utf8")],
-            ["", u"kéy1".encode("utf8"), u"Kèy 1".encode("utf8")],
-            [u"kéy1".encode("utf8"), u"kéy1.1".encode("utf8"), u"猫".encode("utf8")],
+            [u"猫", u"èè", u"ùù"],
+            ["", u"kéy1", u"Kèy 1"],
+            [u"kéy1", u"kéy1.1", u"猫"],
         ]
         for line in lines:
-            csv.write(";".join(line) + "\n")
+            csv.write(ensure_str(";".join(line)) + "\n")
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
@@ -420,12 +423,12 @@ class TestImportForm(unittest.TestCase):
         annotation["separator"] = u";"
         csv = StringIO()
         lines = [
-            [u"猫".encode("utf8"), u"èè".encode("utf8"), u"ùù".encode("utf8")],
-            ["", u"kéy1".encode("utf8"), u"Kèy 1".encode("utf8")],
-            [u"kéy1".encode("utf8"), u"kéy1.1".encode("utf8"), u"猫".encode("utf8")],
+            [u"猫", u"èè", u"ùù"],
+            ["", u"kéy1", u"Kèy 1"],
+            [u"kéy1", u"kéy1.1", u"猫"],
         ]
         for line in lines:
-            csv.write(";".join(line) + "\n")
+            csv.write(ensure_str(";".join(line)) + "\n")
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
@@ -732,7 +735,7 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(
             "The following required columns are missing: identifier",
-            translate(errors[0].error.message),
+            translate(getattr(errors[0].error, 'message', errors[0].message)),
         )
 
     def test_second_step_required_columns_data_ok(self):
@@ -798,7 +801,7 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(
             "Lines 4 have missing required value(s)",
-            translate(errors[0].error.message),
+            translate(getattr(errors[0].error, 'message', errors[0].message)),
         )
 
     def test_second_step_required_columns_data_nok_allow_empty(self):
@@ -874,7 +877,7 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(
             "Bad format values: Line 4, col 1: '-1 11'",
-            translate(errors[0].error.message),
+            translate(getattr(errors[0].error, 'message', errors[0].message)),
         )
 
     def test_second_step_columns_data_format_ok(self):
