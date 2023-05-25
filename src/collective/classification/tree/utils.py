@@ -4,12 +4,18 @@ from Acquisition import aq_parent
 from collective.classification.tree import _
 from collective.classification.tree.caching import forever_context_cache_key
 from plone.memoize import ram
+from six import ensure_str
 from zope.component import createObject
 from zope.event import notify
 from zope.interface import Invalid
 
 import csv
 import re
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 # DECIMAL_SEPARATORS = ("-", ".", ";", "/", "|", ":")
 DECIMAL_SEPARATORS = ("-", ".", "/")
@@ -202,23 +208,23 @@ def validate_csv_data(obj, min_length=2):
             f.read().decode("utf8")
         except UnicodeDecodeError:
             raise Invalid(_("File encoding is not utf8"))
-    with source.open() as f:
-        reader = csv.reader(f, delimiter=separator.encode("utf-8"))
-        first_line = next(reader)
-        if len(first_line) < 2:
-            raise Invalid(_("CSV file must contains at least 2 columns"))
-        base_length = len(first_line)
-
-        wrong_lines = [
-            str(i + 2) for i, v in enumerate(reader) if len(v) != base_length
-        ]
-        if wrong_lines:
-            raise Invalid(
-                _(
-                    "Lines ${lines} does not contains the same number of element",
-                    mapping={"lines": ", ".join(wrong_lines)},
-                )
+    f = StringIO(ensure_str(source.data))
+    reader = csv.reader(f, delimiter=ensure_str(separator, "utf-8"))
+    first_line = next(reader)
+    if len(first_line) < 2:
+        raise Invalid(_("CSV file must contains at least 2 columns"))
+    base_length = len(first_line)
+    wrong_lines = [
+        str(i + 2) for i, v in enumerate(reader) if len(v) != base_length
+    ]
+    f.close()
+    if wrong_lines:
+        raise Invalid(
+            _(
+                "Lines ${lines} does not contains the same number of element",
+                mapping={"lines": ", ".join(wrong_lines)},
             )
+        )
     return True
 
 
@@ -256,31 +262,32 @@ def validate_csv_content(obj, annotation, required_columns, format_dic={}):
     separator = annotation["separator"]
     has_header = annotation["has_header"]
     source = annotation["source"]
-    with source.open() as f:
-        reader = csv.reader(f, delimiter=separator.encode("utf-8"))
-        base_idx = 1
-        if has_header:
-            base_idx += 1
-            next(reader)
-        expected_length = len(required_columns)
-        wrong_lines = []
-        wrong_values = []
-        for idx, line in enumerate(reader):
-            if not getattr(obj, 'allow_empty', False):  # option only in tree import
-                values = [line[columns[n]] for n in required_columns if line[columns[n]]]
-                if len(values) != expected_length:
-                    wrong_lines.append(str(idx + base_idx))
-            for col in format_dic:
-                val = line[columns[col]]
-                if not re.match(format_dic[col], val):
-                    wrong_values.append("Line {}, col {}: '{}'".format(idx + base_idx, columns[col] + 1, val))
-        if wrong_lines:
-            raise Invalid(
-                _(
-                    "Lines ${lines} have missing required value(s)",
-                    mapping={"lines": ", ".join(wrong_lines)},
-                )
+    f = StringIO(ensure_str(source.data))
+    reader = csv.reader(f, delimiter=ensure_str(separator, "utf-8"))
+    base_idx = 1
+    if has_header:
+        base_idx += 1
+        next(reader)
+    expected_length = len(required_columns)
+    wrong_lines = []
+    wrong_values = []
+    for idx, line in enumerate(reader):
+        if not getattr(obj, 'allow_empty', False):  # option only in tree import
+            values = [line[columns[n]] for n in required_columns if line[columns[n]]]
+            if len(values) != expected_length:
+                wrong_lines.append(str(idx + base_idx))
+        for col in format_dic:
+            val = line[columns[col]]
+            if not re.match(format_dic[col], val):
+                wrong_values.append("Line {}, col {}: '{}'".format(idx + base_idx, columns[col] + 1, val))
+    f.close()
+    if wrong_lines:
+        raise Invalid(
+            _(
+                "Lines ${lines} have missing required value(s)",
+                mapping={"lines": ", ".join(wrong_lines)},
             )
-        if wrong_values:
-            raise Invalid(_("Bad format values: ${errors}", mapping={'errors': ' || '.join(wrong_values)}))
+        )
+    if wrong_values:
+        raise Invalid(_("Bad format values: ${errors}", mapping={'errors': ' || '.join(wrong_values)}))
     return True
