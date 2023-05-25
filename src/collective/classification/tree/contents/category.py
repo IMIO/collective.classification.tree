@@ -76,6 +76,8 @@ class ClassificationCategory(
     def getId(self):
         return self.UID()
 
+    id = property(getId)
+
     def Title(self):
         if self.identifier == self.title:
             return self.title
