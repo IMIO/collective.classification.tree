@@ -8,6 +8,10 @@ from plone.autoform.form import AutoExtensibleForm
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from plone.z3cform.layout import FormWrapper
+from six import ensure_str
+from six import ensure_text
+from six import StringIO
+from six.moves import range
 from time import time
 from z3c.form import button
 from z3c.form.datamanager import AttributeField
@@ -25,8 +29,6 @@ from zope.interface.interface import InterfaceClass
 import copy
 import csv
 import re
-from six.moves import range
-
 
 ANNOTATION_KEY = "collective.classification:import"
 
@@ -166,24 +168,25 @@ class BaseImportFormSecondStep(BaseForm):
         data = self._get_data()
         encoding = "utf-8"
         has_header = data["has_header"]
-        with data["source"].open() as f:
-            f.seek(0)
-            reader = csv.reader(f, delimiter=data["separator"].encode(encoding))
-            first_line = next(reader)
-            try:
-                for i in range(0, 2):
-                    data_lines.append(next(reader))
-            except Exception:
-                pass
+        f = StringIO(ensure_str(data["source"].data))
+        # f.seek(0)
+        reader = csv.reader(f, delimiter=ensure_str(data["separator"], encoding))
+        first_line = next(reader)
+        try:
+            for i in range(0, 2):
+                data_lines.append(next(reader))
+        except Exception:
+            pass
+        f.close()
 
         fields = []
         for idx, element in enumerate(first_line):
             if has_header:
-                name = element.decode(encoding)
+                name = ensure_text(element, encoding)
             else:
                 name = str(idx + 1)
             sample = u", ".join(
-                [u"'{0}'".format(ln[idx].decode(encoding)) for ln in data_lines]
+                [u"'{0}'".format(ensure_text(ln[idx], encoding)) for ln in data_lines]
             )
 
             fields.append(
@@ -236,14 +239,15 @@ class BaseImportFormSecondStep(BaseForm):
         mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
         data = []
-        with import_data["source"].open() as f:
-            delimiter = import_data["separator"].encode(encoding)
-            has_header = import_data["has_header"]
-            f.seek(0)
-            reader = csv.reader(f, delimiter=delimiter)
-            if has_header:
-                next(reader)
-            data = self._process_csv(reader, mapping, encoding, import_data, **kwargs)
+        f = StringIO(ensure_str(import_data["source"].data))
+        delimiter = ensure_str(import_data["separator"], encoding)
+        has_header = import_data["has_header"]
+        # f.seek(0)
+        reader = csv.reader(f, delimiter=delimiter)
+        if has_header:
+            next(reader)
+        data = self._process_csv(reader, mapping, encoding, import_data, **kwargs)
+        f.close()
         for node in self._process_data(data):
             self._import_node(node)
         self._after_import()
@@ -290,7 +294,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
     ):
         data = {}
         for line in csv_reader:
-            line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
+            line_data = {v: ensure_text(line[k], encoding) for k, v in mapping.items()}
             orig_identifier = line_data.pop("identifier") or None
             if not orig_identifier:
                 continue

@@ -5,17 +5,13 @@ from collective.classification.tree import _
 from collective.classification.tree.caching import forever_context_cache_key
 from plone.memoize import ram
 from six import ensure_str
+from six import StringIO
 from zope.component import createObject
 from zope.event import notify
 from zope.interface import Invalid
 
 import csv
 import re
-
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 # DECIMAL_SEPARATORS = ("-", ".", ";", "/", "|", ":")
 DECIMAL_SEPARATORS = ("-", ".", "/")

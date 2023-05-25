@@ -31,7 +31,7 @@ class TestCategoriesView(unittest.TestCase):
         self.assertTrue("form-widgets-id" in content)
         self.assertTrue("form-widgets-title" in content)
         self.assertTrue("form-widgets-informations" in content)
-        self.assertTrue('input id="form-buttons-add"' in content)
+        self.assertTrue(' id="form-buttons-add"' in content)
         self.assertTrue("Add Classification Category" in content)
 
     def test_add_view_on_category(self):
@@ -50,7 +50,7 @@ class TestCategoriesView(unittest.TestCase):
         self.assertTrue("form-widgets-id" in content)
         self.assertTrue("form-widgets-title" in content)
         self.assertTrue("form-widgets-informations" in content)
-        self.assertTrue('input id="form-buttons-add"' in content)
+        self.assertTrue(' id="form-buttons-add"' in content)
         self.assertTrue("Add Classification Category" in content)
 
     def test_view_on_category(self):
@@ -86,5 +86,5 @@ class TestCategoriesView(unittest.TestCase):
         self.assertTrue("form-widgets-id" in content)
         self.assertTrue("form-widgets-title" in content)
         self.assertTrue("form-widgets-informations" in content)
-        self.assertTrue('input id="form-buttons-save"' in content)
+        self.assertTrue(' id="form-buttons-save"' in content)
         self.assertTrue("Edit Classification Category" in content)
