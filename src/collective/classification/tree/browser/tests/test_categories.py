@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-
+from collective.classification.tree import PLONE_VERSION
 from collective.classification.tree import testing
-from zope.component import createObject
-from Products.Five import BrowserView
 from plone import api
+from Products.Five import BrowserView
+from zope.component import createObject
 
 import unittest
 
@@ -61,10 +61,10 @@ class TestCategoriesView(unittest.TestCase):
         category.identifier = u"001"
         category.title = u"First"
         container._add_element(category)
-
         path = "container/{0}/view".format(category.UID())
         view = container.restrictedTraverse(path)
-        self.assertTrue(isinstance(view, BrowserView))
+        if PLONE_VERSION < '6.0':
+            self.assertTrue(isinstance(view, BrowserView))
         content = view()
         self.assertTrue("First" in content)
         self.assertTrue("form-widgets-id" in content)
