@@ -2,11 +2,11 @@ Changelog
 =========
 
 
-1.0a2 (unreleased)
+1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Made compatible Plone 4.3 and Plone 6.0
+  [sgeulette]
 
 1.0a1 (2023-03-29)
 ------------------
