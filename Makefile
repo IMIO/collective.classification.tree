@@ -1,9 +1,10 @@
 #!/usr/bin/make
 # pyenv is a requirement, with 2.7, 3.7 and 3.10 python versions, and virtualenv installed in each version
 # plone parameter must be passed to create environment 'make setup plone=6.0' or after a make cleanall
+# The original Makefile can be found on https://github.com/IMIO/scripts-buildout
 
 SHELL=/bin/bash
-plones=4.3 6.0
+plones=4.3 5.2 6.0
 b_o=
 old_plone=$(shell [ -e .plone-version ] && cat .plone-version)
 
@@ -55,9 +56,14 @@ buildout: oneof-plone bin/buildout  ## Runs setup and buildout
 	rm -f .installed.cfg .mr.developer.cfg
 	bin/buildout -t 5 -c test-$(plone).cfg ${b_o}
 
+.PHONY: test
+test: oneof-plone bin/buildout  ## run bin/test without robot
+	# can be run by example with: make test opt='-t "settings"'
+	bin/test -t \!robot ${opt}
+
 .PHONY: cleanall
 cleanall:  ## Cleans all installed buildout files
-	rm -fr bin include lib local share develop-eggs downloads eggs parts .installed.cfg .mr.developer.cfg .python-version .plone-version pyvenv.cfg
+	rm -fr bin include lib local share develop-eggs downloads eggs parts .installed.cfg .mr.developer.cfg .python-version pyvenv.cfg
 
 .PHONY: backup
 backup:  ## Backups db files
