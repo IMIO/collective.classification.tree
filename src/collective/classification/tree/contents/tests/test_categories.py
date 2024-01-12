@@ -43,6 +43,7 @@ class TestCategoriesContents(unittest.TestCase):
         self.assertEqual(1, len(container._tree))
         self.assertEqual(1, len(container))
         self.assertTrue(category.UID() in container)
+        self.assertTrue(bool(category))
 
     def test_multiple_category_levels(self):
         container = api.content.create(

@@ -5,8 +5,8 @@ Changelog
 1.0a4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Handled `bool` on category object.
+  [sgeulette]
 
 1.0a3 (2023-09-08)
 ------------------

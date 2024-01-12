@@ -106,6 +106,14 @@ class ClassificationCategory(
     def __iter__(self):
         return iter(self._tree)
 
+    def __nonzero__(self):
+        """When bool is called in py2"""
+        return True
+
+    def __bool__(self):
+        """When bool is called in py3"""
+        return True
+
     def get(self, key, default=None):
         element = self._tree.get(key, default)
         if element is default:
