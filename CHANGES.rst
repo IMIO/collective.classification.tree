@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0a4 (unreleased)
+1.0.0 (2024-03-01)
 ------------------
 
 - Handled `bool` on category object.
