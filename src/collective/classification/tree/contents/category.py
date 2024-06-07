@@ -26,10 +26,19 @@ from zope.container.contained import ContainerModifiedEvent
 from zope.event import notify
 from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import provider
 from zope.lifecycleevent import ObjectRemovedEvent
 from zope.schema.fieldproperty import FieldProperty
+from zope.schema.interfaces import IContextAwareDefaultFactory
 
 import six
+
+
+@provider(IContextAwareDefaultFactory)
+def default_identifier(context):
+    if IClassificationCategory.providedBy(context):
+        return u"{}?".format(context.identifier)
+    return u"?"
 
 
 class IClassificationCategory(Interface):
@@ -37,6 +46,7 @@ class IClassificationCategory(Interface):
         title=_(u"Identifier"),
         description=_("Identifier of the category"),
         required=True,
+        defaultFactory=default_identifier,
     )
 
     title = schema.TextLine(
