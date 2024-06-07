@@ -13,25 +13,19 @@ class TestCategoriesContents(unittest.TestCase):
 
     def setUp(self):
         self.portal = self.layer["portal"]
-        self.folder = api.content.create(
-            id="folder", type="Folder", container=self.portal
-        )
+        self.folder = api.content.create(id="folder", type="Folder", container=self.portal)
 
     def tearDown(self):
         api.content.delete(self.folder)
 
     def test_container(self):
-        container = api.content.create(
-            title="Container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(title="Container", type="ClassificationContainer", container=self.folder)
         self.assertEqual("Container", container.Title())
         self.assertEqual("Container", INameFromTitle(container).title)
         self.assertEqual("container", container.id)
 
     def test_basic(self):
-        container = api.content.create(
-            id="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(id="container", type="ClassificationContainer", container=self.folder)
         self.assertEqual(0, len(container._tree))
         self.assertEqual(0, len(container))
 
@@ -46,9 +40,7 @@ class TestCategoriesContents(unittest.TestCase):
         self.assertTrue(bool(category))
 
     def test_multiple_category_levels(self):
-        container = api.content.create(
-            id="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(id="container", type="ClassificationContainer", container=self.folder)
         category_lvl1 = createObject("ClassificationCategory")
         category_lvl1.identifier = u"001"
         category_lvl1.title = u"First"
@@ -70,9 +62,7 @@ class TestCategoriesContents(unittest.TestCase):
         self.assertEqual(1, len(category_lvl2))
 
     def test_update_category(self):
-        container = api.content.create(
-            id="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(id="container", type="ClassificationContainer", container=self.folder)
         category = createObject("ClassificationCategory")
         category.identifier = u"001"
         category.title = u"First"
@@ -88,9 +78,7 @@ class TestCategoriesContents(unittest.TestCase):
         self.assertEqual(u"Updated First", element.title)
 
     def test_delete_category(self):
-        container = api.content.create(
-            id="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(id="container", type="ClassificationContainer", container=self.folder)
         category = createObject("ClassificationCategory")
         category.identifier = u"001"
         category.title = u"First"
@@ -101,9 +89,7 @@ class TestCategoriesContents(unittest.TestCase):
         self.assertEqual(0, len(container))
 
     def test_iter_over_categories(self):
-        container = api.content.create(
-            id="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(id="container", type="ClassificationContainer", container=self.folder)
         uids = []
         category = createObject("ClassificationCategory")
         category.identifier = u"001"
@@ -132,9 +118,7 @@ class TestCategoriesContents(unittest.TestCase):
         self.assertListEqual(sorted(uids), sorted([e for e in container.keys()]))
 
     def test_traversing(self):
-        container = api.content.create(
-            id="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(id="container", type="ClassificationContainer", container=self.folder)
         category_lvl1 = createObject("ClassificationCategory")
         category_lvl1.identifier = u"001"
         category_lvl1.title = u"First"

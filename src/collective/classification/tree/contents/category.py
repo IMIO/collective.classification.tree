@@ -3,13 +3,12 @@
 from Acquisition import aq_parent
 from Acquisition import Implicit
 from BTrees.OOBTree import OOBTree
-from OFS.Traversable import Traversable
-from OFS.event import ObjectWillBeRemovedEvent
-from Products.CMFCore.DynamicType import DynamicType
 from collective.classification.tree import _
 from collective.classification.tree import caching
 from collective.classification.tree import utils
 from collective.classification.tree.contents.common import BaseContainer
+from OFS.event import ObjectWillBeRemovedEvent
+from OFS.Traversable import Traversable
 from persistent import Persistent
 from plone import api
 from plone.autoform import directives
@@ -17,6 +16,7 @@ from plone.dexterity.fti import DexterityFTI
 from plone.rest.interfaces import IService
 from plone.uuid.interfaces import IAttributeUUID
 from plone.uuid.interfaces import IMutableUUID
+from Products.CMFCore.DynamicType import DynamicType
 from z3c.form.browser.radio import RadioFieldWidget
 from zExceptions import Redirect
 from zope import schema
@@ -49,13 +49,11 @@ class IClassificationCategory(Interface):
         defaultFactory=default_identifier,
     )
 
-    title = schema.TextLine(
-        title=_(u"Name"), description=_("Name of the category"), required=True
-    )
+    title = schema.TextLine(title=_(u"Name"), description=_("Name of the category"), required=True)
 
-    directives.widget('enabled', RadioFieldWidget)
+    directives.widget("enabled", RadioFieldWidget)
     enabled = schema.Bool(
-        title=_(u'Enabled'),
+        title=_(u"Enabled"),
         default=True,
         required=False,
     )
@@ -64,9 +62,7 @@ class IClassificationCategory(Interface):
 
 
 @implementer(IClassificationCategory, IAttributeUUID, IService)
-class ClassificationCategory(
-    DynamicType, Traversable, Implicit, Persistent, BaseContainer
-):
+class ClassificationCategory(DynamicType, Traversable, Implicit, Persistent, BaseContainer):
     __parent__ = None
     __allow_access_to_unprotected_subobjects__ = True
 
@@ -201,7 +197,5 @@ def category_deleted(obj, event):
             request=obj.REQUEST,
             type="warning",
         )
-        view_url = getMultiAdapter(
-            (obj, obj.REQUEST), name=u"plone_context_state"
-        ).view_url()
+        view_url = getMultiAdapter((obj, obj.REQUEST), name=u"plone_context_state").view_url()
         raise Redirect(view_url)

@@ -16,9 +16,7 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 
 def iterable_to_vocabulary(values):
-    return SimpleVocabulary(
-        [SimpleTerm(value=pair[0], token=pair[0], title=pair[1]) for pair in values]
-    )
+    return SimpleVocabulary([SimpleTerm(value=pair[0], token=pair[0], title=pair[1]) for pair in values])
 
 
 def category_iterable_to_vocabulary(values):
@@ -32,12 +30,7 @@ def classification_tree_vocabulary_factory(context):
     containers = api.content.find(**query)
     results = []
     for container in containers:
-        results.extend(
-            [
-                (e.UID(), e.Title(), e.enabled)
-                for e in utils.iterate_over_tree(container.getObject())
-            ]
-        )
+        results.extend([(e.UID(), e.Title(), e.enabled) for e in utils.iterate_over_tree(container.getObject())])
     results = sorted(results, key=itemgetter(1))
     return category_iterable_to_vocabulary(results)
 
@@ -48,10 +41,7 @@ def full_classification_tree_vocabulary_factory(context):
     results = []
     for container in containers:
         results.extend(
-            [
-                (e.UID(), e.Title(), e.enabled)
-                for e in utils.iterate_over_tree(container._unrestrictedGetObject())
-            ]
+            [(e.UID(), e.Title(), e.enabled) for e in utils.iterate_over_tree(container._unrestrictedGetObject())]
         )
     results = sorted(results, key=itemgetter(1))
     return category_iterable_to_vocabulary(results)
@@ -62,12 +52,7 @@ def classification_tree_id_mapping_vocabulary_factory(context):
     containers = api.content.find(**query)
     results = []
     for container in containers:
-        results.extend(
-            [
-                (e.identifier, e.UID())
-                for e in utils.iterate_over_tree(container.getObject())
-            ]
-        )
+        results.extend([(e.identifier, e.UID()) for e in utils.iterate_over_tree(container.getObject())])
     results = sorted(results, key=itemgetter(1))
     return iterable_to_vocabulary(results)
 
@@ -77,12 +62,7 @@ def classification_tree_title_mapping_vocabulary_factory(context):
     containers = api.content.find(**query)
     results = []
     for container in containers:
-        results.extend(
-            [
-                (e.title, e.UID())
-                for e in utils.iterate_over_tree(container.getObject())
-            ]
-        )
+        results.extend([(e.title, e.UID()) for e in utils.iterate_over_tree(container.getObject())])
     results = sorted(results, key=itemgetter(1))
     return iterable_to_vocabulary(results)
 
@@ -104,7 +84,7 @@ def import_keys_vocabulary_factory(context):
         (u"identifier", _(u"Identifier")),
         (u"title", _(u"Name")),
         (u"informations", _(u"Informations")),
-        (u"enabled", _(u"Enabled"))
+        (u"enabled", _(u"Enabled")),
     )
     return iterable_to_vocabulary(values)
 
@@ -137,14 +117,10 @@ class ClassificationTreeSource(object):
             user = None
             if "login" in creds and creds["login"]:
                 # first try the portal (non-admin accounts)
-                user = portal.acl_users.authenticate(
-                    creds["login"], creds["password"], request
-                )
+                user = portal.acl_users.authenticate(creds["login"], creds["password"], request)
                 if not user:
                     # now try the app (i.e. the admin account)
-                    user = app.acl_users.authenticate(
-                        creds["login"], creds["password"], request
-                    )
+                    user = app.acl_users.authenticate(creds["login"], creds["password"], request)
             return user
         else:
             return api.user.get_current()
@@ -168,9 +144,12 @@ class ClassificationTreeSource(object):
             # this is done as anonymous and the vocabulary is then empty
             # it's not necessary here to render the correct term
             # see z3c.form.term
-            if '++widget++' in self.context.REQUEST.get('URL', ''):
-                return SimpleTerm(value, util.createCSSId(util.toUnicode(value)),
-                                  title=_zf(u'Missing: ${value}', mapping=dict(value=util.toUnicode(value))))
+            if "++widget++" in self.context.REQUEST.get("URL", ""):
+                return SimpleTerm(
+                    value,
+                    util.createCSSId(util.toUnicode(value)),
+                    title=_zf(u"Missing: ${value}", mapping=dict(value=util.toUnicode(value))),
+                )
             raise
 
     def getTermByToken(self, value):
@@ -180,7 +159,7 @@ class ClassificationTreeSource(object):
         q_parts = unidecode(query_string).lower().split()
         results = []
         for term in self.vocabulary:
-            if self.enabled is not None and term.attrs.get('enabled') != self.enabled:
+            if self.enabled is not None and term.attrs.get("enabled") != self.enabled:
                 continue
             if all([q in unidecode(term.title).lower() for q in q_parts]):
                 results.append(term)
@@ -191,7 +170,6 @@ class ClassificationTreeSource(object):
 
 @implementer(IContextSourceBinder)
 class ClassificationTreeSourceBinder(object):
-
     def __init__(self, enabled=None):
         self.enabled = enabled  # None for all or True or False
 

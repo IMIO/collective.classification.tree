@@ -45,15 +45,9 @@ class TreeSearchHandler(object):
             if name is None:
                 finished = True
                 break
-            if (
-                searchable is True
-                and self.query.get("columns[{0}][searchable]".format(idx)) != "true"
-            ):
+            if searchable is True and self.query.get("columns[{0}][searchable]".format(idx)) != "true":
                 name = None
-            if (
-                orderable is True
-                and self.query.get("columns[{0}][searchable]".format(idx)) != "true"
-            ):
+            if orderable is True and self.query.get("columns[{0}][searchable]".format(idx)) != "true":
                 name = None
             if name is not None:
                 columns.append(name)
@@ -102,7 +96,5 @@ class TreeGet(Service):
             result["draw"] = query.pop("draw")
         handler = TreeSearchHandler(self.context)
         result["recordsTotal"], result["recordsFiltered"], data = handler.search(query)
-        result["data"] = [
-            queryMultiAdapter((o, self.request), ISerializeToJson)() for o in data
-        ]
+        result["data"] = [queryMultiAdapter((o, self.request), ISerializeToJson)() for o in data]
         return result

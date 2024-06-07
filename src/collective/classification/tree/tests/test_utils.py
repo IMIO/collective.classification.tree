@@ -14,12 +14,8 @@ class TestUtils(unittest.TestCase):
 
     def setUp(self):
         self.portal = self.layer["portal"]
-        self.folder = api.content.create(
-            id="folder", type="Folder", container=self.portal
-        )
-        self.container = api.content.create(
-            title="Container", type="ClassificationContainer", container=self.folder
-        )
+        self.folder = api.content.create(id="folder", type="Folder", container=self.portal)
+        self.container = api.content.create(title="Container", type="ClassificationContainer", container=self.folder)
         structure = (
             (u"001", u"First", ((u"001.1", u"first"), (u"001.2", u"second"))),
             (u"002", u"Second", ((u"002.1", u"first"),)),
@@ -42,11 +38,12 @@ class TestUtils(unittest.TestCase):
         return category
 
     def test_get_parents(self):
-        self.assertListEqual(utils.get_parents('-1.212.7'), [u'-1', u'-1.2', u'-1.21', u'-1.212', u'-1.212.7'])
-        self.assertListEqual(utils.get_parents('-1.212.7/12'),
-                             [u'-1', u'-1.2', u'-1.21', u'-1.212', u'-1.212.7', u'-1.212.7/12'])
-        self.assertListEqual(utils.get_parents('-1.2./12'), [u'-1', u'-1.2', u'-1.2./12'])
-        self.assertListEqual(utils.get_parents('-1.2...'), [u'-1', u'-1.2'])
+        self.assertListEqual(utils.get_parents("-1.212.7"), [u"-1", u"-1.2", u"-1.21", u"-1.212", u"-1.212.7"])
+        self.assertListEqual(
+            utils.get_parents("-1.212.7/12"), [u"-1", u"-1.2", u"-1.21", u"-1.212", u"-1.212.7", u"-1.212.7/12"]
+        )
+        self.assertListEqual(utils.get_parents("-1.2./12"), [u"-1", u"-1.2", u"-1.2./12"])
+        self.assertListEqual(utils.get_parents("-1.2..."), [u"-1", u"-1.2"])
 
     def test_iterate_over_tree_basic(self):
         """Ensure that returned results are correct"""
@@ -102,9 +99,7 @@ class TestUtils(unittest.TestCase):
 
     def test_importer_one_level(self):
         """Ensure that the content is correctly created"""
-        container = api.content.create(
-            title="Container2", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(title="Container2", type="ClassificationContainer", container=self.folder)
         _children = [
             {
                 "identifier": u"key1.1",
@@ -125,15 +120,11 @@ class TestUtils(unittest.TestCase):
         utils.importer(container, None, u"key2", u"Key 1", None, None, None)
 
         self.assertEqual(2, len(container))
-        self.assertEqual(
-            ["key1", "key2"], sorted([e.identifier for e in container.values()])
-        )
+        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in container.values()]))
 
         subelement = container.get_by("identifier", "key1")
         self.assertEqual(2, len(subelement))
-        self.assertEqual(
-            ["key1.1", "key1.2"], sorted([e.identifier for e in subelement.values()])
-        )
+        self.assertEqual(["key1.1", "key1.2"], sorted([e.identifier for e in subelement.values()]))
 
     def test_importer_one_level_modified(self):
         """Ensure that the content is correctly modified"""
@@ -142,22 +133,16 @@ class TestUtils(unittest.TestCase):
         utils.importer(container, None, u"002", u"Second", None, None, None)
 
         self.assertEqual(2, len(container))
-        self.assertEqual(
-            ["001", "002"], sorted([e.identifier for e in container.values()])
-        )
+        self.assertEqual(["001", "002"], sorted([e.identifier for e in container.values()]))
 
         subelement = container.get_by("identifier", "001")
         self.assertEqual(u"First Modified", subelement.title)
         self.assertEqual(2, len(subelement))
-        self.assertEqual(
-            ["001.1", "001.2"], sorted([e.identifier for e in subelement.values()])
-        )
+        self.assertEqual(["001.1", "001.2"], sorted([e.identifier for e in subelement.values()]))
 
     def test_importer_one_level_result(self):
         """Ensure that the returned list is correct"""
-        container = api.content.create(
-            title="Container2", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(title="Container2", type="ClassificationContainer", container=self.folder)
         _children = [
             {
                 "identifier": u"key1.1",
@@ -180,31 +165,23 @@ class TestUtils(unittest.TestCase):
             ["key1", None],
             ["key1", None],
         ]
-        results = [
-            [getattr(e, "identifier", None) for e in element] for element in modified
-        ]
+        results = [[getattr(e, "identifier", None) for e in element] for element in modified]
         self.assertEqual(expected_results, results)
 
     def test_importer_one_level_modified_result(self):
         """Ensure that the returned list is correct"""
         container = self.container
         modified = utils.importer(container, None, u"001", u"First M", None, None, None)
-        results = [
-            [getattr(e, "identifier", None) for e in element] for element in modified
-        ]
+        results = [[getattr(e, "identifier", None) for e in element] for element in modified]
         self.assertEqual([[None]], results)
 
         modified = utils.importer(container, None, u"002", u"Second", None, None, None)
-        results = [
-            [getattr(e, "identifier", None) for e in element] for element in modified
-        ]
+        results = [[getattr(e, "identifier", None) for e in element] for element in modified]
         self.assertEqual([], results)
 
     def test_importer_multi_levels(self):
         """Ensure that the multi level contents is correctly created"""
-        container = api.content.create(
-            title="Container2", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(title="Container2", type="ClassificationContainer", container=self.folder)
         _children = [
             {
                 "identifier": u"key1.1",
@@ -241,27 +218,19 @@ class TestUtils(unittest.TestCase):
         utils.importer(container, None, u"key2", u"Key 1", None, None, None)
 
         self.assertEqual(2, len(container))
-        self.assertEqual(
-            ["key1", "key2"], sorted([e.identifier for e in container.values()])
-        )
+        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in container.values()]))
 
         subelement = container.get_by("identifier", "key1")
         self.assertEqual(2, len(subelement))
-        self.assertEqual(
-            ["key1.1", "key1.2"], sorted([e.identifier for e in subelement.values()])
-        )
+        self.assertEqual(["key1.1", "key1.2"], sorted([e.identifier for e in subelement.values()]))
 
         subelement = subelement.get_by("identifier", "key1.1")
         self.assertEqual(1, len(subelement))
-        self.assertEqual(
-            ["key1.1.1"], sorted([e.identifier for e in subelement.values()])
-        )
+        self.assertEqual(["key1.1.1"], sorted([e.identifier for e in subelement.values()]))
 
         subelement = subelement.get_by("identifier", "key1.1.1")
         self.assertEqual(1, len(subelement))
-        self.assertEqual(
-            ["key1.1.1.1"], sorted([e.identifier for e in subelement.values()])
-        )
+        self.assertEqual(["key1.1.1.1"], sorted([e.identifier for e in subelement.values()]))
 
     def test_importer_multi_levels_modified(self):
         """Ensure that the content is correctly modified"""
@@ -285,19 +254,13 @@ class TestUtils(unittest.TestCase):
         utils.importer(container, None, u"001", u"First Modified", None, None, children)
 
         self.assertEqual(2, len(container))
-        self.assertEqual(
-            ["001", "002"], sorted([e.identifier for e in container.values()])
-        )
+        self.assertEqual(["001", "002"], sorted([e.identifier for e in container.values()]))
 
         subelement = container.get_by("identifier", "001")
         self.assertEqual(u"First Modified", subelement.title)
         self.assertEqual(2, len(subelement))
-        self.assertEqual(
-            ["001.1", "001.2"], sorted([e.identifier for e in subelement.values()])
-        )
-        self.assertEqual(
-            ["first", "second modified"], sorted([e.title for e in subelement.values()])
-        )
+        self.assertEqual(["001.1", "001.2"], sorted([e.identifier for e in subelement.values()]))
+        self.assertEqual(["first", "second modified"], sorted([e.title for e in subelement.values()]))
 
     def test_importer_multi_levels_created_modified(self):
         """Ensure that the content is correctly created / modified"""
@@ -313,14 +276,14 @@ class TestUtils(unittest.TestCase):
             {
                 "identifier": u"001.2",
                 "title": u"second modified",
-                "informations": u'new infos',
+                "informations": u"new infos",
                 "enabled": False,
                 "_children": [],
             },
             {
                 "identifier": u"001.3",
                 "title": u"new one",
-                "informations": u'infos',
+                "informations": u"infos",
                 "enabled": False,
                 "_children": [],
             },
@@ -328,32 +291,20 @@ class TestUtils(unittest.TestCase):
         utils.importer(container, None, u"001", u"First Modified", None, None, children)
 
         self.assertEqual(2, len(container))
-        self.assertEqual(
-            ["001", "002"], sorted([e.identifier for e in container.values()])
-        )
+        self.assertEqual(["001", "002"], sorted([e.identifier for e in container.values()]))
 
         subelement = container.get_by("identifier", "001")
         self.assertEqual(u"First Modified", subelement.title)
         self.assertEqual(3, len(subelement))
-        values = sorted(subelement.values(), key=attrgetter('identifier'))
-        self.assertEqual(
-            ["001.1", "001.2", "001.3"], [e.identifier for e in values]
-        )
-        self.assertEqual(
-            [u"first", u"second modified", u"new one"], [e.title for e in values]
-        )
-        self.assertEqual(
-            [None, u"new infos", u"infos"], [e.informations for e in values]
-        )
-        self.assertEqual(
-            [True, False, False], [e.enabled for e in values]
-        )
+        values = sorted(subelement.values(), key=attrgetter("identifier"))
+        self.assertEqual(["001.1", "001.2", "001.3"], [e.identifier for e in values])
+        self.assertEqual([u"first", u"second modified", u"new one"], [e.title for e in values])
+        self.assertEqual([None, u"new infos", u"infos"], [e.informations for e in values])
+        self.assertEqual([True, False, False], [e.enabled for e in values])
 
     def test_importer_multi_levels_result(self):
         """Ensure that the returned list is correct"""
-        container = api.content.create(
-            title="Container2", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(title="Container2", type="ClassificationContainer", container=self.folder)
         _children = [
             {
                 "identifier": u"key1.1",
@@ -394,9 +345,7 @@ class TestUtils(unittest.TestCase):
             ["key1.1.1", "key1.1", "key1", None],
             ["key1", None],
         ]
-        results = [
-            [getattr(e, "identifier", None) for e in element] for element in modified
-        ]
+        results = [[getattr(e, "identifier", None) for e in element] for element in modified]
         self.assertEqual(expected_results, results)
 
     def test_importer_multi_levels_modified_result(self):
@@ -418,14 +367,10 @@ class TestUtils(unittest.TestCase):
                 "_children": [],
             },
         ]
-        modified = utils.importer(
-            container, None, u"001", u"First Modified", None, None, children
-        )
+        modified = utils.importer(container, None, u"001", u"First Modified", None, None, children)
 
         expected_results = [[None], ["001", None]]
-        results = [
-            [getattr(e, "identifier", None) for e in element] for element in modified
-        ]
+        results = [[getattr(e, "identifier", None) for e in element] for element in modified]
         self.assertEqual(expected_results, results)
 
     def test_filter_chains_basic(self):
@@ -460,13 +405,13 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("1000")
         expected_results = {
             None: {
-                u"1": (u"1", {u'enabled': False}),
+                u"1": (u"1", {u"enabled": False}),
             },
             u"1": {
-                u"10": (u"10", {u'enabled': False}),
+                u"10": (u"10", {u"enabled": False}),
             },
             u"10": {
-                u"100": (u"100", {u'enabled': False}),
+                u"100": (u"100", {u"enabled": False}),
             },
             u"100": {
                 u"1000": (u"1000", {}),
@@ -479,13 +424,13 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("10.0.0")
         expected_results = {
             None: {
-                u"1": (u"1", {u'enabled': False}),
+                u"1": (u"1", {u"enabled": False}),
             },
             u"1": {
-                u"10": (u"10", {u'enabled': False}),
+                u"10": (u"10", {u"enabled": False}),
             },
             u"10": {
-                u"10.0": (u"10.0", {u'enabled': False}),
+                u"10.0": (u"10.0", {u"enabled": False}),
             },
             u"10.0": {
                 u"10.0.0": (u"10.0.0", {}),
@@ -498,19 +443,19 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("-1.073/074")
         expected_results = {
             None: {
-                u"-1": (u"-1", {u'enabled': False}),
+                u"-1": (u"-1", {u"enabled": False}),
             },
             u"-1": {
-                u"-1.0": (u"-1.0", {u'enabled': False}),
+                u"-1.0": (u"-1.0", {u"enabled": False}),
             },
             u"-1.0": {
-                u"-1.07": (u"-1.07", {u'enabled': False}),
+                u"-1.07": (u"-1.07", {u"enabled": False}),
             },
             u"-1.07": {
-                u"-1.073": (u"-1.073", {u'enabled': False}),
+                u"-1.073": (u"-1.073", {u"enabled": False}),
             },
-            u'-1.073': {
-                u'-1.073/074': (u'-1.073/074', {}),
+            u"-1.073": {
+                u"-1.073/074": (u"-1.073/074", {}),
             },
         }
         self.assertEqual(expected_results, result)

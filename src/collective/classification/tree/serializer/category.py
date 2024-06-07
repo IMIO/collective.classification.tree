@@ -25,8 +25,9 @@ class SerializeToJson(object):
             "identifier": obj.identifier,
             "title": obj.title,
             "informations": obj.informations,
-            "enabled": obj.enabled and translate(_("Yes"), context=self.request) or
-            translate(_("No"), context=self.request),
+            "enabled": obj.enabled
+            and translate(_("Yes"), context=self.request)
+            or translate(_("No"), context=self.request),
             "links": self._links,
         }
 
@@ -43,8 +44,6 @@ class SerializeToJson(object):
             },
             {
                 "title": translate(_("Add"), context=self.request),
-                "link": "{0}/add-{1}".format(
-                    self.context.absolute_url(), self.context.portal_type
-                ),
+                "link": "{0}/add-{1}".format(self.context.absolute_url(), self.context.portal_type),
             },
         ]

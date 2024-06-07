@@ -13,17 +13,13 @@ class TestCategoriesView(unittest.TestCase):
 
     def setUp(self):
         self.portal = self.layer["portal"]
-        self.folder = api.content.create(
-            id="folder", type="Folder", container=self.portal
-        )
+        self.folder = api.content.create(id="folder", type="Folder", container=self.portal)
 
     def tearDown(self):
         api.content.delete(self.folder)
 
     def test_add_view_on_container(self):
-        container = api.content.create(
-            title="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(title="container", type="ClassificationContainer", container=self.folder)
         path = "container/add-ClassificationCategory"
         view = container.restrictedTraverse(path)
         self.assertTrue(isinstance(view, BrowserView))
@@ -35,9 +31,7 @@ class TestCategoriesView(unittest.TestCase):
         self.assertTrue("Add Classification Category" in content)
 
     def test_add_view_on_category(self):
-        container = api.content.create(
-            id="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(id="container", type="ClassificationContainer", container=self.folder)
         category = createObject("ClassificationCategory")
         category.identifier = u"001"
         category.title = u"First"
@@ -54,9 +48,7 @@ class TestCategoriesView(unittest.TestCase):
         self.assertTrue("Add Classification Category" in content)
 
     def test_view_on_category(self):
-        container = api.content.create(
-            id="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(id="container", type="ClassificationContainer", container=self.folder)
         category = createObject("ClassificationCategory")
         category.identifier = u"001"
         category.title = u"First"
@@ -71,9 +63,7 @@ class TestCategoriesView(unittest.TestCase):
         self.assertTrue("form-widgets-informations" in content)
 
     def test_edit_view_on_category(self):
-        container = api.content.create(
-            id="container", type="ClassificationContainer", container=self.folder
-        )
+        container = api.content.create(id="container", type="ClassificationContainer", container=self.folder)
         category = createObject("ClassificationCategory")
         category.identifier = u"001"
         category.title = u"First"

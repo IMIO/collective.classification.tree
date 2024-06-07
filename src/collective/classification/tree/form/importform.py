@@ -94,10 +94,13 @@ class IImportSecondStepBase(Interface):
     def validate_data(obj):
         annotations = IAnnotations(obj.__context__)
         format_dic = {}
-        if obj._Data_data___.get('decimal_import', False):
-            format_dic = {'identifier': r'(-?[./\d]+|( *, *)*)+$'}  # decimal format validation with multiple values
+        if obj._Data_data___.get("decimal_import", False):
+            format_dic = {"identifier": r"(-?[./\d]+|( *, *)*)+$"}  # decimal format validation with multiple values
         return utils.validate_csv_content(
-            obj, annotations[ANNOTATION_KEY], ("identifier",), format_dic,
+            obj,
+            annotations[ANNOTATION_KEY],
+            ("identifier",),
+            format_dic,
         )
 
     decimal_import = GeneratedBool(
@@ -181,9 +184,7 @@ class BaseImportFormSecondStep(BaseForm):
                 name = element.decode(encoding)
             else:
                 name = str(idx + 1)
-            sample = u", ".join(
-                [u"'{0}'".format(ln[idx].decode(encoding)) for ln in data_lines]
-            )
+            sample = u", ".join([u"'{0}'".format(ln[idx].decode(encoding)) for ln in data_lines])
 
             fields.append(
                 GeneratedChoice(
@@ -227,11 +228,7 @@ class BaseImportFormSecondStep(BaseForm):
         self._before_import()
         # {'source': <plone.namedfile.file.NamedBlobFile object at ...>, 'has_header': True, 'separator': u';'}
         import_data = self._get_data()
-        kwargs = {
-            k: data.pop(k)
-            for k in copy.deepcopy(data.keys())
-            if not k.startswith("column_")
-        }
+        kwargs = {k: data.pop(k) for k in copy.deepcopy(data.keys()) if not k.startswith("column_")}
         mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
         data = []
@@ -284,9 +281,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                     if sk not in data[k]:
                         data[k][sk] = sv
 
-    def _process_csv(
-        self, csv_reader, mapping, encoding, import_data, decimal_import=False, **kw
-    ):
+    def _process_csv(self, csv_reader, mapping, encoding, import_data, decimal_import=False, **kw):
         data = {}
         for line in csv_reader:
             line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
@@ -296,11 +291,11 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
             title = line_data.pop("title", None)
             if title:
                 title = title.strip()
-                if kw.get('replace_slash', False):
-                    title = title.replace('/', '-')
-            if 'enabled' in line_data:
-                line_data['enabled'] = line_data['enabled'] and True or False
-            for i, identifier in enumerate(re.split(' *, *', orig_identifier)):
+                if kw.get("replace_slash", False):
+                    title = title.replace("/", "-")
+            if "enabled" in line_data:
+                line_data["enabled"] = line_data["enabled"] and True or False
+            for i, identifier in enumerate(re.split(" *, *", orig_identifier)):
                 if decimal_import is True:
                     self._generate_decimal_structure(data, identifier)
                     parent_identifier = utils.get_decimal_parent(identifier)

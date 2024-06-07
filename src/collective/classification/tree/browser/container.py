@@ -7,11 +7,11 @@ from Products.Five import BrowserView
 
 class ContainerView(WidgetsView):
     """Classification Container View"""
+
     schema = IClassificationContainer
 
 
 class RefreshCache(BrowserView):
-
     def __init__(self, context, request):
         self.context = context
         self.request = request

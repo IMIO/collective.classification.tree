@@ -7,6 +7,8 @@ Changelog
 
 - Defined category identifier defaut value based on parent.
   [sgeulette]
+- Blacked files
+  [sgeulette]
 
 1.0.0 (2024-03-01)
 ------------------

@@ -31,9 +31,7 @@ class TestSetup(unittest.TestCase):
 
     def test_product_installed(self):
         """Test if collective.classification.tree is installed."""
-        self.assertTrue(
-            self.installer.isProductInstalled("collective.classification.tree")
-        )
+        self.assertTrue(self.installer.isProductInstalled("collective.classification.tree"))
 
     def test_browserlayer(self):
         """Test that ICollectiveClassificationTreeLayer is registered."""
@@ -62,9 +60,7 @@ class TestUninstall(unittest.TestCase):
 
     def test_product_uninstalled(self):
         """Test if collective.classification.tree is cleanly uninstalled."""
-        self.assertFalse(
-            self.installer.isProductInstalled("collective.classification.tree")
-        )
+        self.assertFalse(self.installer.isProductInstalled("collective.classification.tree"))
 
     def test_browserlayer_removed(self):
         """Test that ICollectiveClassificationTreeLayer is removed."""

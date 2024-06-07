@@ -69,8 +69,8 @@ def get_parents(code):
     level = ""
     for i, char in enumerate(code):
         level = u"{0}{1}".format(level, char)
-        if char == u'/':  # we stop when encoutering /
-            levels.append(u"{}{}".format(level, code[i+1:]))
+        if char == u"/":  # we stop when encoutering /
+            levels.append(u"{}{}".format(level, code[i + 1 :]))
             break
         elif char in DECIMAL_SEPARATORS:
             continue
@@ -90,7 +90,7 @@ def generate_decimal_structure(code, enabled=False):
         if level == code:  # current elem
             results[last_element] = {level: (level, {})}
         else:
-            results[last_element] = {level: (level, {u'enabled': enabled})}
+            results[last_element] = {level: (level, {u"enabled": enabled})}
         last_element = level
     return results
 
@@ -100,7 +100,7 @@ def get_decimal_parent(code):
     level = lastparent = ""
     for i, char in enumerate(code[:-1]):
         level = u"{0}{1}".format(level, char)
-        if char == u'/':  # we stop when encoutering /
+        if char == u"/":  # we stop when encoutering /
             break
         elif char in DECIMAL_SEPARATORS:
             continue
@@ -109,9 +109,7 @@ def get_decimal_parent(code):
     return lastparent or None
 
 
-def importer(
-    context, parent_identifier, identifier, title, informations=None, enabled=None, _children=None
-):
+def importer(context, parent_identifier, identifier, title, informations=None, enabled=None, _children=None):
     """
     Expected structure for _children (iterable) with dict element that contains :
         * identifier (String)
@@ -127,9 +125,7 @@ def importer(
         parent = get_by(context, "identifier", parent_identifier) or context
 
     modified = []
-    modified.extend(
-        element_importer(parent, identifier, title, informations, enabled, _children)
-    )
+    modified.extend(element_importer(parent, identifier, title, informations, enabled, _children))
     return modified
 
 
@@ -209,9 +205,7 @@ def validate_csv_data(obj, min_length=2):
             raise Invalid(_("CSV file must contains at least 2 columns"))
         base_length = len(first_line)
 
-        wrong_lines = [
-            str(i + 2) for i, v in enumerate(reader) if len(v) != base_length
-        ]
+        wrong_lines = [str(i + 2) for i, v in enumerate(reader) if len(v) != base_length]
         if wrong_lines:
             raise Invalid(
                 _(
@@ -242,14 +236,10 @@ def validate_csv_columns(obj, required_columns):
 def validate_csv_content(obj, annotation, required_columns, format_dic={}):
     """Verify csv content:
 
-        * check if all required columns have values
-        * check some columns format with re pattern {'identifier': pattern}
+    * check if all required columns have values
+    * check some columns format with re pattern {'identifier': pattern}
     """
-    columns = {
-        v: int(k.replace("column_", ""))
-        for k, v in obj._Data_data___.items()
-        if k.startswith("column_") and v
-    }
+    columns = {v: int(k.replace("column_", "")) for k, v in obj._Data_data___.items() if k.startswith("column_") and v}
     if not columns:
         # Validation of columns is made by another function
         return True
@@ -266,14 +256,14 @@ def validate_csv_content(obj, annotation, required_columns, format_dic={}):
         wrong_lines = []
         wrong_values = []
         for idx, line in enumerate(reader):
-            if not getattr(obj, 'allow_empty', False):  # option only in tree import
+            if not getattr(obj, "allow_empty", False):  # option only in tree import
                 values = [line[columns[n]] for n in required_columns if line[columns[n]]]
                 if len(values) != expected_length:
                     wrong_lines.append(str(idx + base_idx))
             for col in format_dic:
                 val = line[columns[col]]
                 if not re.match(format_dic[col], val):
-                    wrong_values.append("Line {}, col {}: '{}'".format(idx+base_idx, columns[col]+1, val))
+                    wrong_values.append("Line {}, col {}: '{}'".format(idx + base_idx, columns[col] + 1, val))
         if wrong_lines:
             raise Invalid(
                 _(
@@ -282,5 +272,5 @@ def validate_csv_content(obj, annotation, required_columns, format_dic={}):
                 )
             )
         if wrong_values:
-            raise Invalid(_("Bad format values: ${errors}", mapping={'errors': ' || '.join(wrong_values)}))
+            raise Invalid(_("Bad format values: ${errors}", mapping={"errors": " || ".join(wrong_values)}))
     return True

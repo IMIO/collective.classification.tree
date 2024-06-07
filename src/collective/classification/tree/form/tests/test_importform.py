@@ -21,12 +21,8 @@ class TestImportForm(unittest.TestCase):
 
     def setUp(self):
         self.portal = self.layer["portal"]
-        self.folder = api.content.create(
-            id="folder", type="Folder", container=self.portal
-        )
-        self.container = api.content.create(
-            title="Container", type="ClassificationContainer", container=self.folder
-        )
+        self.folder = api.content.create(id="folder", type="Folder", container=self.portal)
+        self.container = api.content.create(title="Container", type="ClassificationContainer", container=self.folder)
 
     def tearDown(self):
         api.content.delete(self.folder)
@@ -135,9 +131,7 @@ class TestImportForm(unittest.TestCase):
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertEqual(
-            "CSV file must contains at least 2 columns", errors[0].error.message
-        )
+        self.assertEqual("CSV file must contains at least 2 columns", errors[0].error.message)
 
     def test_first_step_validate_csv_encoding_ok(self):
         """Ensure that we can decode csv file"""
@@ -329,9 +323,7 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(
-            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
-        )
+        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
 
         key1 = self.container.get_by("identifier", "key1")
         self.assertEqual(3, len(key1))
@@ -377,12 +369,8 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(
-            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
-        )
-        self.assertEqual(
-            ["key1", "key2"], sorted([e.title for e in self.container.values()])
-        )
+        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
+        self.assertEqual(["key1", "key2"], sorted([e.title for e in self.container.values()]))
 
     def test_second_step_import_encoding(self):
         """Test importing csv data with special chars in header and content"""
@@ -485,9 +473,7 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(
-            ["1", "2"], sorted([e.identifier for e in self.container.values()])
-        )
+        self.assertEqual(["1", "2"], sorted([e.identifier for e in self.container.values()]))
 
         code_1 = self.container.get_by("identifier", "1")
         self.assertEqual("1", code_1.title)
@@ -566,9 +552,7 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(
-            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
-        )
+        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
 
         key1 = self.container.get_by("identifier", "key1")
         self.assertEqual(3, len(key1))
@@ -619,9 +603,7 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(
-            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
-        )
+        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
 
         key1 = self.container.get_by("identifier", "key1")
         self.assertEqual(3, len(key1))
@@ -680,9 +662,7 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(
-            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
-        )
+        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
 
         key1 = self.container.get_by("identifier", "key1")
         self.assertEqual(3, len(key1))
@@ -1012,8 +992,8 @@ class TestImportForm(unittest.TestCase):
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
             None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {})},
-            u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {'enabled': True})},
-            u"key2": {u"key2.1": (u"Key 2.1", {}), u"key2.2": (u"Key 2.2", {'enabled': False})},
+            u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {"enabled": True})},
+            u"key2": {u"key2.1": (u"Key 2.1", {}), u"key2.2": (u"Key 2.2", {"enabled": False})},
         }
         expected_results = [
             {
@@ -1068,9 +1048,9 @@ class TestImportForm(unittest.TestCase):
         """Tests _process_data with multi levels data structure"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
-            None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {'enabled': False})},
+            None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {"enabled": False})},
             u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {})},
-            u"key2": {u"key2.1": (u"Key 2.1", {'enabled': False})},
+            u"key2": {u"key2.1": (u"Key 2.1", {"enabled": False})},
             u"key1.1": {u"key1.1.1": (u"Key 1.1.1", {})},
             u"key1.1.1": {u"key1.1.1.1": (u"Key 1.1.1.1", {})},
         }
@@ -1152,13 +1132,8 @@ class TestImportForm(unittest.TestCase):
         mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
         result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
         expected_result = {
-            None: {
-                u'1': (u'First-level', {})
-            },
-            u'1': {
-                u'11': (u'Second - level', {}),
-                u'12': (u'Other - level - in -- Tesla', {})
-            }
+            None: {u"1": (u"First-level", {})},
+            u"1": {u"11": (u"Second - level", {}), u"12": (u"Other - level - in -- Tesla", {})},
         }
         self.assertEqual(expected_result, result)
 
@@ -1185,20 +1160,12 @@ class TestImportForm(unittest.TestCase):
         result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
         expected_result = {
             None: {
-                u'1': (u'First level', {}),
-                u'2': (u'2', {u'enabled': False}),
+                u"1": (u"First level", {}),
+                u"2": (u"2", {u"enabled": False}),
             },
-            u'1': {
-                u'11': (u'Second level', {}),
-                u'12': (u'12', {})
-            },
-            u'11': {
-                u'111': (u'Yet one', {})
-            },
-            u'2': {
-                u'21': (u'New sub levels', {}),
-                u'22': (u'22', {})
-            }
+            u"1": {u"11": (u"Second level", {}), u"12": (u"12", {})},
+            u"11": {u"111": (u"Yet one", {})},
+            u"2": {u"21": (u"New sub levels", {}), u"22": (u"22", {})},
         }
         self.assertEqual(expected_result, result)
 
@@ -1225,15 +1192,15 @@ class TestImportForm(unittest.TestCase):
         result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
         expected_result = {
             None: {
-                u'1': (u'First-level', {'enabled': False}),
-                u'2': (u'2', {'enabled': False}),
+                u"1": (u"First-level", {"enabled": False}),
+                u"2": (u"2", {"enabled": False}),
             },
-            u'1': {
-                u'11': (u'Second - level', {'enabled': True}),
-                u'12': (u'Other - level - in -- Tesla', {'enabled': True})
+            u"1": {
+                u"11": (u"Second - level", {"enabled": True}),
+                u"12": (u"Other - level - in -- Tesla", {"enabled": True}),
             },
-            u'2': {
-                u'20': (u'Sublevel without parent', {'enabled': True}),
-            }
+            u"2": {
+                u"20": (u"Sublevel without parent", {"enabled": True}),
+            },
         }
         self.assertEqual(expected_result, result)
