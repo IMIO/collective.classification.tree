@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.1 (unreleased)
+1.0.1 (2024-06-07)
 ------------------
 
 - Defined category identifier defaut value based on parent.
