@@ -43,6 +43,8 @@
     name="collective.classification.tree-hiddenprofiles"
     />
 
+  <adapter name="classification_categories" factory=".indexers.classification_categories_index" />
+
   <utility
     component=".vocabularies.classification_tree_vocabulary_factory"
     name="collective.classification.vocabularies:tree"

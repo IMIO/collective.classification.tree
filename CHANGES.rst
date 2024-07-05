@@ -5,8 +5,8 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Added classification_category indexer to store empty value.
+  [sgeulette]
 
 1.0.1 (2024-06-07)
 ------------------
