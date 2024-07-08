@@ -59,6 +59,7 @@ setup(
         "plone.app.lockingbehavior",
         "plone.schema",
         "collective.js.datatables",
+        "imio.helpers>=1.0.0rc4",
         "imio.pyutils",
         "Unidecode",
     ],
