@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.0.2 (unreleased)
+1.1.0 (2024-09-17)
 ------------------
 
 - Added classification_category indexer to store empty value.
