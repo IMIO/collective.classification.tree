@@ -16,7 +16,7 @@ long_description = "\n\n".join(
 
 setup(
     name="collective.classification.tree",
-    version="1.1.1.dev0",
+    version="1.1.1",
     description="Addon to manage complex content classification tree",
     long_description=long_description,
     # Get more from https://pypi.org/classifiers/
