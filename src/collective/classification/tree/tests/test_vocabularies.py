@@ -87,7 +87,7 @@ class TestCategoriesContents(unittest.TestCase):
             (u"001", u"Tâche", False),
             (u"002", u"Tache import dossier", True),
             (u"003", u"tâche", True),
-            (u"004", u"tache", True),
+            (u"004", u"Code other", True),
             (u"005", u"Other", True),
         ):
             category = self._create_category(cid, title, enabled)
@@ -96,11 +96,11 @@ class TestCategoriesContents(unittest.TestCase):
         terms = cts.vocabulary._terms
         self.assertFalse(terms[0].attrs["enabled"])
         self.assertTrue(terms[1].attrs["enabled"])
-        self.assertEqual(len([t.title for t in cts.search(u"Othe")]), 1)
+        self.assertEqual(len([t.title for t in cts.search(u"Othe")]), 2)
         self.assertEqual(len([t.title for t in cts.search(u"Unfound")]), 0)
         for term in (u"Tâche", u"Tache", u"tâche", u"tache"):
             res = [t.title for t in cts.search(term)]
-            self.assertEqual(len(res), 4, term)
+            self.assertEqual(len(res), 3, term)
         self.assertEqual(len([t.title for t in cts.search(u"tache doss")]), 1)
         # find only disabled
         cts = ClassificationTreeSource(self.container, False)
@@ -109,4 +109,9 @@ class TestCategoriesContents(unittest.TestCase):
         # find only enabled
         cts = ClassificationTreeSource(self.container, True)
         res = [t.title for t in cts.search(u"Tâche")]
-        self.assertEqual(len(res), 3, term)
+        self.assertEqual(len(res), 2, term)
+        # check relevance (sorted by positions find)
+        res = [t.title for t in cts.search(u"othe")]
+        self.assertEqual(len(res), 2, term)
+        self.assertEqual(res[0], u"005 - Other")
+        self.assertEqual(res[1], u"004 - Code other")

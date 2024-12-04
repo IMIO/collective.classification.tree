@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collective.classification.tree import _
+from collective.classification.tree import SOURCE_RESULTS_LEN
 from collective.classification.tree import utils
 from imio.helpers.vocabularies import EnhancedTerm
 from operator import itemgetter
@@ -161,11 +162,12 @@ class ClassificationTreeSource(object):
         for term in self.vocabulary:
             if self.enabled is not None and term.attrs.get("enabled") != self.enabled:
                 continue
-            if all([q in unidecode(term.title).lower() for q in q_parts]):
-                results.append(term)
-            if len(results) >= 10:
-                break
-        return results
+            term_title = term.attrs.setdefault("u_t", unidecode(term.title).lower())
+            if all([q in term_title for q in q_parts]):
+                positions = tuple(term_title.find(q) for q in q_parts)
+                results.append((positions, term))
+        results.sort(key=lambda x: x[0])
+        return [tup[1] for tup in results[:SOURCE_RESULTS_LEN]]
 
 
 @implementer(IContextSourceBinder)

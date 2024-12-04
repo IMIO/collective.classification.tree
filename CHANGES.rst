@@ -5,8 +5,8 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Improved `vocabularies.ClassificationTreeSource.search` to order results search by matching positions.
+  [sgeulette]
 
 1.1.1 (2024-09-18)
 ------------------

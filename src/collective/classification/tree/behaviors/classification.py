@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from collective.classification.tree import _
+from collective.classification.tree.behaviors.widget import AutocompleteMultiFieldWidget
 from collective.classification.tree.vocabularies import ClassificationTreeSourceBinder
 from plone import schema
 from plone.autoform import directives as form
 from plone.autoform.interfaces import IFormFieldProvider
-from plone.formwidget.autocomplete import AutocompleteMultiFieldWidget
 from plone.supermodel import model
 from zope.component import adapter
 from zope.interface import implementer
