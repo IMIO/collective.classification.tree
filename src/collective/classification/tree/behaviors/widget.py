@@ -2,14 +2,19 @@ from App.class_init import InitializeClass
 from collective.classification.tree import SOURCE_RESULTS_LEN
 from plone.formwidget.autocomplete.interfaces import IAutocompleteWidget
 from plone.formwidget.autocomplete.widget import AutocompleteBase as OriginalAutocompleteBase
-from plone.formwidget.autocomplete.widget import \
-    AutocompleteMultiSelectionWidget as OriginalAutocompleteMultiSelectionWidget
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from z3c.formwidget.query.widget import QuerySourceCheckboxWidget
 from zope.interface import implementer
 from zope.interface import implementer_only
 
+import os
+import plone.formwidget.autocomplete
 import z3c.form.interfaces
 import z3c.form.util
 import z3c.form.widget
+
+
+pfa_path = os.path.dirname(plone.formwidget.autocomplete.__file__)
 
 
 @implementer_only(IAutocompleteWidget)
@@ -43,9 +48,13 @@ class AutocompleteBase(OriginalAutocompleteBase):
 InitializeClass(AutocompleteBase)
 
 
-class AutocompleteMultiSelectionWidget(AutocompleteBase,
-                                       OriginalAutocompleteMultiSelectionWidget):
+class AutocompleteMultiSelectionWidget(AutocompleteBase, QuerySourceCheckboxWidget):
     """Autocomplete widget for multiple selection."""
+
+    klass = u'autocomplete-multiselection-widget'
+    input_type = 'checkbox'
+    multiple = True
+    display_template = ViewPageTemplateFile('display.pt', _prefix=pfa_path)
 
 
 @implementer(z3c.form.interfaces.IFieldWidget)
