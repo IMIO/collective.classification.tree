@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.1.2 (unreleased)
+1.2.0 (2024-12-13)
 ------------------
 
 - Improved `vocabularies.ClassificationTreeSource.search` to order results search by matching positions.
