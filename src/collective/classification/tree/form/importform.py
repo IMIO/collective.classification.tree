@@ -30,6 +30,7 @@ import copy
 import csv
 import re
 
+
 ANNOTATION_KEY = "collective.classification:import"
 
 
@@ -97,10 +98,15 @@ class IImportSecondStepBase(Interface):
     def validate_data(obj):
         annotations = IAnnotations(obj.__context__)
         format_dic = {}
-        if obj._Data_data___.get('decimal_import', False):
-            format_dic = {'identifier': r'(-?[./\d]+|( *, *)*)+$'}  # decimal format validation with multiple values
+        if obj._Data_data___.get("decimal_import", False):
+            format_dic = {
+                "identifier": r"(-?[./\d]+|( *, *)*)+$"
+            }  # decimal format validation with multiple values
         return utils.validate_csv_content(
-            obj, annotations[ANNOTATION_KEY], ("identifier",), format_dic,
+            obj,
+            annotations[ANNOTATION_KEY],
+            ("identifier",),
+            format_dic,
         )
 
     decimal_import = GeneratedBool(
@@ -301,11 +307,11 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
             title = line_data.pop("title", None)
             if title:
                 title = title.strip()
-                if kw.get('replace_slash', False):
-                    title = title.replace('/', '-')
-            if 'enabled' in line_data:
-                line_data['enabled'] = line_data['enabled'] and True or False
-            for i, identifier in enumerate(re.split(' *, *', orig_identifier)):
+                if kw.get("replace_slash", False):
+                    title = title.replace("/", "-")
+            if "enabled" in line_data:
+                line_data["enabled"] = line_data["enabled"] and True or False
+            for i, identifier in enumerate(re.split(" *, *", orig_identifier)):
                 if decimal_import is True:
                     self._generate_decimal_structure(data, identifier)
                     parent_identifier = utils.get_decimal_parent(identifier)
@@ -317,7 +323,10 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                     # Using dictionary avoid duplicated informations
                     data[parent_identifier] = {}
                 # if exists, only update if title = identifier
-                if identifier not in data[parent_identifier] or data[parent_identifier][identifier][0] == identifier:
+                if (
+                    identifier not in data[parent_identifier]
+                    or data[parent_identifier][identifier][0] == identifier
+                ):
                     data[parent_identifier][identifier] = (title, line_data)
         return data
 

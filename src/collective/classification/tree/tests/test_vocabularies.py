@@ -15,8 +15,12 @@ class TestCategoriesContents(unittest.TestCase):
 
     def setUp(self):
         self.portal = self.layer["portal"]
-        self.folder = api.content.create(id="folder", type="Folder", container=self.portal)
-        self.container = api.content.create(title="Container", type="ClassificationContainer", container=self.folder)
+        self.folder = api.content.create(
+            id="folder", type="Folder", container=self.portal
+        )
+        self.container = api.content.create(
+            title="Container", type="ClassificationContainer", container=self.folder
+        )
 
     def tearDown(self):
         api.content.delete(self.folder)
@@ -89,25 +93,30 @@ class TestCategoriesContents(unittest.TestCase):
         )
 
     def test_ClassificationtreeSource(self):
-        for cid, title, enabled in ((u"001", u"Tâche", False), (u"002", u"Tache import dossier", True),
-                                    (u"003", u"tâche", True), (u"004", u"tache", True), (u'005', u'Other', True)):
+        for cid, title, enabled in (
+            (u"001", u"Tâche", False),
+            (u"002", u"Tache import dossier", True),
+            (u"003", u"tâche", True),
+            (u"004", u"tache", True),
+            (u"005", u"Other", True),
+        ):
             category = self._create_category(cid, title, enabled)
             self.container._add_element(category)
         cts = ClassificationTreeSource(self.container)
         terms = cts.vocabulary._terms
-        self.assertFalse(terms[0].attrs['enabled'])
-        self.assertTrue(terms[1].attrs['enabled'])
-        self.assertEqual(len([t.title for t in cts.search(u'Othe')]), 1)
-        self.assertEqual(len([t.title for t in cts.search(u'Unfound')]), 0)
-        for term in (u'Tâche', u'Tache', u'tâche', u'tache'):
+        self.assertFalse(terms[0].attrs["enabled"])
+        self.assertTrue(terms[1].attrs["enabled"])
+        self.assertEqual(len([t.title for t in cts.search(u"Othe")]), 1)
+        self.assertEqual(len([t.title for t in cts.search(u"Unfound")]), 0)
+        for term in (u"Tâche", u"Tache", u"tâche", u"tache"):
             res = [t.title for t in cts.search(term)]
             self.assertEqual(len(res), 4, term)
-        self.assertEqual(len([t.title for t in cts.search(u'tache doss')]), 1)
+        self.assertEqual(len([t.title for t in cts.search(u"tache doss")]), 1)
         # find only disabled
         cts = ClassificationTreeSource(self.container, False)
-        res = [t.title for t in cts.search(u'Tâche')]
+        res = [t.title for t in cts.search(u"Tâche")]
         self.assertEqual(len(res), 1, term)
         # find only enabled
         cts = ClassificationTreeSource(self.container, True)
-        res = [t.title for t in cts.search(u'Tâche')]
+        res = [t.title for t in cts.search(u"Tâche")]
         self.assertEqual(len(res), 3, term)

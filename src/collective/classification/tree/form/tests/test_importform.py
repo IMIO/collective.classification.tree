@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from ZPublisher.HTTPRequest import FileUpload
 from collective.classification.tree import testing
 from collective.classification.tree.form import importform
 from operator import itemgetter
@@ -12,6 +11,7 @@ from six import StringIO
 from zope.annotation import IAnnotations
 from zope.component import createObject
 from zope.i18n import translate
+from ZPublisher.HTTPRequest import FileUpload
 
 import csv
 import unittest
@@ -92,7 +92,12 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
+                {
+                    "file": self._csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
@@ -122,7 +127,12 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
+                {
+                    "file": csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
@@ -137,7 +147,8 @@ class TestImportForm(unittest.TestCase):
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
         self.assertEqual(
-            "CSV file must contains at least 2 columns", getattr(errors[0].error, 'message', errors[0].message)
+            "CSV file must contains at least 2 columns",
+            getattr(errors[0].error, "message", errors[0].message),
         )
 
     def test_first_step_validate_csv_encoding_ok(self):
@@ -147,7 +158,12 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
+                {
+                    "file": self._csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
@@ -178,7 +194,12 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": stream, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
+                {
+                    "file": stream,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
@@ -192,7 +213,10 @@ class TestImportForm(unittest.TestCase):
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertEqual("File encoding is not utf8", getattr(errors[0].error, 'message', errors[0].message))
+        self.assertEqual(
+            "File encoding is not utf8",
+            getattr(errors[0].error, "message", errors[0].message),
+        )
 
     def test_first_step_validate_line_columns_ok(self):
         """Ensure that every lines have the same number of columns"""
@@ -201,7 +225,12 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
+                {
+                    "file": self._csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
@@ -232,7 +261,12 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": csv, "filename": "foo.csv", "headers": "text/csv", "name": "xx"},
+                {
+                    "file": csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
@@ -246,7 +280,10 @@ class TestImportForm(unittest.TestCase):
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertTrue("Lines 2, 3" in translate(getattr(errors[0].error, 'message', errors[0].message)))
+        self.assertTrue(
+            "Lines 2, 3"
+            in translate(getattr(errors[0].error, "message", errors[0].message))
+        )
 
     def test_second_step_basic_encoding(self):
         """Ensure that form can be displayed even with special characters"""
@@ -753,7 +790,7 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(
             "The following required columns are missing: identifier",
-            translate(getattr(errors[0].error, 'message', errors[0].message)),
+            translate(getattr(errors[0].error, "message", errors[0].message)),
         )
 
     def test_second_step_required_columns_data_ok(self):
@@ -819,7 +856,7 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(
             "Lines 4 have missing required value(s)",
-            translate(getattr(errors[0].error, 'message', errors[0].message)),
+            translate(getattr(errors[0].error, "message", errors[0].message)),
         )
 
     def test_second_step_required_columns_data_nok_allow_empty(self):
@@ -895,7 +932,7 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(
             "Bad format values: Line 4, col 1: '-1 11'",
-            translate(getattr(errors[0].error, 'message', errors[0].message)),
+            translate(getattr(errors[0].error, "message", errors[0].message)),
         )
 
     def test_second_step_columns_data_format_ok(self):
@@ -977,8 +1014,14 @@ class TestImportForm(unittest.TestCase):
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
             None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {})},
-            u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {'enabled': True})},
-            u"key2": {u"key2.1": (u"Key 2.1", {}), u"key2.2": (u"Key 2.2", {'enabled': False})},
+            u"key1": {
+                u"key1.1": (u"Key 1.1", {}),
+                u"key1.2": (u"Key 1.2", {"enabled": True}),
+            },
+            u"key2": {
+                u"key2.1": (u"Key 2.1", {}),
+                u"key2.2": (u"Key 2.2", {"enabled": False}),
+            },
         }
         expected_results = [
             {
@@ -1033,9 +1076,9 @@ class TestImportForm(unittest.TestCase):
         """Tests _process_data with multi levels data structure"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
-            None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {'enabled': False})},
+            None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {"enabled": False})},
             u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {})},
-            u"key2": {u"key2.1": (u"Key 2.1", {'enabled': False})},
+            u"key2": {u"key2.1": (u"Key 2.1", {"enabled": False})},
             u"key1.1": {u"key1.1.1": (u"Key 1.1.1", {})},
             u"key1.1.1": {u"key1.1.1.1": (u"Key 1.1.1.1", {})},
         }
@@ -1115,15 +1158,15 @@ class TestImportForm(unittest.TestCase):
             "column_1": "title",
         }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
-        result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
+        result = form._process_csv(
+            reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True
+        )
         expected_result = {
-            None: {
-                u'1': (u'First-level', {})
+            None: {u"1": (u"First-level", {})},
+            u"1": {
+                u"11": (u"Second - level", {}),
+                u"12": (u"Other - level - in -- Tesla", {}),
             },
-            u'1': {
-                u'11': (u'Second - level', {}),
-                u'12': (u'Other - level - in -- Tesla', {})
-            }
         }
         self.assertEqual(expected_result, result)
 
@@ -1147,23 +1190,17 @@ class TestImportForm(unittest.TestCase):
             "column_1": "title",
         }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
-        result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
+        result = form._process_csv(
+            reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True
+        )
         expected_result = {
             None: {
-                u'1': (u'First level', {}),
-                u'2': (u'2', {u'enabled': False}),
+                u"1": (u"First level", {}),
+                u"2": (u"2", {u"enabled": False}),
             },
-            u'1': {
-                u'11': (u'Second level', {}),
-                u'12': (u'12', {})
-            },
-            u'11': {
-                u'111': (u'Yet one', {})
-            },
-            u'2': {
-                u'21': (u'New sub levels', {}),
-                u'22': (u'22', {})
-            }
+            u"1": {u"11": (u"Second level", {}), u"12": (u"12", {})},
+            u"11": {u"111": (u"Yet one", {})},
+            u"2": {u"21": (u"New sub levels", {}), u"22": (u"22", {})},
         }
         self.assertEqual(expected_result, result)
 
@@ -1187,18 +1224,20 @@ class TestImportForm(unittest.TestCase):
             "column_2": "enabled",
         }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
-        result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
+        result = form._process_csv(
+            reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True
+        )
         expected_result = {
             None: {
-                u'1': (u'First-level', {'enabled': False}),
-                u'2': (u'2', {'enabled': False}),
+                u"1": (u"First-level", {"enabled": False}),
+                u"2": (u"2", {"enabled": False}),
             },
-            u'1': {
-                u'11': (u'Second - level', {'enabled': True}),
-                u'12': (u'Other - level - in -- Tesla', {'enabled': True})
+            u"1": {
+                u"11": (u"Second - level", {"enabled": True}),
+                u"12": (u"Other - level - in -- Tesla", {"enabled": True}),
             },
-            u'2': {
-                u'20': (u'Sublevel without parent', {'enabled': True}),
-            }
+            u"2": {
+                u"20": (u"Sublevel without parent", {"enabled": True}),
+            },
         }
         self.assertEqual(expected_result, result)

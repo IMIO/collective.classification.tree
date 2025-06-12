@@ -2,12 +2,12 @@
 
 from collective.classification.tree import _
 from collective.classification.tree.contents.category import IClassificationCategory
-from plone.restapi.interfaces import ISerializeToJson
 from plone import api
+from plone.restapi.interfaces import ISerializeToJson
 from zope.component import adapter
 from zope.i18n import translate
-from zope.interface import Interface
 from zope.interface import implementer
+from zope.interface import Interface
 
 
 @implementer(ISerializeToJson)
@@ -25,8 +25,9 @@ class SerializeToJson(object):
             "identifier": obj.identifier,
             "title": obj.title,
             "informations": obj.informations,
-            "enabled": obj.enabled and translate(_("Yes"), context=self.request) or
-            translate(_("No"), context=self.request),
+            "enabled": obj.enabled
+            and translate(_("Yes"), context=self.request)
+            or translate(_("No"), context=self.request),
             "links": self._links,
         }
 

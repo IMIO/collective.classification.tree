@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from plone.memoize import ram
 from plone.memoize.interfaces import ICacheChooser
 from zope.component import queryUtility
-from plone.memoize import ram
 
 
 def forever_context_cache_key(func, context):

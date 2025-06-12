@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from BTrees.OOBTree import OOBTree
-from OFS.event import ObjectWillBeRemovedEvent
 from collective.classification.tree import caching
 from collective.classification.tree.contents.common import BaseContainer
+from OFS.event import ObjectWillBeRemovedEvent
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from zope.container.contained import ContainerModifiedEvent
@@ -58,7 +58,13 @@ class ClassificationContainer(Container, BaseContainer):
         return list(self._tree.keys())
 
     def items(self):
-        return [(i[0], i[1].__of__(self),) for i in self._tree.items()]
+        return [
+            (
+                i[0],
+                i[1].__of__(self),
+            )
+            for i in self._tree.items()
+        ]
 
     def values(self):
         return [v.__of__(self) for v in self._tree.values()]
@@ -83,4 +89,6 @@ class ClassificationContainer(Container, BaseContainer):
 
 def container_modified(context, event):
     """Invalidates tree cache node."""
-    caching.invalidate_cache("collective.classification.tree.utils.iterate_over_tree", context.UID())
+    caching.invalidate_cache(
+        "collective.classification.tree.utils.iterate_over_tree", context.UID()
+    )

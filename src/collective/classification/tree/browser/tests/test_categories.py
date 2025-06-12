@@ -63,7 +63,7 @@ class TestCategoriesView(unittest.TestCase):
         container._add_element(category)
         path = "container/{0}/view".format(category.UID())
         view = container.restrictedTraverse(path)
-        if PLONE_VERSION < '6.0':
+        if PLONE_VERSION < "6.0":
             self.assertTrue(isinstance(view, BrowserView))
         content = view()
         self.assertTrue("First" in content)

@@ -19,8 +19,7 @@ class IClassificationCategoryMarker(Interface):
 
 @provider(IFormFieldProvider)
 class IClassificationCategory(model.Schema):
-    """
-    """
+    """ """
 
     form.widget(classification_categories=AutocompleteMultiFieldWidget)
     classification_categories = schema.List(
@@ -41,7 +40,7 @@ class ClassificationCategory(object):
 
     @property
     def classification_categories(self):
-        if hasattr(self.context, 'classification_categories'):
+        if hasattr(self.context, "classification_categories"):
             return self.context.classification_categories
         return None
 

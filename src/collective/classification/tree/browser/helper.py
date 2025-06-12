@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from Products.Five.browser import BrowserView
+from zope import schema
 from zope.interface import implementer
 from zope.interface import Interface
-from zope import schema
 
 
 class IClassificationHelper(Interface):

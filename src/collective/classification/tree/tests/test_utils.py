@@ -42,11 +42,18 @@ class TestUtils(unittest.TestCase):
         return category
 
     def test_get_parents(self):
-        self.assertListEqual(utils.get_parents('-1.212.7'), [u'-1', u'-1.2', u'-1.21', u'-1.212', u'-1.212.7'])
-        self.assertListEqual(utils.get_parents('-1.212.7/12'),
-                             [u'-1', u'-1.2', u'-1.21', u'-1.212', u'-1.212.7', u'-1.212.7/12'])
-        self.assertListEqual(utils.get_parents('-1.2./12'), [u'-1', u'-1.2', u'-1.2./12'])
-        self.assertListEqual(utils.get_parents('-1.2...'), [u'-1', u'-1.2'])
+        self.assertListEqual(
+            utils.get_parents("-1.212.7"),
+            [u"-1", u"-1.2", u"-1.21", u"-1.212", u"-1.212.7"],
+        )
+        self.assertListEqual(
+            utils.get_parents("-1.212.7/12"),
+            [u"-1", u"-1.2", u"-1.21", u"-1.212", u"-1.212.7", u"-1.212.7/12"],
+        )
+        self.assertListEqual(
+            utils.get_parents("-1.2./12"), [u"-1", u"-1.2", u"-1.2./12"]
+        )
+        self.assertListEqual(utils.get_parents("-1.2..."), [u"-1", u"-1.2"])
 
     def test_iterate_over_tree_basic(self):
         """Ensure that returned results are correct"""
@@ -174,7 +181,9 @@ class TestUtils(unittest.TestCase):
                 "_children": [],
             },
         ]
-        modified = utils.importer(container, None, u"key1", u"Key 1", None, None, _children)
+        modified = utils.importer(
+            container, None, u"key1", u"Key 1", None, None, _children
+        )
         expected_results = [
             [None],
             ["key1", None],
@@ -313,14 +322,14 @@ class TestUtils(unittest.TestCase):
             {
                 "identifier": u"001.2",
                 "title": u"second modified",
-                "informations": u'new infos',
+                "informations": u"new infos",
                 "enabled": False,
                 "_children": [],
             },
             {
                 "identifier": u"001.3",
                 "title": u"new one",
-                "informations": u'infos',
+                "informations": u"infos",
                 "enabled": False,
                 "_children": [],
             },
@@ -335,19 +344,15 @@ class TestUtils(unittest.TestCase):
         subelement = container.get_by("identifier", "001")
         self.assertEqual(u"First Modified", subelement.title)
         self.assertEqual(3, len(subelement))
-        values = sorted(list(subelement.values()), key=attrgetter('identifier'))
-        self.assertEqual(
-            ["001.1", "001.2", "001.3"], [e.identifier for e in values]
-        )
+        values = sorted(list(subelement.values()), key=attrgetter("identifier"))
+        self.assertEqual(["001.1", "001.2", "001.3"], [e.identifier for e in values])
         self.assertEqual(
             [u"first", u"second modified", u"new one"], [e.title for e in values]
         )
         self.assertEqual(
             [None, u"new infos", u"infos"], [e.informations for e in values]
         )
-        self.assertEqual(
-            [True, False, False], [e.enabled for e in values]
-        )
+        self.assertEqual([True, False, False], [e.enabled for e in values])
 
     def test_importer_multi_levels_result(self):
         """Ensure that the returned list is correct"""
@@ -386,7 +391,9 @@ class TestUtils(unittest.TestCase):
                 "_children": [],
             },
         ]
-        modified = utils.importer(container, None, u"key1", u"Key 1", None, None, _children)
+        modified = utils.importer(
+            container, None, u"key1", u"Key 1", None, None, _children
+        )
         expected_results = [
             [None],
             ["key1", None],
@@ -460,13 +467,13 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("1000")
         expected_results = {
             None: {
-                u"1": (u"1", {u'enabled': False}),
+                u"1": (u"1", {u"enabled": False}),
             },
             u"1": {
-                u"10": (u"10", {u'enabled': False}),
+                u"10": (u"10", {u"enabled": False}),
             },
             u"10": {
-                u"100": (u"100", {u'enabled': False}),
+                u"100": (u"100", {u"enabled": False}),
             },
             u"100": {
                 u"1000": (u"1000", {}),
@@ -479,13 +486,13 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("10.0.0")
         expected_results = {
             None: {
-                u"1": (u"1", {u'enabled': False}),
+                u"1": (u"1", {u"enabled": False}),
             },
             u"1": {
-                u"10": (u"10", {u'enabled': False}),
+                u"10": (u"10", {u"enabled": False}),
             },
             u"10": {
-                u"10.0": (u"10.0", {u'enabled': False}),
+                u"10.0": (u"10.0", {u"enabled": False}),
             },
             u"10.0": {
                 u"10.0.0": (u"10.0.0", {}),
@@ -498,19 +505,19 @@ class TestUtils(unittest.TestCase):
         result = utils.generate_decimal_structure("-1.073/074")
         expected_results = {
             None: {
-                u"-1": (u"-1", {u'enabled': False}),
+                u"-1": (u"-1", {u"enabled": False}),
             },
             u"-1": {
-                u"-1.0": (u"-1.0", {u'enabled': False}),
+                u"-1.0": (u"-1.0", {u"enabled": False}),
             },
             u"-1.0": {
-                u"-1.07": (u"-1.07", {u'enabled': False}),
+                u"-1.07": (u"-1.07", {u"enabled": False}),
             },
             u"-1.07": {
-                u"-1.073": (u"-1.073", {u'enabled': False}),
+                u"-1.073": (u"-1.073", {u"enabled": False}),
             },
-            u'-1.073': {
-                u'-1.073/074': (u'-1.073/074', {}),
+            u"-1.073": {
+                u"-1.073/074": (u"-1.073/074", {}),
             },
         }
         self.assertEqual(expected_results, result)

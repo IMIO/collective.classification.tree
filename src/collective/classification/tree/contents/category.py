@@ -3,13 +3,12 @@
 from Acquisition import aq_parent
 from Acquisition import Implicit
 from BTrees.OOBTree import OOBTree
-from OFS.Traversable import Traversable
-from OFS.event import ObjectWillBeRemovedEvent
-from Products.CMFCore.DynamicType import DynamicType
 from collective.classification.tree import _
 from collective.classification.tree import caching
 from collective.classification.tree import utils
 from collective.classification.tree.contents.common import BaseContainer
+from OFS.event import ObjectWillBeRemovedEvent
+from OFS.Traversable import Traversable
 from persistent import Persistent
 from plone import api
 from plone.autoform import directives
@@ -17,6 +16,7 @@ from plone.dexterity.fti import DexterityFTI
 from plone.rest.interfaces import IService
 from plone.uuid.interfaces import IAttributeUUID
 from plone.uuid.interfaces import IMutableUUID
+from Products.CMFCore.DynamicType import DynamicType
 from z3c.form.browser.radio import RadioFieldWidget
 from zExceptions import Redirect
 from zope import schema
@@ -43,9 +43,9 @@ class IClassificationCategory(Interface):
         title=_(u"Name"), description=_("Name of the category"), required=True
     )
 
-    directives.widget('enabled', RadioFieldWidget)
+    directives.widget("enabled", RadioFieldWidget)
     enabled = schema.Bool(
-        title=_(u'Enabled'),
+        title=_(u"Enabled"),
         default=True,
         required=False,
     )

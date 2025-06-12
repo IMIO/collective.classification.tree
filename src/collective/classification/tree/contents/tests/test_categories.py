@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from collective.classification.tree import testing
-from zope.component import createObject
-from plone.app.content.interfaces import INameFromTitle
 from plone import api
+from plone.app.content.interfaces import INameFromTitle
+from zope.component import createObject
 
 import unittest
 
