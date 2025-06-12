@@ -3,12 +3,12 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from collective.classification.tree import utils
+from plone.app.layout.globals.context import ContextState as BaseContextState
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
-from plone.app.layout.globals.context import ContextState as BaseContextState
 from z3c.form import button
 from z3c.form import field
 from z3c.form import form
@@ -68,7 +68,9 @@ class ContextState(BaseContextState):
 class LockingBase(BrowserView):
     @property
     def is_locked(self):
-        locking_view = queryMultiAdapter((self.context, self.request), name="plone_lock_info")
+        locking_view = queryMultiAdapter(
+            (self.context, self.request), name="plone_lock_info"
+        )
 
         return locking_view and locking_view.is_locked_for_current_user()
 
@@ -82,11 +84,15 @@ class DeleteConfirmationForm(form.Form, LockingBase):
 
     def view_url(self):
         """Facade to the homonymous plone_context_state method"""
-        context_state = getMultiAdapter((self.context, self.request), name="plone_context_state")
+        context_state = getMultiAdapter(
+            (self.context, self.request), name="plone_context_state"
+        )
         return context_state.view_url()
 
     def more_info(self):
-        adapter = queryMultiAdapter((self.context, self.request), name="delete_confirmation_info")
+        adapter = queryMultiAdapter(
+            (self.context, self.request), name="delete_confirmation_info"
+        )
         if adapter:
             return adapter()
         return ""
@@ -104,9 +110,13 @@ class DeleteConfirmationForm(form.Form, LockingBase):
         # been?
         if self.context.aq_chain == self.context.aq_inner.aq_chain:
             parent.manage_delObjects(self.context.getId())
-            IStatusMessage(self.request).add(_(u"${title} has been deleted.", mapping={u"title": title}))
+            IStatusMessage(self.request).add(
+                _(u"${title} has been deleted.", mapping={u"title": title})
+            )
         else:
-            IStatusMessage(self.request).add(_(u'"${title}" has already been deleted', mapping={u"title": title}))
+            IStatusMessage(self.request).add(
+                _(u'"${title}" has already been deleted', mapping={u"title": title})
+            )
 
         self.request.response.redirect(parent.absolute_url())
 

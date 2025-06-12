@@ -49,7 +49,9 @@ class IClassificationCategory(Interface):
         defaultFactory=default_identifier,
     )
 
-    title = schema.TextLine(title=_(u"Name"), description=_("Name of the category"), required=True)
+    title = schema.TextLine(
+        title=_(u"Name"), description=_("Name of the category"), required=True
+    )
 
     directives.widget("enabled", RadioFieldWidget)
     enabled = schema.Bool(
@@ -62,7 +64,9 @@ class IClassificationCategory(Interface):
 
 
 @implementer(IClassificationCategory, IAttributeUUID, IService)
-class ClassificationCategory(DynamicType, Traversable, Implicit, Persistent, BaseContainer):
+class ClassificationCategory(
+    DynamicType, Traversable, Implicit, Persistent, BaseContainer
+):
     __parent__ = None
     __allow_access_to_unprotected_subobjects__ = True
 
@@ -199,5 +203,7 @@ def category_deleted(obj, event):
             request=obj.REQUEST,
             type="warning",
         )
-        view_url = getMultiAdapter((obj, obj.REQUEST), name=u"plone_context_state").view_url()
+        view_url = getMultiAdapter(
+            (obj, obj.REQUEST), name=u"plone_context_state"
+        ).view_url()
         raise Redirect(view_url)

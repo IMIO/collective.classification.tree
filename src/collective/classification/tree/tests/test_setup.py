@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Setup tests for this package."""
 from collective.classification.tree import PLONE_VERSION
-from plone import api
-from plone.app.testing import setRoles
-from plone.app.testing import TEST_USER_ID
 from collective.classification.tree.testing import (
     COLLECTIVE_CLASSIFICATION_TREE_INTEGRATION_TESTING,
 )  # noqa: E501
+from plone import api
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
 
 import unittest
 
@@ -32,12 +32,14 @@ class TestSetup(unittest.TestCase):
 
     def test_product_installed(self):
         """Test if collective.classification.tree is installed."""
-        if PLONE_VERSION >= '5.1':
+        if PLONE_VERSION >= "5.1":
             self.assertTrue(
-                self.installer.is_product_installed("collective.classification.tree"))
+                self.installer.is_product_installed("collective.classification.tree")
+            )
         else:
             self.assertTrue(
-                self.installer.isProductInstalled("collective.classification.tree"))
+                self.installer.isProductInstalled("collective.classification.tree")
+            )
 
     def test_browserlayer(self):
         """Test that ICollectiveClassificationTreeLayer is registered."""
@@ -67,12 +69,14 @@ class TestUninstall(unittest.TestCase):
 
     def test_product_uninstalled(self):
         """Test if collective.classification.tree is cleanly uninstalled."""
-        if PLONE_VERSION >= '5.1':
+        if PLONE_VERSION >= "5.1":
             self.assertFalse(
-                self.installer.is_product_installed("collective.classification.tree"))
+                self.installer.is_product_installed("collective.classification.tree")
+            )
         else:
             self.assertFalse(
-                self.installer.isProductInstalled("collective.classification.tree"))
+                self.installer.isProductInstalled("collective.classification.tree")
+            )
 
     def test_browserlayer_removed(self):
         """Test that ICollectiveClassificationTreeLayer is removed."""

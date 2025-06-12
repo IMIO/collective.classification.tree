@@ -30,6 +30,7 @@ import copy
 import csv
 import re
 
+
 ANNOTATION_KEY = "collective.classification:import"
 
 
@@ -98,7 +99,9 @@ class IImportSecondStepBase(Interface):
         annotations = IAnnotations(obj.__context__)
         format_dic = {}
         if obj._Data_data___.get("decimal_import", False):
-            format_dic = {"identifier": r"(-?[./\d]+|( *, *)*)+$"}  # decimal format validation with multiple values
+            format_dic = {
+                "identifier": r"(-?[./\d]+|( *, *)*)+$"
+            }  # decimal format validation with multiple values
         return utils.validate_csv_content(
             obj,
             annotations[ANNOTATION_KEY],
@@ -292,7 +295,9 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                     if sk not in data[k]:
                         data[k][sk] = sv
 
-    def _process_csv(self, csv_reader, mapping, encoding, import_data, decimal_import=False, **kw):
+    def _process_csv(
+        self, csv_reader, mapping, encoding, import_data, decimal_import=False, **kw
+    ):
         data = {}
         for line in csv_reader:
             line_data = {v: ensure_text(line[k], encoding) for k, v in mapping.items()}
@@ -318,7 +323,10 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                     # Using dictionary avoid duplicated informations
                     data[parent_identifier] = {}
                 # if exists, only update if title = identifier
-                if identifier not in data[parent_identifier] or data[parent_identifier][identifier][0] == identifier:
+                if (
+                    identifier not in data[parent_identifier]
+                    or data[parent_identifier][identifier][0] == identifier
+                ):
                     data[parent_identifier][identifier] = (title, line_data)
         return data
 

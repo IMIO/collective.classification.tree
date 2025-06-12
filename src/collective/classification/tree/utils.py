@@ -13,6 +13,7 @@ from zope.interface import Invalid
 import csv
 import re
 
+
 # DECIMAL_SEPARATORS = ("-", ".", ";", "/", "|", ":")
 DECIMAL_SEPARATORS = ("-", ".", "/")
 
@@ -37,7 +38,10 @@ def iterate_over_tree_data(obj):
 
     Returns a list of ``(UID, Title, identifier, title, enabled)`` tuples.
     """
-    return [(e.UID(), e.Title(), e.identifier, e.title, e.enabled) for e in iterate_over_tree(obj)]
+    return [
+        (e.UID(), e.Title(), e.identifier, e.title, e.enabled)
+        for e in iterate_over_tree(obj)
+    ]
 
 
 def create_category(parent, data, event=True):
@@ -123,7 +127,15 @@ def get_decimal_parent(code):
     return lastparent or None
 
 
-def importer(context, parent_identifier, identifier, title, informations=None, enabled=None, _children=None):
+def importer(
+    context,
+    parent_identifier,
+    identifier,
+    title,
+    informations=None,
+    enabled=None,
+    _children=None,
+):
     """
     Expected structure for _children (iterable) with dict element that contains :
         * identifier (String)
@@ -139,7 +151,9 @@ def importer(context, parent_identifier, identifier, title, informations=None, e
         parent = get_by(context, "identifier", parent_identifier) or context
 
     modified = []
-    modified.extend(element_importer(parent, identifier, title, informations, enabled, _children))
+    modified.extend(
+        element_importer(parent, identifier, title, informations, enabled, _children)
+    )
     return modified
 
 
@@ -218,9 +232,7 @@ def validate_csv_data(obj, min_length=2):
     if len(first_line) < 2:
         raise Invalid(_("CSV file must contains at least 2 columns"))
     base_length = len(first_line)
-    wrong_lines = [
-        str(i + 2) for i, v in enumerate(reader) if len(v) != base_length
-    ]
+    wrong_lines = [str(i + 2) for i, v in enumerate(reader) if len(v) != base_length]
     f.close()
     if wrong_lines:
         raise Invalid(
@@ -255,7 +267,11 @@ def validate_csv_content(obj, annotation, required_columns, format_dic={}):
     * check if all required columns have values
     * check some columns format with re pattern {'identifier': pattern}
     """
-    columns = {v: int(k.replace("column_", "")) for k, v in obj._Data_data___.items() if k.startswith("column_") and v}
+    columns = {
+        v: int(k.replace("column_", ""))
+        for k, v in obj._Data_data___.items()
+        if k.startswith("column_") and v
+    }
     if not columns:
         # Validation of columns is made by another function
         return True
@@ -272,14 +288,18 @@ def validate_csv_content(obj, annotation, required_columns, format_dic={}):
     wrong_lines = []
     wrong_values = []
     for idx, line in enumerate(reader):
-        if not getattr(obj, 'allow_empty', False):  # option only in tree import
+        if not getattr(obj, "allow_empty", False):  # option only in tree import
             values = [line[columns[n]] for n in required_columns if line[columns[n]]]
             if len(values) != expected_length:
                 wrong_lines.append(str(idx + base_idx))
         for col in format_dic:
             val = line[columns[col]]
             if not re.match(format_dic[col], val):
-                wrong_values.append("Line {}, col {}: '{}'".format(idx + base_idx, columns[col] + 1, val))
+                wrong_values.append(
+                    "Line {}, col {}: '{}'".format(
+                        idx + base_idx, columns[col] + 1, val
+                    )
+                )
     f.close()
     if wrong_lines:
         raise Invalid(
@@ -289,5 +309,10 @@ def validate_csv_content(obj, annotation, required_columns, format_dic={}):
             )
         )
     if wrong_values:
-        raise Invalid(_("Bad format values: ${errors}", mapping={'errors': ' || '.join(wrong_values)}))
+        raise Invalid(
+            _(
+                "Bad format values: ${errors}",
+                mapping={"errors": " || ".join(wrong_values)},
+            )
+        )
     return True

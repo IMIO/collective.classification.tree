@@ -1,7 +1,9 @@
 from App.class_init import InitializeClass
 from collective.classification.tree import SOURCE_RESULTS_LEN
 from plone.formwidget.autocomplete.interfaces import IAutocompleteWidget
-from plone.formwidget.autocomplete.widget import AutocompleteBase as OriginalAutocompleteBase
+from plone.formwidget.autocomplete.widget import (
+    AutocompleteBase as OriginalAutocompleteBase,
+)
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from z3c.formwidget.query.widget import QuerySourceCheckboxWidget
 from zope.interface import implementer

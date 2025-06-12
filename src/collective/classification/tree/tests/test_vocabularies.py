@@ -15,8 +15,12 @@ class TestCategoriesContents(unittest.TestCase):
 
     def setUp(self):
         self.portal = self.layer["portal"]
-        self.folder = api.content.create(id="folder", type="Folder", container=self.portal)
-        self.container = api.content.create(title="Container", type="ClassificationContainer", container=self.folder)
+        self.folder = api.content.create(
+            id="folder", type="Folder", container=self.portal
+        )
+        self.container = api.content.create(
+            title="Container", type="ClassificationContainer", container=self.folder
+        )
 
     def tearDown(self):
         api.content.delete(self.folder)
@@ -34,7 +38,9 @@ class TestCategoriesContents(unittest.TestCase):
             category = self._create_category(id, title)
             self.container._add_element(category)
 
-        vocabulary = getUtility(IVocabularyFactory, "collective.classification.vocabularies:tree")(self.folder)
+        vocabulary = getUtility(
+            IVocabularyFactory, "collective.classification.vocabularies:tree"
+        )(self.folder)
         self.assertEqual(
             [u"001 - First", u"002 - Second", u"003 - Third"],
             [e.title for e in vocabulary],
@@ -46,7 +52,9 @@ class TestCategoriesContents(unittest.TestCase):
             category = self._create_category(id, title)
             self.container._add_element(category)
 
-        vocabulary = getUtility(IVocabularyFactory, "collective.classification.vocabularies:tree")(self.folder)
+        vocabulary = getUtility(
+            IVocabularyFactory, "collective.classification.vocabularies:tree"
+        )(self.folder)
         self.assertEqual(
             [u"001", u"002", u"003"],
             [e.title for e in vocabulary],
@@ -69,7 +77,9 @@ class TestCategoriesContents(unittest.TestCase):
         category = self._create_category(u"002.1.1", u"first")
         last_element._add_element(category)
 
-        vocabulary = getUtility(IVocabularyFactory, "collective.classification.vocabularies:tree")(self.folder)
+        vocabulary = getUtility(
+            IVocabularyFactory, "collective.classification.vocabularies:tree"
+        )(self.folder)
         self.assertEqual(
             [
                 u"001 - First",

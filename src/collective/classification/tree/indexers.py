@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from Acquisition._Acquisition import aq_parent  # noqa
-from collective.classification.tree.behaviors.classification import IClassificationCategoryMarker
+from collective.classification.tree.behaviors.classification import (
+    IClassificationCategoryMarker,
+)
 from imio.helpers import EMPTY_STRING
 from plone.indexer.decorator import indexer
 from Products.CMFPlone.utils import base_hasattr
