@@ -4,6 +4,7 @@ from collective.classification.tree import _
 from collective.classification.tree.behaviors.widget import AutocompleteMultiFieldWidget
 from collective.classification.tree.vocabularies import ClassificationTreeSourceBinder
 from plone import schema
+from plone.app.z3cform.widgets.select import AjaxSelectFieldWidget
 from plone.autoform import directives as form
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
@@ -21,7 +22,7 @@ class IClassificationCategoryMarker(Interface):
 class IClassificationCategory(model.Schema):
     """ """
 
-    form.widget(classification_categories=AutocompleteMultiFieldWidget)
+    form.widget(classification_categories=AjaxSelectFieldWidget)
     classification_categories = schema.List(
         title=_(u"Classification Categories"),
         description=_(u"List of categories in which this content is filed"),
