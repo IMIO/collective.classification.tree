@@ -31,7 +31,8 @@ def classification_tree_vocabulary_factory(context):
     containers = api.content.find(**query)
     results = []
     for container in containers:
-        results.extend([(e.UID(), e.Title(), e.enabled) for e in utils.iterate_over_tree(container.getObject())])
+        # (uid, title, identifier, raw_title, enabled)
+        results.extend([(d[0], d[1], d[4]) for d in utils.iterate_over_tree_data(container.getObject())])
     results = sorted(results, key=itemgetter(1))
     return category_iterable_to_vocabulary(results)
 
@@ -42,7 +43,7 @@ def full_classification_tree_vocabulary_factory(context):
     results = []
     for container in containers:
         results.extend(
-            [(e.UID(), e.Title(), e.enabled) for e in utils.iterate_over_tree(container._unrestrictedGetObject())]
+            [(d[0], d[1], d[4]) for d in utils.iterate_over_tree_data(container._unrestrictedGetObject())]
         )
     results = sorted(results, key=itemgetter(1))
     return category_iterable_to_vocabulary(results)
@@ -53,7 +54,7 @@ def classification_tree_id_mapping_vocabulary_factory(context):
     containers = api.content.find(**query)
     results = []
     for container in containers:
-        results.extend([(e.identifier, e.UID()) for e in utils.iterate_over_tree(container.getObject())])
+        results.extend([(d[2], d[0]) for d in utils.iterate_over_tree_data(container.getObject())])
     results = sorted(results, key=itemgetter(1))
     return iterable_to_vocabulary(results)
 
@@ -63,7 +64,7 @@ def classification_tree_title_mapping_vocabulary_factory(context):
     containers = api.content.find(**query)
     results = []
     for container in containers:
-        results.extend([(e.title, e.UID()) for e in utils.iterate_over_tree(container.getObject())])
+        results.extend([(d[3], d[0]) for d in utils.iterate_over_tree_data(container.getObject())])
     results = sorted(results, key=itemgetter(1))
     return iterable_to_vocabulary(results)
 

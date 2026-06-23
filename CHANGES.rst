@@ -5,7 +5,8 @@ Changelog
 1.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed `ConnectionStateError` in `iterate_over_tree`.
+  [chris-adam]
 
 
 1.2.0 (2024-12-13)

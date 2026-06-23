@@ -11,19 +11,32 @@ from zope.interface import Invalid
 import csv
 import re
 
+
 # DECIMAL_SEPARATORS = ("-", ".", ";", "/", "|", ":")
 DECIMAL_SEPARATORS = ("-", ".", "/")
 
 
-@ram.cache(forever_context_cache_key)
 def iterate_over_tree(obj):
-    """Iterate over an object to get all sub objects"""
+    """Iterate over an object to get all sub objects.
+
+    This returns live (persistent) objects and is intentionally NOT cached:
+    persistent objects must never be stored in the global RAM cache.
+    """
     result = []
     for e in obj.values():
         result.append(e)
         if len(e) > 0:
             result.extend(iterate_over_tree(e))
     return result
+
+
+@ram.cache(forever_context_cache_key)
+def iterate_over_tree_data(obj):
+    """Return cache-safe primitive data for every node of a tree.
+
+    Returns a list of ``(UID, Title, identifier, title, enabled)`` tuples.
+    """
+    return [(e.UID(), e.Title(), e.identifier, e.title, e.enabled) for e in iterate_over_tree(obj)]
 
 
 def create_category(parent, data, event=True):

@@ -168,7 +168,7 @@ ClassificationCategoryFactory = Factory(ClassificationCategory)
 
 def container_modified(context, event):
     """Invalidates tree cache node."""
-    func = "collective.classification.tree.utils.iterate_over_tree"
+    func = "collective.classification.tree.utils.iterate_over_tree_data"
     for element in utils.get_chain(context):
         caching.invalidate_cache(func, element.UID())
 
