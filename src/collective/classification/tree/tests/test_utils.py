@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from collective.classification.tree import caching
 from collective.classification.tree import testing
 from collective.classification.tree import utils
+from collective.classification.tree.contents.category import ClassificationCategory
 from operator import attrgetter
 from plone import api
 from zope.component import createObject
 
 import unittest
+
+
+ITERATE_OVER_TREE_DATA_FUNC = "collective.classification.tree.utils.iterate_over_tree_data"
 
 
 class TestUtils(unittest.TestCase):
@@ -53,8 +58,15 @@ class TestUtils(unittest.TestCase):
         expected = [u"001", u"001.1", u"001.2", u"002", u"002.1"]
         self.assertEqual(expected, sorted([e.identifier for e in results]))
 
-    def test_iterate_over_tree_caching_first_level_addition(self):
-        """Ensure that returned results are correctly cached"""
+    def test_iterate_over_tree_returns_live_objects(self):
+        """iterate_over_tree returns live (persistent) nodes, not cached primitives."""
+        results = utils.iterate_over_tree(self.container)
+        self.assertEqual(5, len(results))
+        for node in results:
+            self.assertIsInstance(node, ClassificationCategory)
+
+    def test_iterate_over_tree_first_level_addition(self):
+        """Ensure that returned results reflect a first level addition (uncached)"""
         results = utils.iterate_over_tree(self.container)
         self.assertEqual(5, len(results))
 
@@ -67,8 +79,8 @@ class TestUtils(unittest.TestCase):
         expected = [u"001", u"001.1", u"001.2", u"002", u"002.1", u"003"]
         self.assertEqual(expected, sorted([e.identifier for e in results]))
 
-    def test_iterate_over_tree_caching_sub_level_addition(self):
-        """Ensure that returned results are correctly cached"""
+    def test_iterate_over_tree_sub_level_addition(self):
+        """Ensure that returned results reflect a sub level addition (uncached)"""
         results = utils.iterate_over_tree(self.container)
         self.assertEqual(5, len(results))
 
@@ -82,8 +94,8 @@ class TestUtils(unittest.TestCase):
         expected = [u"001", u"001.1", u"001.2", u"002", u"002.1", u"002.2"]
         self.assertEqual(expected, sorted([e.identifier for e in results]))
 
-    def test_iterate_over_tree_caching_edition(self):
-        """Ensure that returned results are correctly cached"""
+    def test_iterate_over_tree_edition(self):
+        """Ensure that returned results reflect an edition (uncached)"""
         results = utils.iterate_over_tree(self.container)
         self.assertEqual(5, len(results))
 
@@ -96,6 +108,55 @@ class TestUtils(unittest.TestCase):
 
         expected = [u"001", u"001.1", u"001.2", u"002-updated", u"002.1"]
         self.assertEqual(expected, sorted([e.identifier for e in results]))
+
+    def test_iterate_over_tree_data_returns_primitives(self):
+        """cached iterate_over_tree_data must return only primitives."""
+        results = utils.iterate_over_tree_data(self.container)
+        self.assertEqual(5, len(results))
+
+        for entry in results:
+            self.assertIsInstance(entry, tuple)
+            self.assertEqual(5, len(entry))
+            uid, title, identifier, raw_title, enabled = entry
+            self.assertIsInstance(uid, str)
+            self.assertIsInstance(title, basestring)
+            self.assertIsInstance(identifier, basestring)
+            self.assertIsInstance(raw_title, basestring)
+            self.assertIsInstance(enabled, bool)
+            for value in entry:
+                self.assertNotIsInstance(value, ClassificationCategory)
+
+    def test_iterate_over_tree_data_values(self):
+        """Ensure that the primitive data matches the live tree"""
+        results = {entry[2]: entry for entry in utils.iterate_over_tree_data(self.container)}
+        self.assertEqual(
+            [u"001", u"001.1", u"001.2", u"002", u"002.1"], sorted(results.keys())
+        )
+
+        node = [e for e in self.container.values() if e.identifier == u"001"][0]
+        uid, title, identifier, raw_title, enabled = results[u"001"]
+        self.assertEqual(node.UID(), uid)
+        self.assertEqual(node.Title(), title)
+        self.assertEqual(u"001", identifier)
+        self.assertEqual(u"First", raw_title)
+        self.assertEqual(node.enabled, enabled)
+
+    def test_iterate_over_tree_data_is_cached(self):
+        """Ensure that iterate_over_tree_data is RAM-cached on the container UID."""
+        results = utils.iterate_over_tree_data(self.container)
+        self.assertEqual(5, len(results))
+
+        # mutate a node's title directly, bypassing the cache-invalidating event
+        category = [e for e in self.container.values() if e.identifier == u"002"][0]
+        category.title = u"Second updated"
+
+        cached = utils.iterate_over_tree_data(self.container)
+        self.assertNotIn(u"Second updated", [entry[3] for entry in cached])
+
+        caching.invalidate_cache(ITERATE_OVER_TREE_DATA_FUNC, self.container.UID())
+
+        refreshed = utils.iterate_over_tree_data(self.container)
+        self.assertIn(u"Second updated", [entry[3] for entry in refreshed])
 
     def test_importer_one_level(self):
         """Ensure that the content is correctly created"""
