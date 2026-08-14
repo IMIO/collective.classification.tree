@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.2.1 (unreleased)
+1.3.0 (2026-08-14)
 ------------------
 
 - Fixed `ConnectionStateError` in `iterate_over_tree`.
