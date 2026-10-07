@@ -90,22 +90,22 @@ def classification_tree_title_mapping_vocabulary_factory(context):
 
 def csv_separator_vocabulary_factory(context):
     values = (
-        (u";", u";"),
-        (u",", u","),
-        (u"|", u"|"),
-        (u"	", _(u"tab")),  # ! value is a tab not a whitespace !
-        (u" ", _(u"whitespace")),
+        (";", ";"),
+        (",", ","),
+        ("|", "|"),
+        ("	", _("tab")),  # ! value is a tab not a whitespace !
+        (" ", _("whitespace")),
     )
     return iterable_to_vocabulary(values)
 
 
 def import_keys_vocabulary_factory(context):
     values = (
-        (u"parent_identifier", _(u"Parent Identifier")),
-        (u"identifier", _(u"Identifier")),
-        (u"title", _(u"Name")),
-        (u"informations", _(u"Informations")),
-        (u"enabled", _(u"Enabled")),
+        ("parent_identifier", _("Parent Identifier")),
+        ("identifier", _("Identifier")),
+        ("title", _("Name")),
+        ("informations", _("Informations")),
+        ("enabled", _("Enabled")),
     )
     return iterable_to_vocabulary(values)
 
@@ -176,7 +176,7 @@ class ClassificationTreeSource(object):
                     value,
                     util.createCSSId(util.toUnicode(value)),
                     title=_zf(
-                        u"Missing: ${value}", mapping=dict(value=util.toUnicode(value))
+                        "Missing: ${value}", mapping=dict(value=util.toUnicode(value))
                     ),
                 )
             raise

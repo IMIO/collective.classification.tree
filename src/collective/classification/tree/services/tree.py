@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from collective.classification.tree import utils
-from operator import attrgetter
 from plone.restapi.interfaces import ISerializeToJson
 from plone.restapi.search.utils import unflatten_dotted_dict
 from plone.restapi.services import Service
-from six import ensure_text
 from unidecode import unidecode
 from zope.component import queryMultiAdapter
 
@@ -63,7 +61,7 @@ class TreeSearchHandler(object):
 
     def _filter(self, results):
         regex = self.query.get("search[regex]", "false") == "true"
-        search = unidecode(ensure_text(self.query.get("search[value]", ""))).lower()
+        search = unidecode(self.query.get("search[value]", "")).lower()
         if not search:
             return results
         columns = self._get_columns(searchable=True)
@@ -73,12 +71,12 @@ class TreeSearchHandler(object):
     def _object_filter(obj, columns, search, regex):
         if regex is True:
             for key in columns:
-                if search in unidecode(getattr(obj, key) or u"").lower():
+                if search in unidecode(getattr(obj, key) or "").lower():
                     return True
             return False
         else:
             for key in columns:
-                if search == unidecode(getattr(obj, key) or u"").lower():
+                if search == unidecode(getattr(obj, key) or "").lower():
                     return True
             return False
 
@@ -89,7 +87,12 @@ class TreeSearchHandler(object):
         if not columns:
             return results
         order_column = columns[idx]
-        return sorted(results, key=attrgetter(order_column), reverse=reverse)
+
+        def key(obj):
+            value = getattr(obj, order_column)
+            return value is not None, value  # empty values first, as on Python 2
+
+        return sorted(results, key=key, reverse=reverse)
 
 
 class TreeGet(Service):

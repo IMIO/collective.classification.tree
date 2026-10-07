@@ -11,8 +11,6 @@ from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectRemovedEvent
 
-import six
-
 
 class IClassificationContainer(model.Schema):
     pass
@@ -70,14 +68,14 @@ class ClassificationContainer(Container, BaseContainer):
         return [v.__of__(self) for v in self._tree.values()]
 
     def iterkeys(self):
-        return six.iterkeys(self._tree)
+        return iter(self._tree.keys())
 
     def itervalues(self):
-        for v in six.itervalues(self._tree):
+        for v in self._tree.values():
             yield v.__of__(self)
 
     def iteritems(self):
-        for k, v in six.iteritems(self._tree):
+        for k, v in self._tree.items():
             yield (
                 k,
                 v.__of__(self),

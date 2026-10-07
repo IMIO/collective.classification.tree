@@ -35,7 +35,7 @@ class SerializeToJson(object):
 
     @property
     def _links(self):
-        if not api.user.has_permission("cmf.ModifyPortalContent"):
+        if not api.user.has_permission("Modify portal content", obj=self.context):
             return []
         return [
             {

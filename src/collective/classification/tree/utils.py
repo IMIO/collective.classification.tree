@@ -3,9 +3,8 @@
 from Acquisition import aq_parent
 from collective.classification.tree import _
 from collective.classification.tree.caching import forever_context_cache_key
+from io import StringIO
 from plone.memoize import ram
-from six import ensure_str
-from six import StringIO
 from zope.component import createObject
 from zope.event import notify
 from zope.interface import Invalid
@@ -86,9 +85,9 @@ def get_parents(code):
     levels = []
     level = ""
     for i, char in enumerate(code):
-        level = u"{0}{1}".format(level, char)
-        if char == u"/":  # we stop when encoutering /
-            levels.append(u"{}{}".format(level, code[i + 1 :]))
+        level = "{0}{1}".format(level, char)
+        if char == "/":  # we stop when encoutering /
+            levels.append("{}{}".format(level, code[i + 1 :]))
             break
         elif char in DECIMAL_SEPARATORS:
             continue
@@ -108,7 +107,7 @@ def generate_decimal_structure(code, enabled=False):
         if level == code:  # current elem
             results[last_element] = {level: (level, {})}
         else:
-            results[last_element] = {level: (level, {u"enabled": enabled})}
+            results[last_element] = {level: (level, {"enabled": enabled})}
         last_element = level
     return results
 
@@ -117,8 +116,8 @@ def get_decimal_parent(code):
     """Return the parent decimal code from a given code e.g. 100 from 100.1"""
     level = lastparent = ""
     for i, char in enumerate(code[:-1]):
-        level = u"{0}{1}".format(level, char)
-        if char == u"/":  # we stop when encoutering /
+        level = "{0}{1}".format(level, char)
+        if char == "/":  # we stop when encoutering /
             break
         elif char in DECIMAL_SEPARATORS:
             continue
@@ -223,11 +222,11 @@ def validate_csv_data(obj, min_length=2):
     source, separator = [obj._Data_data___.get(k) for k in ("source", "separator")]
     with source.open() as f:
         try:
-            f.read().decode("utf8")
+            str(f.read(), "utf8")
         except UnicodeDecodeError:
             raise Invalid(_("File encoding is not utf8"))
-    f = StringIO(ensure_str(source.data))
-    reader = csv.reader(f, delimiter=ensure_str(separator, "utf-8"))
+    f = StringIO(str(source.data, "utf8"))
+    reader = csv.reader(f, delimiter=separator)
     first_line = next(reader)
     if len(first_line) < 2:
         raise Invalid(_("CSV file must contains at least 2 columns"))
@@ -278,8 +277,8 @@ def validate_csv_content(obj, annotation, required_columns, format_dic={}):
     separator = annotation["separator"]
     has_header = annotation["has_header"]
     source = annotation["source"]
-    f = StringIO(ensure_str(source.data))
-    reader = csv.reader(f, delimiter=ensure_str(separator, "utf-8"))
+    f = StringIO(str(source.data, "utf8"))
+    reader = csv.reader(f, delimiter=separator)
     base_idx = 1
     if has_header:
         base_idx += 1

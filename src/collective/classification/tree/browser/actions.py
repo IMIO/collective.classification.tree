@@ -4,8 +4,8 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from collective.classification.tree import utils
 from plone.app.layout.globals.context import ContextState as BaseContextState
-from Products.CMFPlone import PloneMessageFactory as _
-from Products.CMFPlone.utils import safe_unicode
+from plone.base import PloneMessageFactory as _
+from plone.base.utils import safe_text
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
@@ -101,9 +101,9 @@ class DeleteConfirmationForm(form.Form, LockingBase):
     def items_to_delete(self):
         return len(utils.iterate_over_tree(self.context))
 
-    @button.buttonAndHandler(_(u"Delete"), name="Delete")
+    @button.buttonAndHandler(_("Delete"), name="Delete")
     def handle_delete(self, action):
-        title = safe_unicode(self.context.Title())
+        title = safe_text(self.context.Title())
         parent = aq_parent(aq_inner(self.context))
 
         # has the context object been acquired from a place it should not have
@@ -111,16 +111,16 @@ class DeleteConfirmationForm(form.Form, LockingBase):
         if self.context.aq_chain == self.context.aq_inner.aq_chain:
             parent.manage_delObjects(self.context.getId())
             IStatusMessage(self.request).add(
-                _(u"${title} has been deleted.", mapping={u"title": title})
+                _("${title} has been deleted.", mapping={"title": title})
             )
         else:
             IStatusMessage(self.request).add(
-                _(u'"${title}" has already been deleted', mapping={u"title": title})
+                _('"${title}" has already been deleted', mapping={"title": title})
             )
 
         self.request.response.redirect(parent.absolute_url())
 
-    @button.buttonAndHandler(_(u"label_cancel", default=u"Cancel"), name="Cancel")
+    @button.buttonAndHandler(_("label_cancel", default="Cancel"), name="Cancel")
     def handle_cancel(self, action):
         target = self.view_url()
         return self.request.response.redirect(target)

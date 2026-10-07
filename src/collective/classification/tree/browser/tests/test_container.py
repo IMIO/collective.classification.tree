@@ -13,7 +13,9 @@ class TestContainerView(unittest.TestCase):
 
     def test_view(self):
         portal = self.layer["portal"]
-        container = api.content.create(title="My tree", type="ClassificationContainer", container=portal)
+        container = api.content.create(
+            title="My tree", type="ClassificationContainer", container=portal
+        )
         content = container.restrictedTraverse("@@view")()
         self.assertIn("My tree</h1>", content)
         self.assertIn('data-url="{0}/@tree"'.format(container.absolute_url()), content)
@@ -28,12 +30,19 @@ class TestRefreshCache(unittest.TestCase):
 
     def test___call__(self):
         portal = self.layer["portal"]
-        container = api.content.create(title="Container", type="ClassificationContainer", container=portal)
-        create_category(container, {"identifier": u"001", "title": u"First"})
+        container = api.content.create(
+            title="Container", type="ClassificationContainer", container=portal
+        )
+        create_category(container, {"identifier": "001", "title": "First"})
         self.assertEqual(1, len(iterate_over_tree_data(container)))
         # added without event: the cached tree is stale
-        create_category(container, {"identifier": u"002", "title": u"Second"}, event=False)
+        create_category(
+            container, {"identifier": "002", "title": "Second"}, event=False
+        )
         self.assertEqual(1, len(iterate_over_tree_data(container)))
         container.restrictedTraverse("@@refresh-cache")()
         self.assertEqual(2, len(iterate_over_tree_data(container)))
-        self.assertEqual(container.absolute_url(), self.layer["request"].response.getHeader("location"))
+        self.assertEqual(
+            container.absolute_url(),
+            self.layer["request"].response.getHeader("location"),
+        )

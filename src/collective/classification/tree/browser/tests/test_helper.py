@@ -7,12 +7,20 @@ from plone import api
 import unittest
 
 
-CLASSIFICATION_ACTIONS = ["classification.import", "classification.tree.add", "classification.tree.refresh_cache"]
+CLASSIFICATION_ACTIONS = [
+    "classification.import",
+    "classification.tree.add",
+    "classification.tree.refresh_cache",
+]
 
 
 def classification_actions(obj):
     """Ids of the package object_buttons actions available on obj"""
-    actions = api.portal.get_tool("portal_actions").listFilteredActionsFor(obj).get("object_buttons", [])
+    actions = (
+        api.portal.get_tool("portal_actions")
+        .listFilteredActionsFor(obj)
+        .get("object_buttons", [])
+    )
     return sorted([a["id"] for a in actions if a["id"].startswith("classification.")])
 
 
@@ -36,7 +44,9 @@ class TestClassificationContainerHelper(unittest.TestCase):
 
     def setUp(self):
         portal = self.layer["portal"]
-        self.container = api.content.create(title="Container", type="ClassificationContainer", container=portal)
+        self.container = api.content.create(
+            title="Container", type="ClassificationContainer", container=portal
+        )
         self.helper = self.container.restrictedTraverse("@@classification_helper")
 
     def test_can_import(self):
@@ -52,8 +62,12 @@ class TestClassificationCategoryHelper(unittest.TestCase):
 
     def test_can_add_category(self):
         portal = self.layer["portal"]
-        container = api.content.create(title="Container", type="ClassificationContainer", container=portal)
-        category = container[create_category(container, {"identifier": u"001", "title": u"First"}).UID()]
+        container = api.content.create(
+            title="Container", type="ClassificationContainer", container=portal
+        )
+        category = container[
+            create_category(container, {"identifier": "001", "title": "First"}).UID()
+        ]
         helper = category.restrictedTraverse("@@classification_helper")
         self.assertTrue(helper.can_add_category())
         self.assertFalse(helper.can_import())

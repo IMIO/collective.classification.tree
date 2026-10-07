@@ -7,6 +7,11 @@ Changelog
 
 - Made compatible Plone 4.3 and Plone 6.0
   [sgeulette]
+- Added Plone 6.2 support, dropped Plone 4.
+  Fixed `default_identifier` recursion, `@tree` ordering with empty values,
+  `tree_add_parent` and `tree_add_archived` on Python 3,
+  serializer links permission (listing for non-Managers).
+  [chris-adam]
 
 1.3.0 (2026-08-14)
 ------------------

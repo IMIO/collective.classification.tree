@@ -2,16 +2,13 @@
 
 from collective.classification.tree import _
 from collective.classification.tree import utils
+from io import StringIO
 from persistent.dict import PersistentDict
 from plone import api
 from plone.autoform.form import AutoExtensibleForm
 from plone.namedfile.field import NamedBlobFile
 from plone.supermodel import model
 from plone.z3cform.layout import FormWrapper
-from six import ensure_str
-from six import ensure_text
-from six import StringIO
-from six.moves import range
 from time import time
 from z3c.form import button
 from z3c.form.datamanager import AttributeField
@@ -65,21 +62,21 @@ class BaseForm(AutoExtensibleForm, Form):
 class IImportFirstStep(model.Schema):
 
     source = NamedBlobFile(
-        title=_(u"File"),
-        description=_(u"CSV file that contains the classification tree"),
+        title=_("File"),
+        description=_("CSV file that contains the classification tree"),
         required=True,
     )
 
     separator = schema.Choice(
-        title=_(u"CSV Separator"),
-        description=_(u"Separator character to use"),
+        title=_("CSV Separator"),
+        description=_("Separator character to use"),
         vocabulary="collective.classification.vocabularies:csv_separator",
         required=True,
     )
 
     has_header = schema.Bool(
-        title=_(u"Include CSV header"),
-        description=_(u"The CSV file contains an header row"),
+        title=_("Include CSV header"),
+        description=_("The CSV file contains an header row"),
         default=True,
         required=False,
     )
@@ -110,19 +107,19 @@ class IImportSecondStepBase(Interface):
         )
 
     decimal_import = GeneratedBool(
-        title=_(u"Identifier are decimal codes"),
+        title=_("Identifier are decimal codes"),
         default=True,
         required=False,
     )
 
     allow_empty = GeneratedBool(
-        title=_(u"Allow empty column value"),
+        title=_("Allow empty column value"),
         default=False,
         required=False,
     )
 
     replace_slash = GeneratedBool(
-        title=_(u"Replace slash in title"),
+        title=_("Replace slash in title"),
         default=True,
         required=False,
     )
@@ -139,14 +136,14 @@ class ImportFormFirstStep(BaseForm):
         for key, value in data.items():
             annotation[ANNOTATION_KEY][key] = value
 
-    @button.buttonAndHandler(_(u"Continue"), name="continue")
+    @button.buttonAndHandler(_("Continue"), name="continue")
     def handleApply(self, action):
         data, errors = self.extractData()
         if errors:
             self.status = self.formErrorsMessage
             return
         self._set_data(data)
-        redirect_url = u"{0}/@@import-process".format(self.context.absolute_url())
+        redirect_url = "{0}/@@import-process".format(self.context.absolute_url())
         self.request.response.redirect(redirect_url)
 
 
@@ -172,11 +169,9 @@ class BaseImportFormSecondStep(BaseForm):
         first_line = []
         data_lines = []
         data = self._get_data()
-        encoding = "utf-8"
         has_header = data["has_header"]
-        f = StringIO(ensure_str(data["source"].data))
-        # f.seek(0)
-        reader = csv.reader(f, delimiter=ensure_str(data["separator"], encoding))
+        f = StringIO(str(data["source"].data, "utf8"))
+        reader = csv.reader(f, delimiter=data["separator"])
         first_line = next(reader)
         try:
             for i in range(0, 2):
@@ -188,12 +183,10 @@ class BaseImportFormSecondStep(BaseForm):
         fields = []
         for idx, element in enumerate(first_line):
             if has_header:
-                name = ensure_text(element, encoding)
+                name = element
             else:
                 name = str(idx + 1)
-            sample = u", ".join(
-                [u"'{0}'".format(ensure_text(ln[idx], encoding)) for ln in data_lines]
-            )
+            sample = ", ".join(["'{0}'".format(ln[idx]) for ln in data_lines])
 
             fields.append(
                 GeneratedChoice(
@@ -245,11 +238,9 @@ class BaseImportFormSecondStep(BaseForm):
         mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
         data = []
-        f = StringIO(ensure_str(import_data["source"].data))
-        delimiter = ensure_str(import_data["separator"], encoding)
+        f = StringIO(str(import_data["source"].data, "utf8"))
         has_header = import_data["has_header"]
-        # f.seek(0)
-        reader = csv.reader(f, delimiter=delimiter)
+        reader = csv.reader(f, delimiter=import_data["separator"])
         if has_header:
             next(reader)
         data = self._process_csv(reader, mapping, encoding, import_data, **kwargs)
@@ -258,7 +249,7 @@ class BaseImportFormSecondStep(BaseForm):
             self._import_node(node)
         self._after_import()
 
-    @button.buttonAndHandler(_(u"Import"), name="import")
+    @button.buttonAndHandler(_("Import"), name="import")
     def handleApply(self, action):
         data, errors = self.extractData()
         if errors:
@@ -268,7 +259,7 @@ class BaseImportFormSecondStep(BaseForm):
 
 
 class ImportFormSecondStep(BaseImportFormSecondStep):
-    _vocabulary = u"collective.classification.vocabularies:categories_import_keys"
+    _vocabulary = "collective.classification.vocabularies:categories_import_keys"
 
     def _process_data(self, data, key=None):
         """Consolidate data before import"""
@@ -300,7 +291,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
     ):
         data = {}
         for line in csv_reader:
-            line_data = {v: ensure_text(line[k], encoding) for k, v in mapping.items()}
+            line_data = {v: line[k] for k, v in mapping.items()}
             orig_identifier = line_data.pop("identifier") or None
             if not orig_identifier:
                 continue
@@ -342,7 +333,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
         duration = int((time() - self.begin) * 100) / 100.0
         api.portal.show_message(
             message=_(
-                u"Import completed in ${duration} seconds",
+                "Import completed in ${duration} seconds",
                 mapping={"duration": str(duration)},
             ),
             request=self.request,

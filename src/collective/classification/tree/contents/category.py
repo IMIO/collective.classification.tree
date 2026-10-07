@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from Acquisition import aq_base
 from Acquisition import aq_parent
 from Acquisition import Implicit
 from BTrees.OOBTree import OOBTree
@@ -31,36 +32,40 @@ from zope.lifecycleevent import ObjectRemovedEvent
 from zope.schema.fieldproperty import FieldProperty
 from zope.schema.interfaces import IContextAwareDefaultFactory
 
-import six
-
 
 @provider(IContextAwareDefaultFactory)
 def default_identifier(context):
     if IClassificationCategory.providedBy(context):
-        return u"{}?".format(context.identifier)
-    return u"?"
+        # read the stored value: through the FieldProperty, a category without
+        # identifier would call this default factory again (endless recursion)
+        base = aq_base(context)
+        base._p_activate()
+        identifier = base.__dict__.get("identifier")
+        if identifier is not None:
+            return "{}?".format(identifier)
+    return "?"
 
 
 class IClassificationCategory(Interface):
     identifier = schema.TextLine(
-        title=_(u"Identifier"),
+        title=_("Identifier"),
         description=_("Identifier of the category"),
         required=True,
         defaultFactory=default_identifier,
     )
 
     title = schema.TextLine(
-        title=_(u"Name"), description=_("Name of the category"), required=True
+        title=_("Name"), description=_("Name of the category"), required=True
     )
 
     directives.widget("enabled", RadioFieldWidget)
     enabled = schema.Bool(
-        title=_(u"Enabled"),
+        title=_("Enabled"),
         default=True,
         required=False,
     )
 
-    informations = schema.TextLine(title=_(u"Informations"), required=False)
+    informations = schema.TextLine(title=_("Informations"), required=False)
 
 
 @implementer(IClassificationCategory, IAttributeUUID, IService)
@@ -91,7 +96,7 @@ class ClassificationCategory(
     def Title(self):
         if self.identifier == self.title:
             return self.title
-        return u"{0} - {1}".format(self.identifier, self.title)
+        return "{0} - {1}".format(self.identifier, self.title)
 
     def UID(self):
         return IMutableUUID(self).get()
@@ -118,12 +123,8 @@ class ClassificationCategory(
     def __iter__(self):
         return iter(self._tree)
 
-    def __nonzero__(self):
-        """When bool is called in py2"""
-        return True
-
     def __bool__(self):
-        """When bool is called in py3"""
+        """An empty category is still true"""
         return True
 
     def get(self, key, default=None):
@@ -142,14 +143,14 @@ class ClassificationCategory(
         return [v.__of__(self) for v in self._tree.values()]
 
     def iterkeys(self):
-        return six.iterkeys(self._tree)
+        return iter(self._tree.keys())
 
     def itervalues(self):
-        for v in six.itervalues(self._tree):
+        for v in self._tree.values():
             yield v.__of__(self)
 
     def iteritems(self):
-        for k, v in six.iteritems(self._tree):
+        for k, v in self._tree.items():
             yield (k, v.__of__(self))
 
     def allowedContentTypes(self):
@@ -163,7 +164,7 @@ class ClassificationCategory(
         """Delete the contained objects with the specified ids"""
         if ids is None:
             ids = []
-        if isinstance(ids, six.string_types):
+        if isinstance(ids, str):
             ids = [ids]
         for id in ids:
             del self[id]
@@ -204,6 +205,6 @@ def category_deleted(obj, event):
             type="warning",
         )
         view_url = getMultiAdapter(
-            (obj, obj.REQUEST), name=u"plone_context_state"
+            (obj, obj.REQUEST), name="plone_context_state"
         ).view_url()
         raise Redirect(view_url)
