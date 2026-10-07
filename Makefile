@@ -61,6 +61,21 @@ test: oneof-plone bin/buildout  ## run bin/test without robot
 	# can be run by example with: make test opt='-t "settings"'
 	bin/test -t \!robot ${opt}
 
+# Robot suites are excluded from `make test` (bin/test -t \!robot) and from GitHub Actions.
+ZSERVER_PORT ?= 55011
+export ZSERVER_PORT
+
+.PHONY: robot
+robot: oneof-plone bin/buildout  ## run robot tests in headless firefox
+	# can be run by example with: make robot opt='-t "Add a category*"'
+	MOZ_HEADLESS=1 bin/test --all -t robot ${opt}
+
+.PHONY: robot-server
+robot-server:  ## Starts robot server (layer=<layer name in testing.py>, default ACCEPTANCE)
+	# run a robot file against it with: ZSERVER_PORT=$(ZSERVER_PORT) bin/robot -v PLONE_MAJOR:$(firstword $(subst ., ,$(plone))) src/collective/classification/tree/tests/robot/test_<feature>.robot
+	# --no-reload: the reload watchdog restarts the server when a template is read
+	env ZSERVER_HOST=localhost bin/robot-server --no-reload -v collective.classification.tree.testing.$(or $(layer),ACCEPTANCE)
+
 .PHONY: cleanall
 cleanall:  ## Cleans all installed buildout files
 	rm -fr bin include lib local share develop-eggs downloads eggs parts .installed.cfg .mr.developer.cfg .python-version pyvenv.cfg

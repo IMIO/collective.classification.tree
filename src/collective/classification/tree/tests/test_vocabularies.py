@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from collective.classification.tree import testing
+from collective.classification.tree.utils import create_category
 from collective.classification.tree.vocabularies import ClassificationTreeSource
 from plone import api
+from plone.app.testing import login
+from plone.app.testing import logout
+from plone.app.testing import TEST_USER_NAME
 from zope.component import createObject
 from zope.component import getUtility
+from zope.i18n import translate
 from zope.schema.interfaces import IVocabularyFactory
 
 import unittest
@@ -38,9 +43,7 @@ class TestCategoriesContents(unittest.TestCase):
             category = self._create_category(id, title)
             self.container._add_element(category)
 
-        vocabulary = getUtility(
-            IVocabularyFactory, "collective.classification.vocabularies:tree"
-        )(self.folder)
+        vocabulary = getUtility(IVocabularyFactory, "collective.classification.vocabularies:tree")(self.folder)
         self.assertEqual(
             [u"001 - First", u"002 - Second", u"003 - Third"],
             [e.title for e in vocabulary],
@@ -52,9 +55,7 @@ class TestCategoriesContents(unittest.TestCase):
             category = self._create_category(id, title)
             self.container._add_element(category)
 
-        vocabulary = getUtility(
-            IVocabularyFactory, "collective.classification.vocabularies:tree"
-        )(self.folder)
+        vocabulary = getUtility(IVocabularyFactory, "collective.classification.vocabularies:tree")(self.folder)
         self.assertEqual(
             [u"001", u"002", u"003"],
             [e.title for e in vocabulary],
@@ -77,9 +78,7 @@ class TestCategoriesContents(unittest.TestCase):
         category = self._create_category(u"002.1.1", u"first")
         last_element._add_element(category)
 
-        vocabulary = getUtility(
-            IVocabularyFactory, "collective.classification.vocabularies:tree"
-        )(self.folder)
+        vocabulary = getUtility(IVocabularyFactory, "collective.classification.vocabularies:tree")(self.folder)
         self.assertEqual(
             [
                 u"001 - First",
@@ -125,3 +124,55 @@ class TestCategoriesContents(unittest.TestCase):
         self.assertEqual(len(res), 2, term)
         self.assertEqual(res[0], u"005 - Other")
         self.assertEqual(res[1], u"004 - Code other")
+
+    def _vocabulary(self, name):
+        return getUtility(IVocabularyFactory, "collective.classification.vocabularies:" + name)(self.folder)
+
+    def test_full_classification_tree_vocabulary_factory(self):
+        create_category(self.container, {"identifier": u"002", "title": u"Second"})
+        other = api.content.create(title="Other", type="ClassificationContainer", container=self.folder)
+        create_category(other, {"identifier": u"001", "title": u"First"})
+        # categories of all the containers (unrestricted search), sorted by title
+        self.assertEqual([u"001 - First", u"002 - Second"], [t.title for t in self._vocabulary("fulltree")])
+
+    def test_classification_tree_id_mapping_vocabulary_factory(self):
+        uid = create_category(self.container, {"identifier": u"001", "title": u"First"}).UID()
+        self.assertEqual([(u"001", uid)], [(t.value, t.title) for t in self._vocabulary("tree_id_mapping")])
+
+    def test_classification_tree_title_mapping_vocabulary_factory(self):
+        uid = create_category(self.container, {"identifier": u"001", "title": u"First"}).UID()
+        self.assertEqual([(u"First", uid)], [(t.value, t.title) for t in self._vocabulary("tree_title_mapping")])
+
+    def test_csv_separator_vocabulary_factory(self):
+        self.assertEqual([u";", u",", u"|", u"\t", u" "], [t.value for t in self._vocabulary("csv_separator")])
+
+    def test_import_keys_vocabulary_factory(self):
+        self.assertEqual(
+            [u"parent_identifier", u"identifier", u"title", u"informations", u"enabled"],
+            [t.value for t in self._vocabulary("categories_import_keys")],
+        )
+
+
+class TestClassificationTreeSource(unittest.TestCase):
+    layer = testing.COLLECTIVE_CLASSIFICATION_TREE_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        container = api.content.create(title="Container", type="ClassificationContainer", container=self.portal)
+        self.uid = create_category(container, {"identifier": u"001", "title": u"First"}).UID()
+
+    def test_vocabulary(self):
+        self.assertEqual([self.uid], [t.value for t in ClassificationTreeSource(self.portal).vocabulary])
+        # anonymous: user from the authentication cookie, none here
+        logout()
+        self.assertEqual(0, len(ClassificationTreeSource(self.portal).vocabulary))
+        login(self.portal, TEST_USER_NAME)
+
+    def test_getTerm(self):
+        source = ClassificationTreeSource(self.portal)
+        self.assertEqual(u"001 - First", source.getTerm(self.uid).title)
+        self.assertRaises(LookupError, source.getTerm, "unknown")
+        # widget traversal (e.g. plone.formwidget.masterselect, done as anonymous): missing term
+        self.layer["request"]["URL"] = "http://nohost/plone/++widget++form.widgets.classification_categories"
+        term = source.getTerm("unknown")
+        self.assertEqual(("unknown", u"Missing: unknown"), (term.value, translate(term.title)))

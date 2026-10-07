@@ -5,6 +5,7 @@ from operator import itemgetter
 from persistent.dict import PersistentDict
 from plone import api
 from plone.namedfile import NamedBlobFile
+from Products.statusmessages.interfaces import IStatusMessage
 from six import BytesIO
 from six import ensure_str
 from six import StringIO
@@ -1241,3 +1242,86 @@ class TestImportForm(unittest.TestCase):
             },
         }
         self.assertEqual(expected_result, result)
+
+
+def csv_upload(lines):
+    """A `;` CSV file posted by the browser"""
+    data = BytesIO(u"\n".join(lines).encode("utf8"))
+    return FileUpload(
+        type("obj", (object,), {"file": data, "filename": "tree.csv", "headers": "text/csv", "name": "tree.csv"})()
+    )
+
+
+class TestImportFormFirstStep(unittest.TestCase):
+    layer = testing.COLLECTIVE_CLASSIFICATION_TREE_FUNCTIONAL_TESTING
+
+    def test_handleApply(self):
+        request = self.layer["request"]
+        container = api.content.create(title="Container", type="ClassificationContainer", container=self.layer["portal"])
+        upload = csv_upload([u"identifier;title", u"1;Administration"])
+        testing.new_request(
+            request,
+            {
+                "form.widgets.source": upload,
+                "form.widgets.separator": [u";"],
+                "form.widgets.separator-empty-marker": u"1",
+                "form.widgets.has_header": [u"selected"],
+                "form.widgets.has_header-empty-marker": u"1",
+                "form.buttons.continue": u"Continue",
+            },
+        )
+        container.restrictedTraverse("@@import")()
+        data = IAnnotations(container)[importform.ANNOTATION_KEY]
+        self.assertEqual((u";", True), (data["separator"], data["has_header"]))
+        self.assertEqual(b"identifier;title\n1;Administration", data["source"].data)
+        self.assertEqual(container.absolute_url() + "/@@import-process", request.response.getHeader("location"))
+
+
+class TestBaseImportFormSecondStep(unittest.TestCase):
+    layer = testing.COLLECTIVE_CLASSIFICATION_TREE_FUNCTIONAL_TESTING
+
+    def test_handleApply(self):
+        """The 2 steps of the import, as a user"""
+        request = self.layer["request"]
+        container = api.content.create(title="Container", type="ClassificationContainer", container=self.layer["portal"])
+        lines = [u"Code;Name;Info", u"1;Administration;", u"1.1;Personnel;Staff files", u"2;Finances;"]
+        testing.new_request(
+            request,
+            {
+                "form.widgets.source": csv_upload(lines),
+                "form.widgets.separator": [u";"],
+                "form.widgets.separator-empty-marker": u"1",
+                "form.widgets.has_header": [u"selected"],
+                "form.widgets.has_header-empty-marker": u"1",
+                "form.buttons.continue": u"Continue",
+            },
+        )
+        container.restrictedTraverse("@@import")()
+        # second step: the columns of the file
+        testing.new_request(request)
+        content = container.restrictedTraverse("@@import-process")()
+        self.assertIn("Column Code", content)
+        self.assertIn("Sample data : '1', '1.1'", content)
+        testing.new_request(
+            request,
+            {
+                "form.widgets.column_0": [u"identifier"],
+                "form.widgets.column_0-empty-marker": u"1",
+                "form.widgets.column_1": [u"title"],
+                "form.widgets.column_1-empty-marker": u"1",
+                "form.widgets.column_2": [u"informations"],
+                "form.widgets.column_2-empty-marker": u"1",
+                "form.widgets.decimal_import": [u"selected"],
+                "form.widgets.decimal_import-empty-marker": u"1",
+                "form.widgets.allow_empty-empty-marker": u"1",
+                "form.widgets.replace_slash-empty-marker": u"1",
+                "form.buttons.import": u"Import",
+            },
+        )
+        container.restrictedTraverse("@@import-process")()
+        self.assertEqual([u"Administration", u"Finances"], sorted(e.title for e in container.values()))
+        sub = container.get_by("identifier", u"1").get_by("identifier", u"1.1")
+        self.assertEqual((u"Personnel", u"Staff files"), (sub.title, sub.informations))
+        messages = [m.message for m in IStatusMessage(request).show()]
+        self.assertTrue(messages[0].startswith(u"Import completed in "), messages)
+        self.assertEqual(container.absolute_url(), request.response.getHeader("location"))
