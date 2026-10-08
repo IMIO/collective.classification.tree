@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.3.1 (unreleased)
+2.0.0 (unreleased)
 ------------------
 
 - Made compatible Plone 4.3 and Plone 6.0
