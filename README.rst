@@ -2,8 +2,8 @@
    If you want to learn more about writing documentation, please check out: http://docs.plone.org/about/documentation_styleguide.html
    This text does not appear on pypi or github. It is a comment.
 
-.. image:: https://travis-ci.org/collective/collective.classification.tree.svg?branch=master
-    :target: https://travis-ci.org/collective/collective.classification.tree
+.. image:: https://github.com/IMIO/collective.classification.tree/actions/workflows/main.yml/badge.svg
+    :target: https://github.com/IMIO/collective.classification.tree/actions/workflows/main.yml
 
 .. image:: https://coveralls.io/repos/github/collective/collective.classification.tree/badge.svg?branch=master
     :target: https://coveralls.io/github/collective/collective.classification.tree?branch=master

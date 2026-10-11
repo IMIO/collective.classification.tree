@@ -2,6 +2,7 @@
 
 from collective.classification.tree import _
 from collective.classification.tree import utils
+from io import StringIO
 from persistent.dict import PersistentDict
 from plone import api
 from plone.autoform.form import AutoExtensibleForm
@@ -61,21 +62,21 @@ class BaseForm(AutoExtensibleForm, Form):
 class IImportFirstStep(model.Schema):
 
     source = NamedBlobFile(
-        title=_(u"File"),
-        description=_(u"CSV file that contains the classification tree"),
+        title=_("File"),
+        description=_("CSV file that contains the classification tree"),
         required=True,
     )
 
     separator = schema.Choice(
-        title=_(u"CSV Separator"),
-        description=_(u"Separator character to use"),
+        title=_("CSV Separator"),
+        description=_("Separator character to use"),
         vocabulary="collective.classification.vocabularies:csv_separator",
         required=True,
     )
 
     has_header = schema.Bool(
-        title=_(u"Include CSV header"),
-        description=_(u"The CSV file contains an header row"),
+        title=_("Include CSV header"),
+        description=_("The CSV file contains an header row"),
         default=True,
         required=False,
     )
@@ -95,7 +96,9 @@ class IImportSecondStepBase(Interface):
         annotations = IAnnotations(obj.__context__)
         format_dic = {}
         if obj._Data_data___.get("decimal_import", False):
-            format_dic = {"identifier": r"(-?[./\d]+|( *, *)*)+$"}  # decimal format validation with multiple values
+            format_dic = {
+                "identifier": r"(-?[./\d]+|( *, *)*)+$"
+            }  # decimal format validation with multiple values
         return utils.validate_csv_content(
             obj,
             annotations[ANNOTATION_KEY],
@@ -104,19 +107,19 @@ class IImportSecondStepBase(Interface):
         )
 
     decimal_import = GeneratedBool(
-        title=_(u"Identifier are decimal codes"),
+        title=_("Identifier are decimal codes"),
         default=True,
         required=False,
     )
 
     allow_empty = GeneratedBool(
-        title=_(u"Allow empty column value"),
+        title=_("Allow empty column value"),
         default=False,
         required=False,
     )
 
     replace_slash = GeneratedBool(
-        title=_(u"Replace slash in title"),
+        title=_("Replace slash in title"),
         default=True,
         required=False,
     )
@@ -133,14 +136,14 @@ class ImportFormFirstStep(BaseForm):
         for key, value in data.items():
             annotation[ANNOTATION_KEY][key] = value
 
-    @button.buttonAndHandler(_(u"Continue"), name="continue")
+    @button.buttonAndHandler(_("Continue"), name="continue")
     def handleApply(self, action):
         data, errors = self.extractData()
         if errors:
             self.status = self.formErrorsMessage
             return
         self._set_data(data)
-        redirect_url = u"{0}/@@import-process".format(self.context.absolute_url())
+        redirect_url = "{0}/@@import-process".format(self.context.absolute_url())
         self.request.response.redirect(redirect_url)
 
 
@@ -166,25 +169,24 @@ class BaseImportFormSecondStep(BaseForm):
         first_line = []
         data_lines = []
         data = self._get_data()
-        encoding = "utf-8"
         has_header = data["has_header"]
-        with data["source"].open() as f:
-            f.seek(0)
-            reader = csv.reader(f, delimiter=data["separator"].encode(encoding))
-            first_line = reader.next()
-            try:
-                for i in range(0, 2):
-                    data_lines.append(reader.next())
-            except Exception:
-                pass
+        f = StringIO(str(data["source"].data, "utf8"))
+        reader = csv.reader(f, delimiter=data["separator"])
+        first_line = next(reader)
+        try:
+            for i in range(0, 2):
+                data_lines.append(next(reader))
+        except Exception:
+            pass
+        f.close()
 
         fields = []
         for idx, element in enumerate(first_line):
             if has_header:
-                name = element.decode(encoding)
+                name = element
             else:
                 name = str(idx + 1)
-            sample = u", ".join([u"'{0}'".format(ln[idx].decode(encoding)) for ln in data_lines])
+            sample = ", ".join(["'{0}'".format(ln[idx]) for ln in data_lines])
 
             fields.append(
                 GeneratedChoice(
@@ -228,23 +230,26 @@ class BaseImportFormSecondStep(BaseForm):
         self._before_import()
         # {'source': <plone.namedfile.file.NamedBlobFile object at ...>, 'has_header': True, 'separator': u';'}
         import_data = self._get_data()
-        kwargs = {k: data.pop(k) for k in copy.deepcopy(data.keys()) if not k.startswith("column_")}
+        kwargs = {
+            k: data.pop(k)
+            for k in copy.deepcopy(list(data.keys()))
+            if not k.startswith("column_")
+        }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items() if v}
         encoding = "utf-8"
         data = []
-        with import_data["source"].open() as f:
-            delimiter = import_data["separator"].encode(encoding)
-            has_header = import_data["has_header"]
-            f.seek(0)
-            reader = csv.reader(f, delimiter=delimiter)
-            if has_header:
-                reader.next()
-            data = self._process_csv(reader, mapping, encoding, import_data, **kwargs)
+        f = StringIO(str(import_data["source"].data, "utf8"))
+        has_header = import_data["has_header"]
+        reader = csv.reader(f, delimiter=import_data["separator"])
+        if has_header:
+            next(reader)
+        data = self._process_csv(reader, mapping, encoding, import_data, **kwargs)
+        f.close()
         for node in self._process_data(data):
             self._import_node(node)
         self._after_import()
 
-    @button.buttonAndHandler(_(u"Import"), name="import")
+    @button.buttonAndHandler(_("Import"), name="import")
     def handleApply(self, action):
         data, errors = self.extractData()
         if errors:
@@ -254,7 +259,7 @@ class BaseImportFormSecondStep(BaseForm):
 
 
 class ImportFormSecondStep(BaseImportFormSecondStep):
-    _vocabulary = u"collective.classification.vocabularies:categories_import_keys"
+    _vocabulary = "collective.classification.vocabularies:categories_import_keys"
 
     def _process_data(self, data, key=None):
         """Consolidate data before import"""
@@ -281,10 +286,12 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                     if sk not in data[k]:
                         data[k][sk] = sv
 
-    def _process_csv(self, csv_reader, mapping, encoding, import_data, decimal_import=False, **kw):
+    def _process_csv(
+        self, csv_reader, mapping, encoding, import_data, decimal_import=False, **kw
+    ):
         data = {}
         for line in csv_reader:
-            line_data = {v: line[k].decode(encoding) for k, v in mapping.items()}
+            line_data = {v: line[k] for k, v in mapping.items()}
             orig_identifier = line_data.pop("identifier") or None
             if not orig_identifier:
                 continue
@@ -307,7 +314,10 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
                     # Using dictionary avoid duplicated informations
                     data[parent_identifier] = {}
                 # if exists, only update if title = identifier
-                if identifier not in data[parent_identifier] or data[parent_identifier][identifier][0] == identifier:
+                if (
+                    identifier not in data[parent_identifier]
+                    or data[parent_identifier][identifier][0] == identifier
+                ):
                     data[parent_identifier][identifier] = (title, line_data)
         return data
 
@@ -323,7 +333,7 @@ class ImportFormSecondStep(BaseImportFormSecondStep):
         duration = int((time() - self.begin) * 100) / 100.0
         api.portal.show_message(
             message=_(
-                u"Import completed in ${duration} seconds",
+                "Import completed in ${duration} seconds",
                 mapping={"duration": str(duration)},
             ),
             request=self.request,
