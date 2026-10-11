@@ -148,7 +148,9 @@ class ClassificationTreeSource(object):
                     )
             return user
         else:
-            return api.user.get_current()
+            # the user, not its MemberData: adopt_user keeps a MemberData of a user
+            # missing from the user folders (e.g. robot autologin) and checks fail
+            return api.user.get_current().getUser()
 
     @property
     def vocabulary(self):

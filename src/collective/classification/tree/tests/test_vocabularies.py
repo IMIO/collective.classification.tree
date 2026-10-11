@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from AccessControl.SecurityManagement import newSecurityManager
 from collective.classification.tree import testing
 from collective.classification.tree.utils import create_category
 from collective.classification.tree.vocabularies import ClassificationTreeSource
@@ -7,6 +8,7 @@ from plone import api
 from plone.app.testing import login
 from plone.app.testing import logout
 from plone.app.testing import TEST_USER_NAME
+from Products.PlonePAS.plugins.ufactory import PloneUser
 from zope.component import createObject
 from zope.component import getUtility
 from zope.i18n import translate
@@ -199,6 +201,14 @@ class TestClassificationTreeSource(unittest.TestCase):
         # anonymous: user from the authentication cookie, none here
         logout()
         self.assertEqual(0, len(ClassificationTreeSource(self.portal).vocabulary))
+        # a user authenticated by a plugin, not stored in a user folder (robot autologin)
+        user = PloneUser("Manager")
+        user._addRoles(["Manager"])
+        newSecurityManager(None, user.__of__(self.portal.acl_users))
+        self.assertEqual(
+            [self.uid],
+            [t.value for t in ClassificationTreeSource(self.portal).vocabulary],
+        )
         login(self.portal, TEST_USER_NAME)
 
     def test_getTerm(self):
