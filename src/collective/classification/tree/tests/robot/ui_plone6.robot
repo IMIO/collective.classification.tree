@@ -83,3 +83,17 @@ The page is not found
 
 The edit link is not available
     Page should not contain element  css=#contentview-edit
+
+Select in the multi select2 widget
+    [Documentation]  Add a value to the select2 widget of this field (plone.app.z3cform AjaxSelectWidget)
+    [Arguments]  ${field_name}  ${label}
+    Click element  css=#formfield-form-widgets-${field_name} .select2-choices
+    ${result}=  Set variable  xpath=//div[@id="select2-drop"]//div[contains(@class, "select2-result-label")][contains(., "${label}")]
+    Wait until element is visible  ${result}
+    Click element  ${result}
+    Wait until element is not visible  css=#select2-drop
+
+The select2 widget contains
+    [Documentation]  Selected value of the select2 widget of this field in an input form, by title
+    [Arguments]  ${field_name}  ${label}
+    Wait until element contains  css=#formfield-form-widgets-${field_name} .select2-choices  ${label}

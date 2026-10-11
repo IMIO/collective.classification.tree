@@ -60,3 +60,8 @@ The listing does not show the category
 Search the listing
     [Arguments]  ${text}
     Input text  css=#table_filter input  ${text}
+
+The categories field shows
+    [Documentation]  Value of the classification categories field in the view of the content
+    [Arguments]  ${text}
+    Element should contain  css=#form-widgets-IClassificationCategory-classification_categories  ${text}

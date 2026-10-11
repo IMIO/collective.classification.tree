@@ -15,6 +15,8 @@ Changelog
   `tree_add_parent` and `tree_add_archived` on Python 3,
   serializer links permission (listing for non-Managers).
   [chris-adam]
+- Fixed the categories widget showing UIDs instead of titles (`SourceAjaxSelectFieldWidget`).
+  [chris-adam]
 - Fixed `ClassificationTreeSource` for a user missing from the user folders (MemberData error).
   [chris-adam]
 
