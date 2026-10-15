@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from BTrees.OOBTree import OOBTree
-from OFS.event import ObjectWillBeRemovedEvent
 from collective.classification.tree import caching
 from collective.classification.tree.contents.common import BaseContainer
+from OFS.event import ObjectWillBeRemovedEvent
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from zope.container.contained import ContainerModifiedEvent
 from zope.event import notify
 from zope.interface import implementer
 from zope.lifecycleevent import ObjectRemovedEvent
-
-import six
 
 
 class IClassificationContainer(model.Schema):
@@ -55,7 +53,7 @@ class ClassificationContainer(Container, BaseContainer):
         return element.__of__(self)
 
     def keys(self):
-        return self._tree.keys()
+        return list(self._tree.keys())
 
     def items(self):
         return [
@@ -70,14 +68,14 @@ class ClassificationContainer(Container, BaseContainer):
         return [v.__of__(self) for v in self._tree.values()]
 
     def iterkeys(self):
-        return six.iterkeys(self._tree)
+        return iter(self._tree.keys())
 
     def itervalues(self):
-        for v in six.itervalues(self._tree):
+        for v in self._tree.values():
             yield v.__of__(self)
 
     def iteritems(self):
-        for k, v in six.iteritems(self._tree):
+        for k, v in self._tree.items():
             yield (
                 k,
                 v.__of__(self),
@@ -89,4 +87,6 @@ class ClassificationContainer(Container, BaseContainer):
 
 def container_modified(context, event):
     """Invalidates tree cache node."""
-    caching.invalidate_cache("collective.classification.tree.utils.iterate_over_tree_data", context.UID())
+    caching.invalidate_cache(
+        "collective.classification.tree.utils.iterate_over_tree_data", context.UID()
+    )

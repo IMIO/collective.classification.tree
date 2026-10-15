@@ -2,11 +2,23 @@ Changelog
 =========
 
 
-1.3.1 (unreleased)
+2.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Migrated to Plone 6.2 / Python 3, based on the work started by @sgeulette,
+  @mpeeters and @anuyens on `plone6`.
+  [sgeulette, mpeeters, anuyens, chris-adam]
+- Made compatible Plone 4.3 and Plone 6.0
+  [sgeulette]
+- Added Plone 6.2 support, dropped Plone 4.
+  Fixed `default_identifier` recursion, `@tree` ordering with empty values,
+  `tree_add_parent` and `tree_add_archived` on Python 3,
+  serializer links permission (listing for non-Managers).
+  [chris-adam]
+- Fixed the categories widget showing UIDs instead of titles (`SourceAjaxSelectFieldWidget`).
+  [chris-adam]
+- Fixed `ClassificationTreeSource` for a user missing from the user folders (MemberData error).
+  [chris-adam]
 
 1.3.0 (2026-08-14)
 ------------------

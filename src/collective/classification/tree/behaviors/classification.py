@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collective.classification.tree import _
-from collective.classification.tree.behaviors.widget import AutocompleteMultiFieldWidget
+from collective.classification.tree.browser.widget import SourceAjaxSelectFieldWidget
 from collective.classification.tree.vocabularies import ClassificationTreeSourceBinder
 from plone import schema
 from plone.autoform import directives as form
@@ -21,10 +21,10 @@ class IClassificationCategoryMarker(Interface):
 class IClassificationCategory(model.Schema):
     """ """
 
-    form.widget(classification_categories=AutocompleteMultiFieldWidget)
+    form.widget(classification_categories=SourceAjaxSelectFieldWidget)
     classification_categories = schema.List(
-        title=_(u"Classification Categories"),
-        description=_(u"List of categories in which this content is filed"),
+        title=_("Classification Categories"),
+        description=_("List of categories in which this content is filed"),
         value_type=schema.Choice(
             source=ClassificationTreeSourceBinder(enabled=True),
         ),
