@@ -263,7 +263,7 @@ def add_parent():
             new_lines.append(line)
     if "3" in ns.parts:
         new_file = ns.tree_file.replace(".csv", "_parent.csv")
-        with open(new_file, "w", newline="") as csvfile:
+        with open(new_file, "w", newline="", encoding="utf8") as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=sep, quoting=csv.QUOTE_NONNUMERIC)
             for line in new_lines:
                 csvwriter.writerow(line)
@@ -331,7 +331,7 @@ def add_archived():
             new_lines.append(line)
     if "2" in ns.parts:
         new_file = ns.tree_file.replace(".csv", "_archived.csv")
-        with open(new_file, "w", newline="") as csvfile:
+        with open(new_file, "w", newline="", encoding="utf8") as csvfile:
             csvwriter = csv.writer(
                 csvfile, delimiter=sep, quoting=csv.QUOTE_NONNUMERIC
             )  # csv.QUOTE_ALL
