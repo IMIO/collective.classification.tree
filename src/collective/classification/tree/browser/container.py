@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from collective.classification.tree import caching
-from plone.autoform.view import WidgetsView
 from collective.classification.tree.contents.container import IClassificationContainer
+from plone.autoform.view import WidgetsView
 from Products.Five import BrowserView
 
 
@@ -17,5 +17,8 @@ class RefreshCache(BrowserView):
         self.request = request
 
     def __call__(self):
-        caching.invalidate_cache("collective.classification.tree.utils.iterate_over_tree_data", self.context.UID())
+        caching.invalidate_cache(
+            "collective.classification.tree.utils.iterate_over_tree_data",
+            self.context.UID(),
+        )
         self.request.response.redirect(self.context.absolute_url())

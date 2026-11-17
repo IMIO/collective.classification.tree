@@ -17,12 +17,17 @@ from zope.schema.vocabulary import SimpleVocabulary
 
 
 def iterable_to_vocabulary(values):
-    return SimpleVocabulary([SimpleTerm(value=pair[0], token=pair[0], title=pair[1]) for pair in values])
+    return SimpleVocabulary(
+        [SimpleTerm(value=pair[0], token=pair[0], title=pair[1]) for pair in values]
+    )
 
 
 def category_iterable_to_vocabulary(values):
     return SimpleVocabulary(
-        [EnhancedTerm(value=pair[0], token=pair[0], title=pair[1], enabled=pair[2]) for pair in values]
+        [
+            EnhancedTerm(value=pair[0], token=pair[0], title=pair[1], enabled=pair[2])
+            for pair in values
+        ]
     )
 
 
@@ -32,7 +37,12 @@ def classification_tree_vocabulary_factory(context):
     results = []
     for container in containers:
         # (uid, title, identifier, raw_title, enabled)
-        results.extend([(d[0], d[1], d[4]) for d in utils.iterate_over_tree_data(container.getObject())])
+        results.extend(
+            [
+                (d[0], d[1], d[4])
+                for d in utils.iterate_over_tree_data(container.getObject())
+            ]
+        )
     results = sorted(results, key=itemgetter(1))
     return category_iterable_to_vocabulary(results)
 
@@ -43,7 +53,12 @@ def full_classification_tree_vocabulary_factory(context):
     results = []
     for container in containers:
         results.extend(
-            [(d[0], d[1], d[4]) for d in utils.iterate_over_tree_data(container._unrestrictedGetObject())]
+            [
+                (d[0], d[1], d[4])
+                for d in utils.iterate_over_tree_data(
+                    container._unrestrictedGetObject()
+                )
+            ]
         )
     results = sorted(results, key=itemgetter(1))
     return category_iterable_to_vocabulary(results)
@@ -54,7 +69,9 @@ def classification_tree_id_mapping_vocabulary_factory(context):
     containers = api.content.find(**query)
     results = []
     for container in containers:
-        results.extend([(d[2], d[0]) for d in utils.iterate_over_tree_data(container.getObject())])
+        results.extend(
+            [(d[2], d[0]) for d in utils.iterate_over_tree_data(container.getObject())]
+        )
     results = sorted(results, key=itemgetter(1))
     return iterable_to_vocabulary(results)
 
@@ -64,29 +81,31 @@ def classification_tree_title_mapping_vocabulary_factory(context):
     containers = api.content.find(**query)
     results = []
     for container in containers:
-        results.extend([(d[3], d[0]) for d in utils.iterate_over_tree_data(container.getObject())])
+        results.extend(
+            [(d[3], d[0]) for d in utils.iterate_over_tree_data(container.getObject())]
+        )
     results = sorted(results, key=itemgetter(1))
     return iterable_to_vocabulary(results)
 
 
 def csv_separator_vocabulary_factory(context):
     values = (
-        (u";", u";"),
-        (u",", u","),
-        (u"|", u"|"),
-        (u"	", _(u"tab")),  # ! value is a tab not a whitespace !
-        (u" ", _(u"whitespace")),
+        (";", ";"),
+        (",", ","),
+        ("|", "|"),
+        ("	", _("tab")),  # ! value is a tab not a whitespace !
+        (" ", _("whitespace")),
     )
     return iterable_to_vocabulary(values)
 
 
 def import_keys_vocabulary_factory(context):
     values = (
-        (u"parent_identifier", _(u"Parent Identifier")),
-        (u"identifier", _(u"Identifier")),
-        (u"title", _(u"Name")),
-        (u"informations", _(u"Informations")),
-        (u"enabled", _(u"Enabled")),
+        ("parent_identifier", _("Parent Identifier")),
+        ("identifier", _("Identifier")),
+        ("title", _("Name")),
+        ("informations", _("Informations")),
+        ("enabled", _("Enabled")),
     )
     return iterable_to_vocabulary(values)
 
@@ -119,13 +138,19 @@ class ClassificationTreeSource(object):
             user = None
             if "login" in creds and creds["login"]:
                 # first try the portal (non-admin accounts)
-                user = portal.acl_users.authenticate(creds["login"], creds["password"], request)
+                user = portal.acl_users.authenticate(
+                    creds["login"], creds["password"], request
+                )
                 if not user:
                     # now try the app (i.e. the admin account)
-                    user = app.acl_users.authenticate(creds["login"], creds["password"], request)
+                    user = app.acl_users.authenticate(
+                        creds["login"], creds["password"], request
+                    )
             return user
         else:
-            return api.user.get_current()
+            # the user, not its MemberData: adopt_user keeps a MemberData of a user
+            # missing from the user folders (e.g. robot autologin) and checks fail
+            return api.user.get_current().getUser()
 
     @property
     def vocabulary(self):
@@ -133,7 +158,9 @@ class ClassificationTreeSource(object):
             current_user = self._verified_user
             if current_user:
                 with api.env.adopt_user(user=current_user):
-                    self._vocabulary = classification_tree_vocabulary_factory(self.context)
+                    self._vocabulary = classification_tree_vocabulary_factory(
+                        self.context
+                    )
             else:
                 self._vocabulary = SimpleVocabulary([])
         return self._vocabulary
@@ -150,7 +177,9 @@ class ClassificationTreeSource(object):
                 return SimpleTerm(
                     value,
                     util.createCSSId(util.toUnicode(value)),
-                    title=_zf(u"Missing: ${value}", mapping=dict(value=util.toUnicode(value))),
+                    title=_zf(
+                        "Missing: ${value}", mapping=dict(value=util.toUnicode(value))
+                    ),
                 )
             raise
 

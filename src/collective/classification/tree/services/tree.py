@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from collective.classification.tree import utils
-from operator import attrgetter
 from plone.restapi.interfaces import ISerializeToJson
 from plone.restapi.search.utils import unflatten_dotted_dict
 from plone.restapi.services import Service
@@ -45,9 +44,15 @@ class TreeSearchHandler(object):
             if name is None:
                 finished = True
                 break
-            if searchable is True and self.query.get("columns[{0}][searchable]".format(idx)) != "true":
+            if (
+                searchable is True
+                and self.query.get("columns[{0}][searchable]".format(idx)) != "true"
+            ):
                 name = None
-            if orderable is True and self.query.get("columns[{0}][searchable]".format(idx)) != "true":
+            if (
+                orderable is True
+                and self.query.get("columns[{0}][searchable]".format(idx)) != "true"
+            ):
                 name = None
             if name is not None:
                 columns.append(name)
@@ -56,7 +61,7 @@ class TreeSearchHandler(object):
 
     def _filter(self, results):
         regex = self.query.get("search[regex]", "false") == "true"
-        search = unidecode(self.query.get("search[value]", "").decode("utf8")).lower()
+        search = unidecode(self.query.get("search[value]", "")).lower()
         if not search:
             return results
         columns = self._get_columns(searchable=True)
@@ -66,12 +71,12 @@ class TreeSearchHandler(object):
     def _object_filter(obj, columns, search, regex):
         if regex is True:
             for key in columns:
-                if search in unidecode(getattr(obj, key) or u"").lower():
+                if search in unidecode(getattr(obj, key) or "").lower():
                     return True
             return False
         else:
             for key in columns:
-                if search == unidecode(getattr(obj, key) or u"").lower():
+                if search == unidecode(getattr(obj, key) or "").lower():
                     return True
             return False
 
@@ -82,7 +87,12 @@ class TreeSearchHandler(object):
         if not columns:
             return results
         order_column = columns[idx]
-        return sorted(results, key=attrgetter(order_column), reverse=reverse)
+
+        def key(obj):
+            value = getattr(obj, order_column)
+            return value is not None, value  # empty values first, as on Python 2
+
+        return sorted(results, key=key, reverse=reverse)
 
 
 class TreeGet(Service):
@@ -96,5 +106,7 @@ class TreeGet(Service):
             result["draw"] = query.pop("draw")
         handler = TreeSearchHandler(self.context)
         result["recordsTotal"], result["recordsFiltered"], data = handler.search(query)
-        result["data"] = [queryMultiAdapter((o, self.request), ISerializeToJson)() for o in data]
+        result["data"] = [
+            queryMultiAdapter((o, self.request), ISerializeToJson)() for o in data
+        ]
         return result

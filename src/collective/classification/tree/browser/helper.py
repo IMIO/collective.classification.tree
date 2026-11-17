@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from Products.Five.browser import BrowserView
+from zope import schema
 from zope.interface import implementer
 from zope.interface import Interface
-from zope import schema
 
 
 class IClassificationHelper(Interface):
-    can_import = schema.Bool(title=u"Can import data", readonly=True)
-    can_add_category = schema.Bool(title=u"Can add a new category", readonly=True)
+    can_import = schema.Bool(title="Can import data", readonly=True)
+    can_add_category = schema.Bool(title="Can add a new category", readonly=True)
 
 
 @implementer(IClassificationHelper)

@@ -29,14 +29,14 @@ class CategoryEditForm(AutoExtensibleForm, EditForm):
         for key, value in data.items():
             setattr(element, key, value)
         aq_parent(self.context)._update_element(element)
-        api.portal.show_message(_(u"Changes saved"), request=self.request)
+        api.portal.show_message(_("Changes saved"), request=self.request)
         self.request.response.redirect(self.redirect_url)
 
     @property
     def redirect_url(self):
         return self.context.absolute_url()
 
-    @button.buttonAndHandler(_(u"Save"), name="save")
+    @button.buttonAndHandler(_("Save"), name="save")
     def handle_save(self, action):
         data, errors = self.extractData()
         if errors:
@@ -45,7 +45,7 @@ class CategoryEditForm(AutoExtensibleForm, EditForm):
 
         self.update_element(data)
 
-    @button.buttonAndHandler(_(u"Cancel"), name="cancel")
+    @button.buttonAndHandler(_("Cancel"), name="cancel")
     def handle_cancel(self, action):
         self.request.response.redirect(self.redirect_url)
 
@@ -67,11 +67,11 @@ class CategoryAddForm(AutoExtensibleForm, AddForm):
         for key, value in data.items():
             setattr(element, key, value)
         self.context._add_element(element)
-        api.portal.show_message(_(u"Category added"), request=self.request)
+        api.portal.show_message(_("Category added"), request=self.request)
         url = "{0}/view".format(element.absolute_url())
         self.request.response.redirect(url)
 
-    @button.buttonAndHandler(_(u"Add"), name="add")
+    @button.buttonAndHandler(_("Add"), name="add")
     def handle_add(self, action):
         data, errors = self.extractData()
         if errors:
@@ -80,7 +80,7 @@ class CategoryAddForm(AutoExtensibleForm, AddForm):
 
         self.add_element(data)
 
-    @button.buttonAndHandler(_(u"Cancel"), name="cancel")
+    @button.buttonAndHandler(_("Cancel"), name="cancel")
     def handle_cancel(self, action):
         self.request.response.redirect(self.context.absolute_url())
 

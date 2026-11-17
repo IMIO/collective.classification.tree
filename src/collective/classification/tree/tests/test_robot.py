@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
-from collective.classification.tree.testing import (
-    COLLECTIVE_CLASSIFICATION_TREE_ACCEPTANCE_TESTING,
-)  # noqa: E501
-from plone.app.testing import ROBOT_TEST_LEVEL
+"""Robot suites of tests/robot, run with the layer of their file name.
+
+ROBOT_PLONE_MAJOR (6) selects the UI keywords: robotsuite passes the
+ROBOT_* environment variables to the suites as robot variables.
+"""
+from ..testing import ACCEPTANCE
+from importlib.metadata import version
 from plone.testing import layered
 
 import os
@@ -10,24 +13,24 @@ import robotsuite
 import unittest
 
 
+# suites needing an optional integration layer, e.g. {'test_facetednav.robot': ADDONS_ACCEPTANCE}
+SUITE_LAYERS = {}
+
+
 def test_suite():
+    os.environ.setdefault(
+        "ROBOT_PLONE_MAJOR", version("Products.CMFPlone").split(".")[0]
+    )
     suite = unittest.TestSuite()
-    current_dir = os.path.abspath(os.path.dirname(__file__))
-    robot_dir = os.path.join(current_dir, "robot")
-    robot_tests = [
-        os.path.join("robot", doc)
-        for doc in os.listdir(robot_dir)
-        if doc.endswith(".robot") and doc.startswith("test_")
-    ]
-    for robot_test in robot_tests:
-        robottestsuite = robotsuite.RobotTestSuite(robot_test)
-        robottestsuite.level = ROBOT_TEST_LEVEL
-        suite.addTests(
-            [
-                layered(
-                    robottestsuite,
-                    layer=COLLECTIVE_CLASSIFICATION_TREE_ACCEPTANCE_TESTING,
-                )
-            ]
-        )
+    robot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "robot")
+    for name in sorted(os.listdir(robot_dir)):
+        if name.startswith("test_") and name.endswith(".robot"):
+            suite.addTests(
+                [
+                    layered(
+                        robotsuite.RobotTestSuite(os.path.join("robot", name)),
+                        layer=SUITE_LAYERS.get(name, ACCEPTANCE),
+                    ),
+                ]
+            )
     return suite

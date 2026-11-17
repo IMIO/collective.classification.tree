@@ -6,11 +6,25 @@ from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
-from plone.app.testing import TEST_USER_ID
-from plone.testing import z2
 from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.dexterity.fti import DexterityFTI
+from plone.testing.zope import Browser  # noqa: F401
+from plone.testing.zope import WSGI_SERVER_FIXTURE
 
 import collective.classification.tree
+
+
+BEHAVIOR = (
+    "collective.classification.tree.behaviors.classification.IClassificationCategory"
+)
+
+
+def new_request(request, form=None):
+    """Reuse the test request as a new browser request: GET, or POST of the form values"""
+    request["REQUEST_METHOD"] = form and "POST" or "GET"
+    request.form = form or {}
+    request.response.setStatus(200)
 
 
 class CollectiveClassificationTreeLayer(PloneSandboxLayer):
@@ -32,6 +46,12 @@ class CollectiveClassificationTreeLayer(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         applyProfile(portal, "collective.classification.tree:default")
         setRoles(portal, TEST_USER_ID, ["Manager"])
+        # a content type classified with the behavior, as the mails of imio.dms.mail
+        fti = DexterityFTI(
+            "ClassifiedItem", klass="plone.dexterity.content.Item", global_allow=True
+        )
+        fti.behaviors = (BEHAVIOR,)
+        portal.portal_types._setObject("ClassifiedItem", fti)
 
 
 COLLECTIVE_CLASSIFICATION_TREE_FIXTURE = CollectiveClassificationTreeLayer()
@@ -49,11 +69,12 @@ COLLECTIVE_CLASSIFICATION_TREE_FUNCTIONAL_TESTING = FunctionalTesting(
 )
 
 
-COLLECTIVE_CLASSIFICATION_TREE_ACCEPTANCE_TESTING = FunctionalTesting(
+ACCEPTANCE = FunctionalTesting(
     bases=(
         COLLECTIVE_CLASSIFICATION_TREE_FIXTURE,
         REMOTE_LIBRARY_BUNDLE_FIXTURE,
-        z2.ZSERVER_FIXTURE,
+        WSGI_SERVER_FIXTURE,
     ),
     name="CollectiveClassificationTreeLayer:AcceptanceTesting",
 )
+COLLECTIVE_CLASSIFICATION_TREE_ACCEPTANCE_TESTING = ACCEPTANCE  # former name

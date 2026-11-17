@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-
-from StringIO import StringIO
-from ZPublisher.HTTPRequest import FileUpload
 from collective.classification.tree import testing
 from collective.classification.tree.form import importform
+from io import BytesIO
+from io import StringIO
 from operator import itemgetter
 from persistent.dict import PersistentDict
 from plone import api
 from plone.namedfile import NamedBlobFile
+from Products.statusmessages.interfaces import IStatusMessage
 from zope.annotation import IAnnotations
 from zope.component import createObject
 from zope.i18n import translate
+from ZPublisher.HTTPRequest import FileUpload
 
 import csv
 import unittest
@@ -21,8 +22,12 @@ class TestImportForm(unittest.TestCase):
 
     def setUp(self):
         self.portal = self.layer["portal"]
-        self.folder = api.content.create(id="folder", type="Folder", container=self.portal)
-        self.container = api.content.create(title="Container", type="ClassificationContainer", container=self.folder)
+        self.folder = api.content.create(
+            id="folder", type="Folder", container=self.portal
+        )
+        self.container = api.content.create(
+            title="Container", type="ClassificationContainer", container=self.folder
+        )
 
     def tearDown(self):
         api.content.delete(self.folder)
@@ -65,10 +70,10 @@ class TestImportForm(unittest.TestCase):
         data = {
             "source": NamedBlobFile(
                 data=self._csv.read(),
-                contentType=u"text/csv",
-                filename=u"test.csv",
+                contentType="text/csv",
+                filename="test.csv",
             ),
-            "separator": u";",
+            "separator": ";",
             "has_header": False,
         }
         form._set_data(data)
@@ -87,15 +92,20 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv"},
+                {
+                    "file": self._csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
-            "form.buttons.continue": u"Continuer",
-            "form.widgets.separator": [u";"],
-            "form.widgets.separator-empty-marker": u"1",
+            "form.buttons.continue": "Continuer",
+            "form.widgets.separator": [";"],
+            "form.widgets.separator-empty-marker": "1",
             "form.widgets.source": source,
-            "form.widgets.has_header": u"False",
+            "form.widgets.has_header": "False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
@@ -117,21 +127,29 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": csv, "filename": "foo.csv", "headers": "text/csv"},
+                {
+                    "file": csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
-            "form.buttons.continue": u"Continuer",
-            "form.widgets.separator": [u";"],
-            "form.widgets.separator-empty-marker": u"1",
+            "form.buttons.continue": "Continuer",
+            "form.widgets.separator": [";"],
+            "form.widgets.separator-empty-marker": "1",
             "form.widgets.source": source,
-            "form.widgets.has_header": u"False",
+            "form.widgets.has_header": "False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertEqual("CSV file must contains at least 2 columns", errors[0].error.message)
+        self.assertEqual(
+            "CSV file must contains at least 2 columns",
+            getattr(errors[0].error, "message", errors[0].message),
+        )
 
     def test_first_step_validate_csv_encoding_ok(self):
         """Ensure that we can decode csv file"""
@@ -140,15 +158,20 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv"},
+                {
+                    "file": self._csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
-            "form.buttons.continue": u"Continuer",
-            "form.widgets.separator": [u";"],
-            "form.widgets.separator-empty-marker": u"1",
+            "form.buttons.continue": "Continuer",
+            "form.widgets.separator": [";"],
+            "form.widgets.separator-empty-marker": "1",
             "form.widgets.source": source,
-            "form.widgets.has_header": u"False",
+            "form.widgets.has_header": "False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
@@ -158,34 +181,42 @@ class TestImportForm(unittest.TestCase):
     def test_first_step_validate_csv_encoding_nok(self):
         """Ensure that we can decode csv file"""
         request = self.layer["request"]
-        csv = StringIO()
         lines = [
-            [u"猫", u"èè", u"ùù"],
+            ["猫", "èè", "ùù"],
             ["", "key1", "Key 1"],
-            [u"猫", u"ààà", u"ééé"],
+            ["猫", "ààà", "ééé"],
         ]
+        stream = BytesIO()
         for line in lines:
-            csv.write(";".join(line).encode("utf-16") + "\n")
-        csv.seek(0)
+            stream.write(bytes(";".join(line) + "\n", "utf-16"))
+        stream.seek(0)
         source = FileUpload(
             type(
                 "obj",
                 (object,),
-                {"file": csv, "filename": "foo.csv", "headers": "text/csv"},
+                {
+                    "file": stream,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
-            "form.buttons.continue": u"continuer",
-            "form.widgets.separator": [u";"],
-            "form.widgets.separator-empty-marker": u"1",
+            "form.buttons.continue": "continuer",
+            "form.widgets.separator": [";"],
+            "form.widgets.separator-empty-marker": "1",
             "form.widgets.source": source,
-            "form.widgets.has_header": u"True",
+            "form.widgets.has_header": "True",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertEqual("File encoding is not utf8", errors[0].error.message)
+        self.assertEqual(
+            "File encoding is not utf8",
+            getattr(errors[0].error, "message", errors[0].message),
+        )
 
     def test_first_step_validate_line_columns_ok(self):
         """Ensure that every lines have the same number of columns"""
@@ -194,15 +225,20 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": self._csv, "filename": "foo.csv", "headers": "text/csv"},
+                {
+                    "file": self._csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
-            "form.buttons.continue": u"continuer",
-            "form.widgets.separator": [u";"],
-            "form.widgets.separator-empty-marker": u"1",
+            "form.buttons.continue": "continuer",
+            "form.widgets.separator": [";"],
+            "form.widgets.separator-empty-marker": "1",
             "form.widgets.source": source,
-            "form.widgets.has_header": u"False",
+            "form.widgets.has_header": "False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
@@ -225,21 +261,29 @@ class TestImportForm(unittest.TestCase):
             type(
                 "obj",
                 (object,),
-                {"file": csv, "filename": "foo.csv", "headers": "text/csv"},
+                {
+                    "file": csv,
+                    "filename": "foo.csv",
+                    "headers": "text/csv",
+                    "name": "xx",
+                },
             )()
         )
         request.form = {
-            "form.buttons.continue": u"continuer",
-            "form.widgets.separator": [u";"],
-            "form.widgets.separator-empty-marker": u"1",
+            "form.buttons.continue": "continuer",
+            "form.widgets.separator": [";"],
+            "form.widgets.separator-empty-marker": "1",
             "form.widgets.source": source,
-            "form.widgets.has_header": u"False",
+            "form.widgets.has_header": "False",
         }
         form = importform.ImportFormFirstStep(self.container, request)
         form.update()
         data, errors = form.extractData()
         self.assertEqual(1, len(errors))
-        self.assertTrue("Lines 2, 3" in translate(errors[0].error.message))
+        self.assertTrue(
+            "Lines 2, 3"
+            in translate(getattr(errors[0].error, "message", errors[0].message))
+        )
 
     def test_second_step_basic_encoding(self):
         """Ensure that form can be displayed even with special characters"""
@@ -247,16 +291,16 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["null", "key1", "key1.1", "Key 1.1", "informations"],
             [
                 "null",
                 "",
-                u"key1 éà$€".encode("utf8"),
-                u"Key 1 éà$€".encode("utf8"),
-                u"informations éà$€".encode("utf8"),
+                "key1 éà$€",
+                "Key 1 éà$€",
+                "informations éà$€",
             ],
         ]
         for line in lines:
@@ -264,8 +308,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         exception = None
         try:
@@ -280,7 +324,7 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u","
+        annotation["separator"] = ","
         csv = StringIO()
         lines = [
             ["", "key1", "Key 1"],
@@ -292,8 +336,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         exception = None
         try:
@@ -308,11 +352,11 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         annotation["source"] = NamedBlobFile(
             data=self._csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         data = {
             "column_0": "parent_identifier",
@@ -323,7 +367,9 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
+        )
 
         key1 = self.container.get_by("identifier", "key1")
         self.assertEqual(3, len(key1))
@@ -346,7 +392,7 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["", "key1", "Key 1"],
@@ -357,8 +403,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         data = {
             "column_0": None,
@@ -369,8 +415,12 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
-        self.assertEqual(["key1", "key2"], sorted([e.title for e in self.container.values()]))
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
+        )
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.title for e in self.container.values()])
+        )
 
     def test_second_step_import_encoding(self):
         """Test importing csv data with special chars in header and content"""
@@ -378,20 +428,20 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = True
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
-            [u"猫".encode("utf8"), u"èè".encode("utf8"), u"ùù".encode("utf8")],
-            ["", u"kéy1".encode("utf8"), u"Kèy 1".encode("utf8")],
-            [u"kéy1".encode("utf8"), u"kéy1.1".encode("utf8"), u"猫".encode("utf8")],
+            ["猫", "èè", "ùù"],
+            ["", "kéy1", "Kèy 1"],
+            ["kéy1", "kéy1.1", "猫"],
         ]
         for line in lines:
             csv.write(";".join(line) + "\n")
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         data = {
             "column_0": "parent_identifier",
@@ -402,14 +452,14 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(1, len(self.container))
-        self.assertEqual([u"kéy1"], [e.identifier for e in self.container.values()])
+        self.assertEqual(["kéy1"], [e.identifier for e in self.container.values()])
 
-        key1 = self.container.get_by("identifier", u"kéy1")
+        key1 = self.container.get_by("identifier", "kéy1")
         self.assertEqual(1, len(key1))
-        self.assertEqual([u"kéy1.1"], [e.identifier for e in key1.values()])
+        self.assertEqual(["kéy1.1"], [e.identifier for e in key1.values()])
 
-        key1_1 = key1.get_by("identifier", u"kéy1.1")
-        self.assertEqual(u"猫", key1_1.title)
+        key1_1 = key1.get_by("identifier", "kéy1.1")
+        self.assertEqual("猫", key1_1.title)
 
     def test_second_step_import_encoding_form(self):
         """Test importing csv data with special chars in header and content"""
@@ -417,20 +467,20 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = True
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
-            [u"猫".encode("utf8"), u"èè".encode("utf8"), u"ùù".encode("utf8")],
-            ["", u"kéy1".encode("utf8"), u"Kèy 1".encode("utf8")],
-            [u"kéy1".encode("utf8"), u"kéy1.1".encode("utf8"), u"猫".encode("utf8")],
+            ["猫", "èè", "ùù"],
+            ["", "kéy1", "Kèy 1"],
+            ["kéy1", "kéy1.1", "猫"],
         ]
         for line in lines:
             csv.write(";".join(line) + "\n")
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         form.update()
         exception = None
@@ -439,7 +489,7 @@ class TestImportForm(unittest.TestCase):
         except UnicodeDecodeError as e:
             exception = e
         self.assertIsNone(exception)
-        self.assertTrue(u"Column {0}".format(u"猫") in render)
+        self.assertTrue("Column {0}".format("猫") in render)
 
     def test_second_step_import_decimal_basic(self):
         """Test importing csv data with decimal codes"""
@@ -447,7 +497,7 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["100", "Key 1"],
@@ -462,8 +512,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         data = {
             "column_0": "identifier",
@@ -473,7 +523,9 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(["1", "2"], sorted([e.identifier for e in self.container.values()]))
+        self.assertEqual(
+            ["1", "2"], sorted([e.identifier for e in self.container.values()])
+        )
 
         code_1 = self.container.get_by("identifier", "1")
         self.assertEqual("1", code_1.title)
@@ -524,7 +576,7 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["null", "", "key1", "Key 1", "informations", ""],
@@ -540,8 +592,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         data = {
             "column_1": "parent_identifier",
@@ -552,7 +604,9 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
+        )
 
         key1 = self.container.get_by("identifier", "key1")
         self.assertEqual(3, len(key1))
@@ -575,7 +629,7 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["", "key1", "Key 1"],
@@ -591,8 +645,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         data = {
             "column_0": "parent_identifier",
@@ -603,7 +657,9 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
+        )
 
         key1 = self.container.get_by("identifier", "key1")
         self.assertEqual(3, len(key1))
@@ -626,7 +682,7 @@ class TestImportForm(unittest.TestCase):
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["", "key1", "Key 1"],
@@ -650,8 +706,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         data = {
             "column_0": "parent_identifier",
@@ -662,7 +718,9 @@ class TestImportForm(unittest.TestCase):
         }
         form._import(data)
         self.assertEqual(2, len(self.container))
-        self.assertEqual(["key1", "key2"], sorted([e.identifier for e in self.container.values()]))
+        self.assertEqual(
+            ["key1", "key2"], sorted([e.identifier for e in self.container.values()])
+        )
 
         key1 = self.container.get_by("identifier", "key1")
         self.assertEqual(3, len(key1))
@@ -683,21 +741,21 @@ class TestImportForm(unittest.TestCase):
         """Test validation of required columns"""
         request = self.layer["request"]
         request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"parent_identifier",
-            "form.widgets.column_1": u"identifier",
-            "form.widgets.column_2": u"title",
-            "form.widgets.decimal_import": u"False",
-            "form.widgets.allow_empty": u"False",
+            "form.buttons.import": "Importer",
+            "form.widgets.column_0": "parent_identifier",
+            "form.widgets.column_1": "identifier",
+            "form.widgets.column_2": "title",
+            "form.widgets.decimal_import": "False",
+            "form.widgets.allow_empty": "False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         annotation["source"] = NamedBlobFile(
             data=self._csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         form = importform.ImportFormSecondStep(self.container, request)
         form.updateFieldsFromSchemata()
@@ -709,21 +767,21 @@ class TestImportForm(unittest.TestCase):
         """Test validation of required columns"""
         request = self.layer["request"]
         request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"--NOVALUE--",
-            "form.widgets.column_1": u"--NOVALUE--",
-            "form.widgets.column_2": u"--NOVALUE--",
-            "form.widgets.decimal_import": u"False",
-            "form.widgets.allow_empty": u"False",
+            "form.buttons.import": "Importer",
+            "form.widgets.column_0": "--NOVALUE--",
+            "form.widgets.column_1": "--NOVALUE--",
+            "form.widgets.column_2": "--NOVALUE--",
+            "form.widgets.decimal_import": "False",
+            "form.widgets.allow_empty": "False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         annotation["source"] = NamedBlobFile(
             data=self._csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         form = importform.ImportFormSecondStep(self.container, request)
         form.updateFieldsFromSchemata()
@@ -732,27 +790,27 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(
             "The following required columns are missing: identifier",
-            translate(errors[0].error.message),
+            translate(getattr(errors[0].error, "message", errors[0].message)),
         )
 
     def test_second_step_required_columns_data_ok(self):
         """Test validation of required columns data"""
         request = self.layer["request"]
         request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"parent_identifier",
-            "form.widgets.column_1": u"identifier",
-            "form.widgets.column_2": u"title",
-            "form.widgets.decimal_import": u"False",
+            "form.buttons.import": "Importer",
+            "form.widgets.column_0": "parent_identifier",
+            "form.widgets.column_1": "identifier",
+            "form.widgets.column_2": "title",
+            "form.widgets.decimal_import": "False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         annotation["source"] = NamedBlobFile(
             data=self._csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         form = importform.ImportFormSecondStep(self.container, request)
         form.updateFieldsFromSchemata()
@@ -764,17 +822,17 @@ class TestImportForm(unittest.TestCase):
         """Test validation of required columns data"""
         request = self.layer["request"]
         request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"parent_identifier",
-            "form.widgets.column_1": u"identifier",
-            "form.widgets.column_2": u"title",
-            "form.widgets.decimal_import": u"False",
-            "form.widgets.allow_empty": u"False",
+            "form.buttons.import": "Importer",
+            "form.widgets.column_0": "parent_identifier",
+            "form.widgets.column_1": "identifier",
+            "form.widgets.column_2": "title",
+            "form.widgets.decimal_import": "False",
+            "form.widgets.allow_empty": "False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["", "key1", "Key 1"],
@@ -788,8 +846,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         form = importform.ImportFormSecondStep(self.container, request)
         form.updateFieldsFromSchemata()
@@ -798,24 +856,24 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(
             "Lines 4 have missing required value(s)",
-            translate(errors[0].error.message),
+            translate(getattr(errors[0].error, "message", errors[0].message)),
         )
 
     def test_second_step_required_columns_data_nok_allow_empty(self):
         """Test validation of required columns data"""
         request = self.layer["request"]
         request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"parent_identifier",
-            "form.widgets.column_1": u"identifier",
-            "form.widgets.column_2": u"title",
-            "form.widgets.decimal_import": u"False",
-            "form.widgets.allow_empty": u"selected",
+            "form.buttons.import": "Importer",
+            "form.widgets.column_0": "parent_identifier",
+            "form.widgets.column_1": "identifier",
+            "form.widgets.column_2": "title",
+            "form.widgets.decimal_import": "False",
+            "form.widgets.allow_empty": "selected",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["", "key1", "Key 1"],
@@ -829,8 +887,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         form = importform.ImportFormSecondStep(self.container, request)
         form.updateFieldsFromSchemata()
@@ -842,16 +900,16 @@ class TestImportForm(unittest.TestCase):
         """Test validation of columns data format"""
         request = self.layer["request"]
         request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"identifier",
-            "form.widgets.column_1": u"title",
-            "form.widgets.decimal_import": u"selected",
-            "form.widgets.allow_empty": u"False",
+            "form.buttons.import": "Importer",
+            "form.widgets.column_0": "identifier",
+            "form.widgets.column_1": "title",
+            "form.widgets.decimal_import": "selected",
+            "form.widgets.allow_empty": "False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["-1", "key1"],
@@ -864,8 +922,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         form = importform.ImportFormSecondStep(self.container, request)
         form.updateFieldsFromSchemata()
@@ -874,23 +932,23 @@ class TestImportForm(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual(
             "Bad format values: Line 4, col 1: '-1 11'",
-            translate(errors[0].error.message),
+            translate(getattr(errors[0].error, "message", errors[0].message)),
         )
 
     def test_second_step_columns_data_format_ok(self):
         """Test validation of columns data format"""
         request = self.layer["request"]
         request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"identifier",
-            "form.widgets.column_1": u"title",
-            "form.widgets.decimal_import": u"selected",
-            "form.widgets.allow_empty": u"False",
+            "form.buttons.import": "Importer",
+            "form.widgets.column_0": "identifier",
+            "form.widgets.column_1": "title",
+            "form.widgets.decimal_import": "selected",
+            "form.widgets.allow_empty": "False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["-1", "key1"],
@@ -906,8 +964,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         form = importform.ImportFormSecondStep(self.container, request)
         form.updateFieldsFromSchemata()
@@ -919,18 +977,18 @@ class TestImportForm(unittest.TestCase):
         """Test validation of optional columns data"""
         request = self.layer["request"]
         request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"parent_identifier",
-            "form.widgets.column_1": u"identifier",
-            "form.widgets.column_2": u"title",
-            "form.widgets.column_3": u"informations",
-            "form.widgets.decimal_import": u"False",
-            "form.widgets.allow_empty": u"False",
+            "form.buttons.import": "Importer",
+            "form.widgets.column_0": "parent_identifier",
+            "form.widgets.column_1": "identifier",
+            "form.widgets.column_2": "title",
+            "form.widgets.column_3": "informations",
+            "form.widgets.decimal_import": "False",
+            "form.widgets.allow_empty": "False",
         }
         annotations = IAnnotations(self.container)
         annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
         annotation["has_header"] = False
-        annotation["separator"] = u";"
+        annotation["separator"] = ";"
         csv = StringIO()
         lines = [
             ["", "key1", "Key 1", "infos"],
@@ -942,44 +1000,8 @@ class TestImportForm(unittest.TestCase):
         csv.seek(0)
         annotation["source"] = NamedBlobFile(
             data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
-        )
-        form = importform.ImportFormSecondStep(self.container, request)
-        form.updateFieldsFromSchemata()
-        form.updateWidgets()
-        data, errors = form.extractData()
-        self.assertEqual(0, len(errors))
-
-    def test_second_step_optional_columns_data_ok(self):
-        """Test validation of optional columns data"""
-        request = self.layer["request"]
-        request.form = {
-            "form.buttons.import": u"Importer",
-            "form.widgets.column_0": u"parent_identifier",
-            "form.widgets.column_1": u"identifier",
-            "form.widgets.column_2": u"title",
-            "form.widgets.column_3": u"informations",
-            "form.widgets.decimal_import": u"False",
-            "form.widgets.allow_empty": u"False",
-        }
-        annotations = IAnnotations(self.container)
-        annotation = annotations[importform.ANNOTATION_KEY] = PersistentDict()
-        annotation["has_header"] = False
-        annotation["separator"] = u";"
-        csv = StringIO()
-        lines = [
-            ["", "key1", "Key 1", "infos"],
-            ["key1", "key1.1", "Key 1.1", ""],
-            ["key1.1", "key1.1.1", "Key 1.1.1", ""],
-        ]
-        for line in lines:
-            csv.write(";".join(line) + "\n")
-        csv.seek(0)
-        annotation["source"] = NamedBlobFile(
-            data=csv.read(),
-            contentType=u"text/csv",
-            filename=u"test.csv",
+            contentType="text/csv",
+            filename="test.csv",
         )
         form = importform.ImportFormSecondStep(self.container, request)
         form.updateFieldsFromSchemata()
@@ -991,27 +1013,33 @@ class TestImportForm(unittest.TestCase):
         """Tests _process_data with basic data structure"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
-            None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {})},
-            u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {"enabled": True})},
-            u"key2": {u"key2.1": (u"Key 2.1", {}), u"key2.2": (u"Key 2.2", {"enabled": False})},
+            None: {"key1": ("Key 1", {}), "key2": ("Key 2", {})},
+            "key1": {
+                "key1.1": ("Key 1.1", {}),
+                "key1.2": ("Key 1.2", {"enabled": True}),
+            },
+            "key2": {
+                "key2.1": ("Key 2.1", {}),
+                "key2.2": ("Key 2.2", {"enabled": False}),
+            },
         }
         expected_results = [
             {
-                "identifier": u"key1",
-                "title": u"Key 1",
+                "identifier": "key1",
+                "title": "Key 1",
                 "informations": None,
                 "enabled": None,
                 "_children": [
                     {
-                        "identifier": u"key1.1",
-                        "title": u"Key 1.1",
+                        "identifier": "key1.1",
+                        "title": "Key 1.1",
                         "informations": None,
                         "enabled": None,
                         "_children": [],
                     },
                     {
-                        "identifier": u"key1.2",
-                        "title": u"Key 1.2",
+                        "identifier": "key1.2",
+                        "title": "Key 1.2",
                         "informations": None,
                         "enabled": True,
                         "_children": [],
@@ -1019,21 +1047,21 @@ class TestImportForm(unittest.TestCase):
                 ],
             },
             {
-                "identifier": u"key2",
-                "title": u"Key 2",
+                "identifier": "key2",
+                "title": "Key 2",
                 "informations": None,
                 "enabled": None,
                 "_children": [
                     {
-                        "identifier": u"key2.1",
-                        "title": u"Key 2.1",
+                        "identifier": "key2.1",
+                        "title": "Key 2.1",
                         "informations": None,
                         "enabled": None,
                         "_children": [],
                     },
                     {
-                        "identifier": u"key2.2",
-                        "title": u"Key 2.2",
+                        "identifier": "key2.2",
+                        "title": "Key 2.2",
                         "informations": None,
                         "enabled": False,
                         "_children": [],
@@ -1048,34 +1076,34 @@ class TestImportForm(unittest.TestCase):
         """Tests _process_data with multi levels data structure"""
         form = importform.ImportFormSecondStep(self.container, self.layer["request"])
         data = {
-            None: {u"key1": (u"Key 1", {}), u"key2": (u"Key 2", {"enabled": False})},
-            u"key1": {u"key1.1": (u"Key 1.1", {}), u"key1.2": (u"Key 1.2", {})},
-            u"key2": {u"key2.1": (u"Key 2.1", {"enabled": False})},
-            u"key1.1": {u"key1.1.1": (u"Key 1.1.1", {})},
-            u"key1.1.1": {u"key1.1.1.1": (u"Key 1.1.1.1", {})},
+            None: {"key1": ("Key 1", {}), "key2": ("Key 2", {"enabled": False})},
+            "key1": {"key1.1": ("Key 1.1", {}), "key1.2": ("Key 1.2", {})},
+            "key2": {"key2.1": ("Key 2.1", {"enabled": False})},
+            "key1.1": {"key1.1.1": ("Key 1.1.1", {})},
+            "key1.1.1": {"key1.1.1.1": ("Key 1.1.1.1", {})},
         }
         expected_results = [
             {
-                "identifier": u"key1",
-                "title": u"Key 1",
+                "identifier": "key1",
+                "title": "Key 1",
                 "informations": None,
                 "enabled": None,
                 "_children": [
                     {
-                        "identifier": u"key1.1",
-                        "title": u"Key 1.1",
+                        "identifier": "key1.1",
+                        "title": "Key 1.1",
                         "informations": None,
                         "enabled": None,
                         "_children": [
                             {
-                                "identifier": u"key1.1.1",
-                                "title": u"Key 1.1.1",
+                                "identifier": "key1.1.1",
+                                "title": "Key 1.1.1",
                                 "informations": None,
                                 "enabled": None,
                                 "_children": [
                                     {
-                                        "identifier": u"key1.1.1.1",
-                                        "title": u"Key 1.1.1.1",
+                                        "identifier": "key1.1.1.1",
+                                        "title": "Key 1.1.1.1",
                                         "informations": None,
                                         "enabled": None,
                                         "_children": [],
@@ -1085,8 +1113,8 @@ class TestImportForm(unittest.TestCase):
                         ],
                     },
                     {
-                        "identifier": u"key1.2",
-                        "title": u"Key 1.2",
+                        "identifier": "key1.2",
+                        "title": "Key 1.2",
                         "informations": None,
                         "enabled": None,
                         "_children": [],
@@ -1094,14 +1122,14 @@ class TestImportForm(unittest.TestCase):
                 ],
             },
             {
-                "identifier": u"key2",
-                "title": u"Key 2",
+                "identifier": "key2",
+                "title": "Key 2",
                 "informations": None,
                 "enabled": False,
                 "_children": [
                     {
-                        "identifier": u"key2.1",
-                        "title": u"Key 2.1",
+                        "identifier": "key2.1",
+                        "title": "Key 2.1",
                         "informations": None,
                         "enabled": False,
                         "_children": [],
@@ -1130,10 +1158,15 @@ class TestImportForm(unittest.TestCase):
             "column_1": "title",
         }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
-        result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
+        result = form._process_csv(
+            reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True
+        )
         expected_result = {
-            None: {u"1": (u"First-level", {})},
-            u"1": {u"11": (u"Second - level", {}), u"12": (u"Other - level - in -- Tesla", {})},
+            None: {"1": ("First-level", {})},
+            "1": {
+                "11": ("Second - level", {}),
+                "12": ("Other - level - in -- Tesla", {}),
+            },
         }
         self.assertEqual(expected_result, result)
 
@@ -1157,15 +1190,17 @@ class TestImportForm(unittest.TestCase):
             "column_1": "title",
         }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
-        result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
+        result = form._process_csv(
+            reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True
+        )
         expected_result = {
             None: {
-                u"1": (u"First level", {}),
-                u"2": (u"2", {u"enabled": False}),
+                "1": ("First level", {}),
+                "2": ("2", {"enabled": False}),
             },
-            u"1": {u"11": (u"Second level", {}), u"12": (u"12", {})},
-            u"11": {u"111": (u"Yet one", {})},
-            u"2": {u"21": (u"New sub levels", {}), u"22": (u"22", {})},
+            "1": {"11": ("Second level", {}), "12": ("12", {})},
+            "11": {"111": ("Yet one", {})},
+            "2": {"21": ("New sub levels", {}), "22": ("22", {})},
         }
         self.assertEqual(expected_result, result)
 
@@ -1189,18 +1224,132 @@ class TestImportForm(unittest.TestCase):
             "column_2": "enabled",
         }
         mapping = {int(k.replace("column_", "")): v for k, v in data.items()}
-        result = form._process_csv(reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True)
+        result = form._process_csv(
+            reader, mapping, "utf-8", {}, decimal_import=True, replace_slash=True
+        )
         expected_result = {
             None: {
-                u"1": (u"First-level", {"enabled": False}),
-                u"2": (u"2", {"enabled": False}),
+                "1": ("First-level", {"enabled": False}),
+                "2": ("2", {"enabled": False}),
             },
-            u"1": {
-                u"11": (u"Second - level", {"enabled": True}),
-                u"12": (u"Other - level - in -- Tesla", {"enabled": True}),
+            "1": {
+                "11": ("Second - level", {"enabled": True}),
+                "12": ("Other - level - in -- Tesla", {"enabled": True}),
             },
-            u"2": {
-                u"20": (u"Sublevel without parent", {"enabled": True}),
+            "2": {
+                "20": ("Sublevel without parent", {"enabled": True}),
             },
         }
         self.assertEqual(expected_result, result)
+
+
+def csv_upload(lines):
+    """A `;` CSV file posted by the browser"""
+    data = BytesIO(bytes("\n".join(lines), "utf8"))
+    return FileUpload(
+        type(
+            "obj",
+            (object,),
+            {
+                "file": data,
+                "filename": "tree.csv",
+                "headers": "text/csv",
+                "name": "tree.csv",
+            },
+        )()
+    )
+
+
+class TestImportFormFirstStep(unittest.TestCase):
+    layer = testing.COLLECTIVE_CLASSIFICATION_TREE_FUNCTIONAL_TESTING
+
+    def test_handleApply(self):
+        request = self.layer["request"]
+        container = api.content.create(
+            title="Container",
+            type="ClassificationContainer",
+            container=self.layer["portal"],
+        )
+        upload = csv_upload(["identifier;title", "1;Administration"])
+        testing.new_request(
+            request,
+            {
+                "form.widgets.source": upload,
+                "form.widgets.separator": [";"],
+                "form.widgets.separator-empty-marker": "1",
+                "form.widgets.has_header": ["selected"],
+                "form.widgets.has_header-empty-marker": "1",
+                "form.buttons.continue": "Continue",
+            },
+        )
+        container.restrictedTraverse("@@import")()
+        data = IAnnotations(container)[importform.ANNOTATION_KEY]
+        self.assertEqual((";", True), (data["separator"], data["has_header"]))
+        self.assertEqual(b"identifier;title\n1;Administration", data["source"].data)
+        self.assertEqual(
+            container.absolute_url() + "/@@import-process",
+            request.response.getHeader("location"),
+        )
+
+
+class TestBaseImportFormSecondStep(unittest.TestCase):
+    layer = testing.COLLECTIVE_CLASSIFICATION_TREE_FUNCTIONAL_TESTING
+
+    def test_handleApply(self):
+        """The 2 steps of the import, as a user"""
+        request = self.layer["request"]
+        container = api.content.create(
+            title="Container",
+            type="ClassificationContainer",
+            container=self.layer["portal"],
+        )
+        lines = [
+            "Code;Name;Info",
+            "1;Administration;",
+            "1.1;Personnel;Staff files",
+            "2;Finances;",
+        ]
+        testing.new_request(
+            request,
+            {
+                "form.widgets.source": csv_upload(lines),
+                "form.widgets.separator": [";"],
+                "form.widgets.separator-empty-marker": "1",
+                "form.widgets.has_header": ["selected"],
+                "form.widgets.has_header-empty-marker": "1",
+                "form.buttons.continue": "Continue",
+            },
+        )
+        container.restrictedTraverse("@@import")()
+        # second step: the columns of the file
+        testing.new_request(request)
+        content = container.restrictedTraverse("@@import-process")()
+        self.assertIn("Column Code", content)
+        self.assertIn("Sample data : '1', '1.1'", content)
+        testing.new_request(
+            request,
+            {
+                "form.widgets.column_0": ["identifier"],
+                "form.widgets.column_0-empty-marker": "1",
+                "form.widgets.column_1": ["title"],
+                "form.widgets.column_1-empty-marker": "1",
+                "form.widgets.column_2": ["informations"],
+                "form.widgets.column_2-empty-marker": "1",
+                "form.widgets.decimal_import": ["selected"],
+                "form.widgets.decimal_import-empty-marker": "1",
+                "form.widgets.allow_empty-empty-marker": "1",
+                "form.widgets.replace_slash-empty-marker": "1",
+                "form.buttons.import": "Import",
+            },
+        )
+        container.restrictedTraverse("@@import-process")()
+        self.assertEqual(
+            ["Administration", "Finances"], sorted(e.title for e in container.values())
+        )
+        sub = container.get_by("identifier", "1").get_by("identifier", "1.1")
+        self.assertEqual(("Personnel", "Staff files"), (sub.title, sub.informations))
+        messages = [m.message for m in IStatusMessage(request).show()]
+        self.assertTrue(messages[0].startswith("Import completed in "), messages)
+        self.assertEqual(
+            container.absolute_url(), request.response.getHeader("location")
+        )
