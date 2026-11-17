@@ -17,6 +17,8 @@ Changelog
   [chris-adam]
 - Fixed `ClassificationTreeSource` for a user missing from the user folders (MemberData error).
   [chris-adam]
+- Dropped support for Plone versions below 6.2.
+  [chris-adam]
 
 1.3.0 (2026-08-14)
 ------------------
